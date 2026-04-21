@@ -1,0 +1,2767 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual TypeScript — Referência Completa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0d0b;
+    --bg-2: #17130f;
+    --panel: #1c1712;
+    --panel-2: #241d17;
+    --border: #2d251d;
+    --border-strong: #3a3024;
+    --text: #f2ede4;
+    --text-2: #cfc5b4;
+    --muted: #a39a8e;
+    --dim: #6a6258;
+    --accent: #f0a830;
+    --accent-2: #e08c2a;
+    --accent-soft: rgba(240, 168, 48, 0.12);
+    --teal: #5eead4;
+    --rose: #f5a8a8;
+    --sage: #b0c98c;
+
+    /* syntax */
+    --sx-keyword: #e59866;
+    --sx-string: #b0c98c;
+    --sx-number: #e0a05a;
+    --sx-comment: #6a6258;
+    --sx-type: #7fd4c4;
+    --sx-func: #f0c878;
+    --sx-var: #f2ede4;
+    --sx-op: #a39a8e;
+    --sx-prop: #d8b4fe;
+    --sx-builtin: #7fd4c4;
+
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(240, 168, 48, 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 90% 30%, rgba(94, 234, 212, 0.03) 0%, transparent 40%);
+  }
+
+  /* ===== HEADER ===== */
+  header.top {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(15, 13, 11, 0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  header.top .inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .brand-mark {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: #1a1410;
+    font-size: 15px;
+    letter-spacing: -0.5px;
+    box-shadow: 0 4px 20px rgba(240, 168, 48, 0.25);
+  }
+  .brand-text .title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 20px;
+    font-style: italic;
+    line-height: 1;
+  }
+  .brand-text .sub {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .search-wrap {
+    flex: 1;
+    max-width: 420px;
+    position: relative;
+  }
+  .search-wrap input {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px 10px 40px;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  .search-wrap input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--panel-2);
+  }
+  .search-wrap::before {
+    content: "⌕";
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 16px;
+  }
+  .header-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .header-meta .dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  /* ===== LAYOUT ===== */
+  .layout {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 0;
+    padding: 0 32px;
+  }
+
+  /* ===== SIDEBAR ===== */
+  aside.sidebar {
+    position: sticky;
+    top: 77px;
+    height: calc(100vh - 77px);
+    overflow-y: auto;
+    padding: 32px 24px 32px 0;
+    border-right: 1px solid var(--border);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+  aside.sidebar::-webkit-scrollbar { width: 6px; }
+  aside.sidebar::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+  .nav-group { margin-bottom: 28px; }
+  .nav-group-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .nav-group-title::before {
+    content: "";
+    width: 4px; height: 4px;
+    background: var(--accent);
+    transform: rotate(45deg);
+  }
+  .nav-group ul { list-style: none; }
+  .nav-group a {
+    display: block;
+    padding: 7px 12px;
+    color: var(--text-2);
+    text-decoration: none;
+    font-size: 14px;
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+    border-radius: 0 4px 4px 0;
+  }
+  .nav-group a:hover {
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-left-color: var(--accent);
+  }
+  .nav-group a.active {
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-left-color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* ===== MAIN ===== */
+  main {
+    padding: 48px 48px 96px;
+    min-width: 0;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    margin-bottom: 80px;
+    padding: 48px 0 64px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    top: 0; left: -48px; right: -48px; bottom: 0;
+    background:
+      radial-gradient(ellipse at top left, rgba(240, 168, 48, 0.08), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(94, 234, 212, 0.05), transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .eyebrow::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border-strong), transparent);
+    max-width: 280px;
+  }
+  h1.hero-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(48px, 8vw, 96px);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+    color: var(--text);
+  }
+  h1.hero-title em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .hero-lead {
+    font-family: var(--font-display);
+    font-size: clamp(18px, 2.4vw, 24px);
+    line-height: 1.5;
+    color: var(--text-2);
+    max-width: 720px;
+    font-weight: 400;
+  }
+  .hero-lead::first-letter {
+    font-size: 1.4em;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .hero-meta {
+    margin-top: 48px;
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+  .hero-meta-item { border-left: 2px solid var(--accent); padding-left: 16px; }
+  .hero-meta-item .label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .hero-meta-item .value {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  /* ===== SECTIONS ===== */
+  section.chapter {
+    margin-bottom: 80px;
+    scroll-margin-top: 90px;
+  }
+  .chapter-number {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  h2.chapter-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(34px, 4.5vw, 52px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+  h2.chapter-title em { font-style: italic; color: var(--accent); }
+  .chapter-intro {
+    font-family: var(--font-display);
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--text-2);
+    max-width: 780px;
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h3.topic {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 1.2;
+    margin: 56px 0 12px;
+    color: var(--text);
+    scroll-margin-top: 90px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+  h3.topic .hash {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 400;
+  }
+
+  h4.subtopic {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 17px;
+    margin: 36px 0 10px;
+    color: var(--text);
+    letter-spacing: -0.005em;
+  }
+
+  p {
+    margin-bottom: 16px;
+    color: var(--text-2);
+    max-width: 780px;
+  }
+  p strong { color: var(--text); font-weight: 600; }
+  p em { color: var(--accent); font-style: italic; }
+  p code, li code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: var(--panel);
+    padding: 2px 7px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--teal);
+    white-space: nowrap;
+  }
+
+  ul.bullets, ol.bullets {
+    margin: 12px 0 20px 20px;
+    max-width: 780px;
+  }
+  ul.bullets li, ol.bullets li {
+    margin-bottom: 8px;
+    color: var(--text-2);
+    padding-left: 6px;
+  }
+  ul.bullets li::marker { color: var(--accent); }
+
+  a.link {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--accent-2);
+  }
+  a.link:hover { color: var(--text); border-bottom-style: solid; }
+
+  /* ===== CODE BLOCKS ===== */
+  .code-wrap {
+    margin: 20px 0 28px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .code-header .filename { color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .code-header .filename::before {
+    content: "●";
+    color: var(--accent);
+    font-size: 8px;
+  }
+  .code-header .copy-btn {
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--muted);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.15s;
+  }
+  .code-header .copy-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .code-header .copy-btn.copied { color: var(--sage); border-color: var(--sage); }
+  pre {
+    margin: 0;
+    padding: 20px 22px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--text);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+  pre::-webkit-scrollbar { height: 8px; }
+  pre::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+  pre code { display: block; }
+
+  /* Syntax highlighting */
+  .tk-kw { color: var(--sx-keyword); font-style: italic; }
+  .tk-str { color: var(--sx-string); }
+  .tk-num { color: var(--sx-number); }
+  .tk-cmt { color: var(--sx-comment); font-style: italic; }
+  .tk-typ { color: var(--sx-type); }
+  .tk-fn { color: var(--sx-func); }
+  .tk-op { color: var(--sx-op); }
+  .tk-bi { color: var(--sx-builtin); }
+  .tk-prop { color: var(--sx-prop); }
+  .tk-punc { color: var(--text-2); }
+
+  /* ===== CALLOUTS ===== */
+  .callout {
+    margin: 24px 0;
+    padding: 16px 20px;
+    border-radius: 8px;
+    border-left: 3px solid;
+    background: var(--panel);
+    max-width: 860px;
+  }
+  .callout-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .callout-body { color: var(--text-2); font-size: 15px; line-height: 1.6; }
+  .callout-body code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: var(--bg-2);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--teal);
+  }
+  .callout.note { border-color: var(--teal); }
+  .callout.note .callout-label { color: var(--teal); }
+  .callout.warn { border-color: var(--rose); }
+  .callout.warn .callout-label { color: var(--rose); }
+  .callout.tip { border-color: var(--accent); }
+  .callout.tip .callout-label { color: var(--accent); }
+
+  /* ===== TABLES ===== */
+  .table-wrap {
+    margin: 20px 0 32px;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    max-width: 100%;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th, td {
+    padding: 11px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: var(--panel);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  td { color: var(--text-2); }
+  td:first-child { color: var(--teal); font-family: var(--font-mono); font-size: 13px; }
+  tr:last-child td { border-bottom: none; }
+
+  /* ===== FOOTER ===== */
+  footer {
+    margin-top: 120px;
+    padding: 48px 0 64px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+  footer .ornament {
+    font-family: var(--font-display);
+    font-size: 32px;
+    color: var(--accent);
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+  footer p {
+    color: var(--muted);
+    font-size: 13px;
+    max-width: none;
+    margin: 0;
+  }
+  footer .line {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 12px;
+    color: var(--dim);
+  }
+
+  /* progress bar */
+  #progressBar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--teal));
+    z-index: 100;
+    width: 0%;
+    transition: width 0.1s;
+  }
+
+  /* mobile */
+  .mobile-toggle { display: none; }
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; padding: 0 20px; }
+    aside.sidebar {
+      position: fixed;
+      top: 70px; left: 0;
+      width: 280px;
+      height: calc(100vh - 70px);
+      background: var(--bg);
+      padding: 24px 20px;
+      border-right: 1px solid var(--border);
+      transform: translateX(-100%);
+      transition: transform 0.3s;
+      z-index: 40;
+    }
+    aside.sidebar.open { transform: translateX(0); }
+    main { padding: 32px 0 64px; }
+    header.top .inner { padding: 14px 20px; }
+    .search-wrap { display: none; }
+    .mobile-toggle {
+      display: flex;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      cursor: pointer;
+      letter-spacing: 1px;
+    }
+    .header-meta { display: none; }
+    .hero { padding: 24px 0 40px; }
+  }
+
+  /* hidden when filtered */
+  .nav-hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div id="progressBar"></div>
+
+<header class="top">
+  <div class="inner">
+    <a class="brand" href="#top">
+      <div class="brand-mark">TS</div>
+      <div class="brand-text">
+        <div class="title">Manual TypeScript</div>
+        <div class="sub">Referência · v5.x</div>
+      </div>
+    </a>
+    <div class="search-wrap">
+      <input id="search" type="text" placeholder="Buscar tópico, tipo ou palavra-chave..." autocomplete="off">
+    </div>
+    <button class="mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰ Menu</button>
+    <div class="header-meta">
+      <span class="dot"></span>
+      <span>PT-BR · Completo</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+
+    <div class="nav-group">
+      <div class="nav-group-title">Fundamentos</div>
+      <ul>
+        <li><a href="#introducao">Introdução ao TypeScript</a></li>
+        <li><a href="#instalacao">Instalação e setup</a></li>
+        <li><a href="#tsconfig">O arquivo tsconfig.json</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Sistema de Tipos</div>
+      <ul>
+        <li><a href="#tipos-basicos">Tipos básicos</a></li>
+        <li><a href="#arrays-tuplas">Arrays e Tuplas</a></li>
+        <li><a href="#any-unknown">any, unknown, never, void</a></li>
+        <li><a href="#inferencia">Inferência de tipos</a></li>
+        <li><a href="#assertion">Type assertions (as, satisfies)</a></li>
+        <li><a href="#literal">Literal types</a></li>
+        <li><a href="#enums">Enums</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Funções</div>
+      <ul>
+        <li><a href="#funcoes">Tipando funções</a></li>
+        <li><a href="#params-opcionais">Parâmetros opcionais e padrão</a></li>
+        <li><a href="#overloads">Function overloads</a></li>
+        <li><a href="#this-type">Tipando o <code>this</code></a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Interfaces e Types</div>
+      <ul>
+        <li><a href="#interfaces">Interfaces</a></li>
+        <li><a href="#type-aliases">Type aliases</a></li>
+        <li><a href="#interface-vs-type">Interface vs Type</a></li>
+        <li><a href="#readonly-optional">Readonly e Opcional</a></li>
+        <li><a href="#index-signatures">Index Signatures</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Tipos Compostos</div>
+      <ul>
+        <li><a href="#union">Union types</a></li>
+        <li><a href="#intersection">Intersection types</a></li>
+        <li><a href="#narrowing">Narrowing e Type Guards</a></li>
+        <li><a href="#discriminated">Discriminated Unions</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Classes</div>
+      <ul>
+        <li><a href="#classes">Classes em TypeScript</a></li>
+        <li><a href="#modificadores">Modificadores de acesso</a></li>
+        <li><a href="#heranca">Herança e abstração</a></li>
+        <li><a href="#classes-genericas">Classes genéricas</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Generics</div>
+      <ul>
+        <li><a href="#generics">Introdução a Generics</a></li>
+        <li><a href="#constraints">Constraints com extends</a></li>
+        <li><a href="#generics-defaults">Defaults em Generics</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Tipos Avançados</div>
+      <ul>
+        <li><a href="#keyof">O operador <code>keyof</code></a></li>
+        <li><a href="#typeof">O operador <code>typeof</code></a></li>
+        <li><a href="#indexed-access">Indexed Access Types</a></li>
+        <li><a href="#conditional">Conditional Types</a></li>
+        <li><a href="#infer">A palavra-chave <code>infer</code></a></li>
+        <li><a href="#mapped">Mapped Types</a></li>
+        <li><a href="#template-literal">Template Literal Types</a></li>
+        <li><a href="#recursive">Tipos Recursivos</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Utility Types</div>
+      <ul>
+        <li><a href="#utility">Catálogo de Utility Types</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Ecossistema</div>
+      <ul>
+        <li><a href="#modulos">Módulos</a></li>
+        <li><a href="#declaration-files">Arquivos .d.ts</a></li>
+        <li><a href="#decorators">Decorators</a></li>
+        <li><a href="#async">Tipos assíncronos</a></li>
+        <li><a href="#boas-praticas">Boas práticas</a></li>
+      </ul>
+    </div>
+
+  </aside>
+
+  <main id="top">
+
+    <section class="hero">
+      <div class="eyebrow">Volume I · Guia de referência definitivo</div>
+      <h1 class="hero-title">O manual de <em>TypeScript</em>.</h1>
+      <p class="hero-lead">Do primeiro <code>let x: number</code> aos tipos condicionais recursivos. Este documento é um guia progressivo e completo, estruturado para funcionar tanto como um tutorial sequencial quanto como uma referência rápida enquanto você constrói seus projetos.</p>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <div class="label">Extensão</div>
+          <div class="value">15 capítulos</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="label">Exemplos</div>
+          <div class="value">Mais de 150 snippets</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="label">Nível</div>
+          <div class="value">Iniciante → Avançado</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="label">Versão alvo</div>
+          <div class="value">TypeScript 5.x</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 1: INTRODUÇÃO ============ -->
+    <section class="chapter" id="introducao">
+      <div class="chapter-number">Capítulo 01</div>
+      <h2 class="chapter-title">Introdução ao <em>TypeScript</em></h2>
+      <p class="chapter-intro">TypeScript é um superconjunto tipado de JavaScript, desenvolvido pela Microsoft. Tudo o que é JavaScript válido é também TypeScript válido — a linguagem adiciona, sobre isso, um sistema de tipos estático opcional que é apagado na compilação, resultando em JavaScript puro que roda em qualquer lugar.</p>
+
+      <h3 class="topic" id="por-que"><span class="hash">#</span> Por que usar TypeScript?</h3>
+      <p>JavaScript é uma linguagem dinâmica: o mesmo identificador pode conter um número agora e uma função mais tarde. Isso é flexível, mas custa caro em bugs silenciosos e refatorações arriscadas. TypeScript trabalha em tempo de desenvolvimento para:</p>
+      <ul class="bullets">
+        <li>Detectar erros <strong>antes</strong> do código rodar, não durante uma chamada em produção.</li>
+        <li>Oferecer autocomplete e navegação confiáveis no editor.</li>
+        <li>Documentar contratos entre funções, módulos e equipes.</li>
+        <li>Facilitar refatorações em bases de código grandes.</li>
+      </ul>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">exemplo.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// JavaScript aceita silenciosamente:
+function somar(a, b) { return a + b; }
+somar("5", 10); // "510" em runtime, sem aviso.
+
+// TypeScript bloqueia o erro antes da execução:
+function somarTS(a: number, b: number): number {
+  return a + b;
+}
+somarTS("5", 10); // ❌ Erro: 'string' não é atribuível a 'number'.</code></pre>
+      </div>
+
+      <h3 class="topic" id="instalacao"><span class="hash">#</span> Instalação e setup</h3>
+      <p>TypeScript é distribuído como um pacote npm. A instalação global é útil para experimentos, mas em projetos reais prefira adicionar como dependência de desenvolvimento.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">terminal</span><button class="copy-btn">Copiar</button></div>
+        <pre><code># Instalação global (opcional)
+npm install -g typescript
+
+# Em um projeto novo:
+npm init -y
+npm install --save-dev typescript @types/node
+
+# Gerar o arquivo de configuração:
+npx tsc --init
+
+# Compilar um arquivo:
+npx tsc arquivo.ts
+
+# Compilar todo o projeto em modo watch:
+npx tsc --watch</code></pre>
+      </div>
+
+      <p>Para executar arquivos <code>.ts</code> diretamente, sem gerar <code>.js</code>, existem runners como <code>tsx</code>, <code>ts-node</code> ou o próprio <strong>Bun</strong> e <strong>Deno</strong>, que entendem TypeScript nativamente.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">terminal</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>npm install --save-dev tsx
+npx tsx arquivo.ts     # Executa direto, sem passo de build
+
+# Ou com Bun (suporte nativo, muito rápido):
+bun run arquivo.ts</code></pre>
+      </div>
+
+      <h3 class="topic" id="primeiro"><span class="hash">#</span> Seu primeiro programa</h3>
+      <p>Crie um arquivo <code>ola.ts</code> e experimente a experiência de tipos desde a primeira linha:</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">ola.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>interface Pessoa {
+  nome: string;
+  idade: number;
+}
+
+function saudar(p: Pessoa): string {
+  return `Olá, ${p.nome}! Você tem ${p.idade} anos.`;
+}
+
+const maria: Pessoa = { nome: "Maria", idade: 28 };
+console.log(saudar(maria));</code></pre>
+      </div>
+
+      <div class="callout note">
+        <div class="callout-label">Observação</div>
+        <div class="callout-body">O compilador (<code>tsc</code>) gera JavaScript a partir de TypeScript — ele <strong>não</strong> verifica tipos em tempo de execução. Toda a tipagem acontece no editor e na hora do build.</div>
+      </div>
+
+      <h3 class="topic" id="tsconfig"><span class="hash">#</span> O arquivo tsconfig.json</h3>
+      <p>O <code>tsconfig.json</code> é o coração de um projeto TypeScript. Ele diz ao compilador quais arquivos incluir, qual versão do JavaScript gerar, e quão rigoroso ele deve ser. Um <code>tsconfig</code> moderno e sensato tem mais ou menos esta cara:</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">tsconfig.json</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>{
+  "compilerOptions": {
+    "target": "ES2022",               // versão do JS gerado
+    "module": "NodeNext",             // sistema de módulos
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022", "DOM"],         // APIs disponíveis
+    "outDir": "./dist",               // pasta de saída
+    "rootDir": "./src",               // pasta de entrada
+
+    "strict": true,                   // ativa todas checagens rigorosas
+    "noImplicitAny": true,            // proíbe 'any' implícito
+    "strictNullChecks": true,         // null/undefined são explícitos
+    "noUncheckedIndexedAccess": true, // arr[i] pode ser undefined
+    "exactOptionalPropertyTypes": true,
+
+    "esModuleInterop": true,          // compatibilidade CommonJS/ESM
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "declaration": true,              // gera .d.ts junto com .js
+    "sourceMap": true                 // facilita debug
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">Dica</div>
+        <div class="callout-body">Sempre comece com <code>"strict": true</code>. Lutar contra ele depois é muito mais doloroso do que escrever código correto desde o início.</div>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 2: TIPOS BÁSICOS ============ -->
+    <section class="chapter" id="tipos-basicos">
+      <div class="chapter-number">Capítulo 02</div>
+      <h2 class="chapter-title">Os <em>tipos básicos</em></h2>
+      <p class="chapter-intro">TypeScript herda de JavaScript todos os tipos primitivos e adiciona alguns próprios, nascidos da necessidade de descrever situações que o JavaScript não trata. Este capítulo é o vocabulário fundamental da linguagem.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Primitivos: string, number, boolean</h3>
+      <p>Os três tipos primitivos principais são praticamente os mesmos de JavaScript, agora com rótulos explícitos.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">primitivos.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>let nome: string = "Ana";
+let idade: number = 30;
+let ativo: boolean = true;
+
+// Template literals funcionam normalmente:
+let apresentacao: string = `${nome} tem ${idade} anos`;
+
+// number cobre inteiros, decimais, hex, binário, octal:
+let hex: number = 0xff;
+let bin: number = 0b1010;
+let dec: number = 3.14;
+
+// Além destes, TypeScript também tem:
+let grande: bigint = 9007199254740991n;
+let id: symbol = Symbol("id");</code></pre>
+      </div>
+
+      <h3 class="topic" id="arrays-tuplas"><span class="hash">#</span> Arrays e Tuplas</h3>
+      <p>Arrays têm duas notações equivalentes. A tupla (<em>tuple</em>) é uma invenção do TypeScript: um array de tamanho e tipos fixos por posição.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">arrays-tuplas.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Duas formas de declarar arrays:
+let numeros: number[] = [1, 2, 3];
+let nomes: Array&lt;string&gt; = ["Ana", "Bruno"];
+
+// Array com tipos variados (union):
+let mistos: (string | number)[] = ["a", 1, "b", 2];
+
+// TUPLA — ordem e tipo fixos:
+let coord: [number, number] = [10, 20];
+let registro: [string, number, boolean] = ["item", 10, true];
+
+// Tupla com elementos opcionais (?):
+let ponto: [number, number, number?] = [1, 2];
+
+// Tupla com rest (...) — útil para padrões variádicos:
+let eventos: [string, ...number[]] = ["click", 10, 20, 30];
+
+// Tupla readonly — imutável:
+let rgb: readonly [number, number, number] = [255, 0, 0];
+// rgb[0] = 100; // ❌ Erro</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Objetos</h3>
+      <p>Objetos são descritos pelo formato dos seus campos. O TypeScript chama isso de <strong>tipagem estrutural</strong>: o que importa é o formato, não o nome.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">objetos.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Tipo inline em um parâmetro:
+function imprimirPonto(p: { x: number; y: number }): void {
+  console.log(`(${p.x}, ${p.y})`);
+}
+
+// Propriedades opcionais usam '?':
+function criarUsuario(info: { nome: string; email?: string }) {
+  console.log(info.nome);
+  if (info.email) console.log(info.email);
+}
+
+// Objeto com campos readonly:
+let config: { readonly versao: string; porta: number } = {
+  versao: "1.0",
+  porta: 8080,
+};
+// config.versao = "2.0"; // ❌ readonly</code></pre>
+      </div>
+
+      <h3 class="topic" id="any-unknown"><span class="hash">#</span> any, unknown, never, void</h3>
+      <p>Estes são os quatro tipos "especiais" de TypeScript. Entender a diferença entre eles é um dos pontos de virada no aprendizado da linguagem.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tipo</th><th>Significado</th><th>Quando usar</th></tr></thead>
+          <tbody>
+            <tr><td>any</td><td>"Não checar nada"</td><td>Fuga de emergência. Evite sempre que possível.</td></tr>
+            <tr><td>unknown</td><td>"Algo, mas não sei o quê"</td><td>Valores externos (JSON, API) que você vai validar.</td></tr>
+            <tr><td>never</td><td>"Nunca acontece"</td><td>Funções que lançam erro ou fazem loop infinito.</td></tr>
+            <tr><td>void</td><td>"Sem valor de retorno útil"</td><td>Funções que não retornam nada significativo.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">especiais.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// ANY — desliga o type checker. Cuidado!
+let qualquerCoisa: any = 4;
+qualquerCoisa = "texto";
+qualquerCoisa.foo.bar; // passa, mas quebra em runtime.
+
+// UNKNOWN — obriga você a verificar antes de usar:
+let valor: unknown = JSON.parse('{"x": 1}');
+// valor.x; // ❌ Erro: valor é unknown
+if (typeof valor === "object" &amp;&amp; valor !== null &amp;&amp; "x" in valor) {
+  console.log(valor.x); // ✅ ok aqui dentro
+}
+
+// NEVER — um valor que nunca existe:
+function erroFatal(msg: string): never {
+  throw new Error(msg);
+}
+function loopInfinito(): never {
+  while (true) {}
+}
+
+// VOID — função sem retorno significativo:
+function log(msg: string): void {
+  console.log(msg);
+  // não precisa de 'return'
+}</code></pre>
+      </div>
+
+      <div class="callout warn">
+        <div class="callout-label">Atenção</div>
+        <div class="callout-body">Usar <code>any</code> é como remover a tipagem. Se a intenção é "valor desconhecido que vou validar", use <code>unknown</code>. Se a intenção é "qualquer tipo genérico", use <strong>generics</strong>. <code>any</code> quase sempre é um cheiro de código.</div>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> null e undefined</h3>
+      <p>Com <code>strictNullChecks</code> ativo (o padrão em projetos modernos), <code>null</code> e <code>undefined</code> são tipos distintos e precisam ser tratados explicitamente.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">null-undefined.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>let a: string = null;       // ❌ em strict mode
+let b: string | null = null; // ✅
+
+function buscarUsuario(id: number): string | undefined {
+  if (id &lt; 0) return undefined;
+  return "Ana";
+}
+
+const nome = buscarUsuario(1);
+// nome.toUpperCase(); // ❌ possivelmente undefined
+
+// Encadeamento opcional (?.) — retorna undefined se null/undefined:
+console.log(nome?.toUpperCase());
+
+// Coalescência nula (??) — só usa o fallback em null/undefined:
+const tamanho = nome?.length ?? 0;
+
+// Non-null assertion (!) — você jura que não é null:
+const nomeCerto = buscarUsuario(1)!;
+console.log(nomeCerto.toUpperCase()); // use com cuidado!</code></pre>
+      </div>
+
+      <h3 class="topic" id="inferencia"><span class="hash">#</span> Inferência de tipos</h3>
+      <p>TypeScript é inteligente. Na maior parte do tempo, você <strong>não precisa</strong> escrever tipos — ele descobre sozinho a partir do valor. O segredo do código TypeScript limpo é escrever tipos só onde acrescentam informação.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">inferencia.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>let total = 10;           // inferido como number
+let nome = "Ana";         // inferido como string
+let ativos = [1, 2, 3];   // inferido como number[]
+
+// Em const, o tipo é ainda mais estreito (literal):
+const cor = "vermelho";   // tipo: "vermelho" (não string)
+
+// Em funções, o retorno é inferido a partir do corpo:
+function dobrar(n: number) {
+  return n * 2; // TS sabe que retorna number
+}
+
+// Em objetos literais o TS também infere:
+const pessoa = { nome: "Ana", idade: 30 };
+// tipo: { nome: string; idade: number }</code></pre>
+      </div>
+
+      <h3 class="topic" id="assertion"><span class="hash">#</span> Type assertions: as e satisfies</h3>
+      <p>Às vezes você sabe mais que o compilador. <code>as</code> diz "confie em mim", enquanto <code>satisfies</code> (TypeScript 4.9+) é uma checagem sem mudar o tipo inferido. São ferramentas diferentes para problemas diferentes.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">assertions.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// AS — afirma um tipo ao compilador:
+const elemento = document.getElementById("app") as HTMLInputElement;
+elemento.value = "oi"; // acessa propriedade de input
+
+// Dupla asserção (use em último caso):
+const x = "123" as unknown as number;
+
+// SATISFIES — valida sem apagar o tipo inferido:
+type Cor = "red" | "green" | "blue";
+
+const paleta = {
+  primaria: "red",
+  secundaria: "blue",
+} satisfies Record&lt;string, Cor&gt;;
+
+// paleta.primaria ainda é "red" literal, não 'Cor'.
+// E o TS validou que os valores são Cor válidas.
+
+// Compare com 'as', que perderia a inferência:
+const paleta2 = {
+  primaria: "red",
+  secundaria: "blue",
+} as Record&lt;string, Cor&gt;;
+// aqui paleta2.primaria é Cor, não "red".</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">Use satisfies</div>
+        <div class="callout-body">Sempre que você quiser validar que um objeto tem certo formato, mas sem perder a precisão dos tipos literais que o TypeScript infere, prefira <code>satisfies</code> em vez de <code>as</code>.</div>
+      </div>
+
+      <h3 class="topic" id="literal"><span class="hash">#</span> Literal types</h3>
+      <p>Você pode usar valores literais como tipos. Isso é a base dos <em>discriminated unions</em> e de muitos padrões avançados.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">literal.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Literal types em união formam um "enum leve":
+type Alinhamento = "left" | "center" | "right";
+
+function alinhar(texto: string, como: Alinhamento) { /* ... */ }
+alinhar("oi", "center"); // ✅
+alinhar("oi", "centro"); // ❌ Erro: "centro" não existe
+
+// Também funciona com números e booleanos:
+type Dado = 1 | 2 | 3 | 4 | 5 | 6;
+type Bit = 0 | 1;
+
+// 'as const' congela literais em um objeto:
+const config = {
+  modo: "dark",
+  versao: 1,
+} as const;
+// config.modo é "dark", não string
+// config agora é readonly</code></pre>
+      </div>
+
+      <h3 class="topic" id="enums"><span class="hash">#</span> Enums</h3>
+      <p>Enums são conjuntos nomeados de constantes. TypeScript oferece <em>numeric enums</em>, <em>string enums</em> e <em>const enums</em>. A comunidade moderna tem preferido unions de literais, mas enums ainda aparecem muito em código legado e em APIs de bibliotecas.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">enums.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Enum numérico (valores começam em 0 por padrão):
+enum Direcao {
+  Norte,       // 0
+  Leste,       // 1
+  Sul,         // 2
+  Oeste,       // 3
+}
+
+// Você pode customizar:
+enum Status {
+  Ativo = 1,
+  Inativo = 2,
+  Banido = 99,
+}
+
+// String enum (mais seguro — sem mágica numérica):
+enum Cor {
+  Vermelho = "RED",
+  Verde = "GREEN",
+  Azul = "BLUE",
+}
+
+// const enum — apagado no build, vira valor literal:
+const enum Tamanho { Pequeno = "S", Medio = "M", Grande = "G" }
+const t = Tamanho.Medio; // vira "M" no JS final
+
+// Alternativa moderna recomendada — union type:
+type StatusModerno = "ativo" | "inativo" | "banido";</code></pre>
+      </div>
+
+      <div class="callout note">
+        <div class="callout-label">Prefira unions</div>
+        <div class="callout-body">Em código novo, unions de literais (<code>"a" | "b"</code>) costumam ser mais previsíveis, mais fáceis de usar com JSON e não deixam artefatos no bundle final. Reserve <code>enum</code> para quando for realmente necessário ou para compatibilidade.</div>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 3: FUNÇÕES ============ -->
+    <section class="chapter" id="funcoes">
+      <div class="chapter-number">Capítulo 03</div>
+      <h2 class="chapter-title">Funções <em>tipadas</em></h2>
+      <p class="chapter-intro">Funções são cidadãs de primeira classe em JavaScript. Em TypeScript, isso significa que elas têm tipos ricos: parâmetros tipados, retornos tipados, parâmetros opcionais, sobrecargas e até a assinatura do <code>this</code>.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Assinatura básica</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">funcoes.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Declaração de função com tipos:
+function somar(a: number, b: number): number {
+  return a + b;
+}
+
+// Arrow function:
+const multiplicar = (a: number, b: number): number =&gt; a * b;
+
+// Função como valor tipado:
+const dividir: (a: number, b: number) =&gt; number = (a, b) =&gt; a / b;
+
+// Usando um type alias para a assinatura:
+type Operacao = (a: number, b: number) =&gt; number;
+const subtrair: Operacao = (a, b) =&gt; a - b;
+
+// Void em retornos — não precisa de return:
+function logar(msg: string): void {
+  console.log(msg);
+}</code></pre>
+      </div>
+
+      <h3 class="topic" id="params-opcionais"><span class="hash">#</span> Parâmetros opcionais, padrão e rest</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">params.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Opcional — '?' após o nome:
+function saudar(nome: string, titulo?: string): string {
+  return titulo ? `${titulo} ${nome}` : nome;
+}
+saudar("Ana");            // ✅
+saudar("Ana", "Dra.");    // ✅
+
+// Padrão — atribui um valor se nada for passado:
+function criarConfig(host: string, porta: number = 8080) {
+  return `${host}:${porta}`;
+}
+
+// Rest — coleta argumentos em um array:
+function somarTudo(...numeros: number[]): number {
+  return numeros.reduce((acc, n) =&gt; acc + n, 0);
+}
+somarTudo(1, 2, 3, 4);
+
+// Destructuring tipado:
+function perfil({ nome, idade }: { nome: string; idade: number }) {
+  return `${nome} (${idade})`;
+}</code></pre>
+      </div>
+
+      <h3 class="topic" id="overloads"><span class="hash">#</span> Function overloads</h3>
+      <p>Sobrecarga permite descrever múltiplas formas de chamar a mesma função. Você escreve várias <em>assinaturas</em> seguidas da <em>implementação</em>, que precisa cobrir todos os casos.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">overloads.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Assinaturas (visíveis para quem chama):
+function pesquisar(id: number): string;
+function pesquisar(nome: string): number;
+function pesquisar(query: boolean): string[];
+
+// Implementação (não visível externamente):
+function pesquisar(query: number | string | boolean): string | number | string[] {
+  if (typeof query === "number") return "usuario-" + query;
+  if (typeof query === "string") return query.length;
+  return [];
+}
+
+const a = pesquisar(1);       // string
+const b = pesquisar("Ana");   // number
+const c = pesquisar(true);    // string[]</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">Quando usar</div>
+        <div class="callout-body">Overloads são úteis quando o tipo de retorno depende do tipo de entrada de forma complexa. Em casos mais simples, prefira <strong>generics</strong> ou <strong>união de tipos</strong>, que são mais fáceis de manter.</div>
+      </div>
+
+      <h3 class="topic" id="this-type"><span class="hash">#</span> Tipando o this</h3>
+      <p>Diferente de outras linguagens, <code>this</code> em JavaScript depende de como a função é chamada. TypeScript permite declarar o tipo de <code>this</code> como um primeiro parâmetro "fantasma":</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">this.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>interface Contador {
+  valor: number;
+  incrementar(): void;
+}
+
+// 'this: Contador' não aparece em runtime; só vale para o TS:
+function incrementar(this: Contador) {
+  this.valor++;
+}
+
+const c: Contador = { valor: 0, incrementar };
+c.incrementar(); // ✅
+// incrementar.call({ outra: 1 }); // ❌ 'this' inválido</code></pre>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 4: INTERFACES E TYPES ============ -->
+    <section class="chapter" id="interfaces">
+      <div class="chapter-number">Capítulo 04</div>
+      <h2 class="chapter-title">Interfaces e <em>Type aliases</em></h2>
+      <p class="chapter-intro">Estas são as duas maneiras primárias de nomear um tipo no TypeScript. Elas parecem a mesma coisa e, na maior parte do tempo, são intercambiáveis — mas cada uma tem suas particularidades.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Interfaces</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">interfaces.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>interface Usuario {
+  id: number;
+  nome: string;
+  email: string;
+  ativo: boolean;
+}
+
+const u: Usuario = {
+  id: 1,
+  nome: "Ana",
+  email: "ana@exemplo.com",
+  ativo: true,
+};
+
+// Extensão (herança de interfaces):
+interface Admin extends Usuario {
+  permissoes: string[];
+}
+
+// Múltipla extensão:
+interface Timestamped {
+  criadoEm: Date;
+  atualizadoEm: Date;
+}
+interface Post extends Usuario, Timestamped {
+  titulo: string;
+  conteudo: string;
+}
+
+// Declaration merging — duas declarações se fundem:
+interface Janela { largura: number; }
+interface Janela { altura: number; }
+// Resultado: Janela tem largura E altura.</code></pre>
+      </div>
+
+      <h3 class="topic" id="type-aliases"><span class="hash">#</span> Type aliases</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">type-alias.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Apelido para tipo de objeto:
+type Produto = {
+  id: number;
+  nome: string;
+  preco: number;
+};
+
+// Apelido para união:
+type ID = number | string;
+
+// Apelido para tupla:
+type Coordenada = [number, number];
+
+// Apelido para função:
+type Callback&lt;T&gt; = (valor: T) =&gt; void;
+
+// Intersection (combinação):
+type ProdutoEstocado = Produto &amp; {
+  estoque: number;
+  localizacao: string;
+};</code></pre>
+      </div>
+
+      <h3 class="topic" id="interface-vs-type"><span class="hash">#</span> Interface vs Type — quando usar cada um</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Característica</th><th>interface</th><th>type</th></tr></thead>
+          <tbody>
+            <tr><td>Objetos</td><td>✅ ideal</td><td>✅ funciona</td></tr>
+            <tr><td>Unions</td><td>❌ não suporta</td><td>✅ <code>A | B</code></td></tr>
+            <tr><td>Tuples</td><td>❌</td><td>✅ <code>[a, b]</code></td></tr>
+            <tr><td>Primitivos/literals</td><td>❌</td><td>✅ <code>"on" | "off"</code></td></tr>
+            <tr><td>Extends/herança</td><td>✅ <code>extends</code></td><td>✅ via <code>&amp;</code></td></tr>
+            <tr><td>Declaration merging</td><td>✅ pode fundir</td><td>❌ duplicação é erro</td></tr>
+            <tr><td>Mapped/conditional</td><td>❌</td><td>✅</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">Regra prática</div>
+        <div class="callout-body">Use <code>interface</code> para formas de objeto que podem ser estendidas (especialmente em APIs públicas de bibliotecas, onde merging é útil). Use <code>type</code> para tudo o mais: unions, intersections, tuplas, mapped types, conditional types. Se não souber, <code>type</code> é um bom default.</div>
+      </div>
+
+      <h3 class="topic" id="readonly-optional"><span class="hash">#</span> Readonly e campos opcionais</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">readonly-optional.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>interface Config {
+  readonly id: string;       // imutável após criado
+  readonly versao: number;
+  porta?: number;            // opcional
+  debug?: boolean;
+}
+
+const cfg: Config = { id: "app", versao: 1 };
+// cfg.id = "outro"; // ❌ readonly
+
+// Readonly arrays:
+const dias: readonly string[] = ["seg", "ter"];
+// dias.push("qua"); // ❌ push não existe em readonly array
+
+// ReadonlyArray&lt;T&gt; é equivalente:
+const nums: ReadonlyArray&lt;number&gt; = [1, 2, 3];</code></pre>
+      </div>
+
+      <h3 class="topic" id="index-signatures"><span class="hash">#</span> Index Signatures</h3>
+      <p>Quando você não sabe de antemão os nomes das propriedades, mas sabe seu tipo, use uma assinatura de índice.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">index-signatures.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Dicionário de strings para números:
+interface Placar {
+  [jogador: string]: number;
+}
+const placar: Placar = { ana: 10, bruno: 7 };
+placar.carlos = 15; // ✅
+
+// Dicionário misto — com propriedade fixa e índice:
+interface ConfigComDefault {
+  default: string;
+  [chave: string]: string;
+}
+
+// Com union em tipo de valor:
+interface Cache {
+  [url: string]: { data: unknown; ttl: number };
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 5: UNIONS E NARROWING ============ -->
+    <section class="chapter" id="union">
+      <div class="chapter-number">Capítulo 05</div>
+      <h2 class="chapter-title">Unions, Intersections e <em>Narrowing</em></h2>
+      <p class="chapter-intro">Poucos recursos expressam tanto quanto as uniões de tipos. Combinadas com o mecanismo de <em>narrowing</em> do TypeScript, você consegue representar e validar cenários do mundo real com precisão cirúrgica.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Union types (|)</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">union.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Um valor que pode ser de um de vários tipos:
+type ID = string | number;
+
+function identificar(id: ID) {
+  // antes do narrowing, só dá para usar métodos comuns:
+  console.log(id.toString()); // ✅ (ambos têm toString)
+  // console.log(id.toUpperCase()); // ❌ número não tem
+}
+
+// Union de objetos:
+type Animal =
+  | { tipo: "cao"; latidos: number }
+  | { tipo: "gato"; miados: number }
+  | { tipo: "peixe"; bolhas: number };</code></pre>
+      </div>
+
+      <h3 class="topic" id="intersection"><span class="hash">#</span> Intersection types (&)</h3>
+      <p>A intersecção combina vários tipos em um só. O resultado precisa satisfazer <strong>todos</strong> os lados da combinação.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">intersection.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>type ComNome = { nome: string };
+type ComIdade = { idade: number };
+
+type Pessoa = ComNome &amp; ComIdade;
+// equivalente a: { nome: string; idade: number }
+
+const p: Pessoa = { nome: "Ana", idade: 30 };
+
+// Combinações úteis com generics:
+type WithId&lt;T&gt; = T &amp; { id: string };
+
+type UsuarioComId = WithId&lt;{ nome: string; email: string }&gt;;
+// { nome: string; email: string; id: string }</code></pre>
+      </div>
+
+      <h3 class="topic" id="narrowing"><span class="hash">#</span> Narrowing e Type Guards</h3>
+      <p>O TypeScript observa o fluxo do seu código e, a cada verificação, <em>estreita</em> (narrow) o tipo automaticamente. Conhecer as formas de guard é essencial.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">narrowing.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// 1) typeof — para primitivos:
+function imprimir(v: string | number) {
+  if (typeof v === "string") {
+    console.log(v.toUpperCase()); // v é string aqui
+  } else {
+    console.log(v.toFixed(2));    // v é number aqui
+  }
+}
+
+// 2) instanceof — para classes:
+function lidar(e: Error | string) {
+  if (e instanceof Error) {
+    console.log(e.stack);
+  } else {
+    console.log(e);
+  }
+}
+
+// 3) in — testa a presença de propriedade:
+type Carro = { rodas: number };
+type Barco = { remos: number };
+
+function mover(v: Carro | Barco) {
+  if ("rodas" in v) {
+    console.log(v.rodas);  // v é Carro
+  } else {
+    console.log(v.remos);  // v é Barco
+  }
+}
+
+// 4) Comparação com literal:
+function estado(s: "loading" | "ok" | "erro") {
+  if (s === "loading") { /* s é "loading" */ }
+}
+
+// 5) Truthiness narrowing:
+function tamanho(x: string | null) {
+  if (x) {
+    return x.length; // x é string aqui
+  }
+  return 0;
+}
+
+// 6) User-defined type guard (predicate):
+function ehString(v: unknown): v is string {
+  return typeof v === "string";
+}
+
+function usar(v: unknown) {
+  if (ehString(v)) {
+    console.log(v.trim()); // v é string
+  }
+}
+
+// 7) Assertion function:
+function garantirString(v: unknown): asserts v is string {
+  if (typeof v !== "string") throw new Error("não é string");
+}
+
+function process(v: unknown) {
+  garantirString(v);
+  console.log(v.toUpperCase()); // v é string após a asserção
+}</code></pre>
+      </div>
+
+      <h3 class="topic" id="discriminated"><span class="hash">#</span> Discriminated Unions</h3>
+      <p>O padrão mais poderoso do sistema de tipos TypeScript. Cada variante da união carrega uma propriedade literal única (a "tag"), e o compilador usa essa tag para distinguir os casos.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">discriminated.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>type Requisicao =
+  | { status: "loading" }
+  | { status: "ok"; dados: string[] }
+  | { status: "erro"; mensagem: string };
+
+function renderizar(req: Requisicao) {
+  switch (req.status) {
+    case "loading":
+      return "Carregando...";
+    case "ok":
+      return `${req.dados.length} itens`; // dados existe aqui
+    case "erro":
+      return `Falha: ${req.mensagem}`;   // mensagem existe aqui
+  }
+}
+
+// Exaustividade com 'never' — garante que todos os casos foram tratados:
+function renderizarCompleto(req: Requisicao): string {
+  switch (req.status) {
+    case "loading": return "...";
+    case "ok":      return "ok";
+    case "erro":    return "erro";
+    default:
+      const _exhaustive: never = req; // erro se faltar caso
+      return _exhaustive;
+  }
+}</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">O padrão da discriminated union</div>
+        <div class="callout-body">Sempre que você tiver "um valor que pode ter formatos diferentes", pense em discriminated union com uma tag literal. É a forma idiomática de representar estados, resultados de API e eventos em TypeScript.</div>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 6: CLASSES ============ -->
+    <section class="chapter" id="classes">
+      <div class="chapter-number">Capítulo 06</div>
+      <h2 class="chapter-title">Classes em <em>TypeScript</em></h2>
+      <p class="chapter-intro">Classes existem em JavaScript desde ES2015, mas TypeScript adiciona camadas importantes: modificadores de acesso, classes abstratas, implementação de interfaces, membros estáticos tipados e parâmetros de propriedade.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Classes básicas</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">classes.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>class Pessoa {
+  // propriedades com tipo:
+  nome: string;
+  idade: number;
+
+  constructor(nome: string, idade: number) {
+    this.nome = nome;
+    this.idade = idade;
+  }
+
+  cumprimentar(): string {
+    return `Olá, eu sou ${this.nome}`;
+  }
+}
+
+const ana = new Pessoa("Ana", 30);
+console.log(ana.cumprimentar());</code></pre>
+      </div>
+
+      <h3 class="topic" id="modificadores"><span class="hash">#</span> Modificadores de acesso</h3>
+      <p>TypeScript adiciona <code>public</code>, <code>private</code> e <code>protected</code>. Eles existem apenas em tempo de compilação — no JavaScript gerado, tudo fica público. Para privacidade em runtime, use os <em>private fields</em> do ECMAScript (<code>#campo</code>).</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">modificadores.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>class Conta {
+  public titular: string;          // padrão; acessível por todos
+  private saldo: number;           // só dentro da classe
+  protected numero: string;        // classe + subclasses
+  readonly moeda: string = "BRL";  // imutável após o construtor
+
+  constructor(titular: string, saldo: number, numero: string) {
+    this.titular = titular;
+    this.saldo = saldo;
+    this.numero = numero;
+  }
+
+  depositar(valor: number) {
+    this.saldo += valor;
+  }
+
+  consultarSaldo(): number {
+    return this.saldo;
+  }
+}
+
+// PARAMETER PROPERTIES — atalho para declarar+atribuir:
+class Cliente {
+  constructor(
+    public nome: string,
+    private cpf: string,
+    readonly criadoEm: Date = new Date()
+  ) {}
+  // equivalente a declarar campos e atribuir no constructor.
+}
+
+// Private fields do JS (privacidade REAL em runtime):
+class Cofre {
+  #segredo: string;
+  constructor(s: string) { this.#segredo = s; }
+  revelar(): string { return this.#segredo; }
+}</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Getters, setters e estáticos</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">accessors-static.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>class Temperatura {
+  private _celsius: number = 0;
+
+  get celsius(): number { return this._celsius; }
+  set celsius(valor: number) {
+    if (valor &lt; -273.15) throw new Error("abaixo do zero absoluto");
+    this._celsius = valor;
+  }
+
+  get fahrenheit(): number {
+    return this._celsius * 9 / 5 + 32;
+  }
+
+  // Membros estáticos — pertencem à classe, não à instância:
+  static zeroAbsoluto = -273.15;
+  static emKelvin(c: number): number {
+    return c + 273.15;
+  }
+}
+
+const t = new Temperatura();
+t.celsius = 25;
+console.log(t.fahrenheit);          // 77
+console.log(Temperatura.zeroAbsoluto);
+console.log(Temperatura.emKelvin(25));</code></pre>
+      </div>
+
+      <h3 class="topic" id="heranca"><span class="hash">#</span> Herança, abstração e interfaces</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">heranca.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Classe ABSTRATA — não pode ser instanciada, serve só como base:
+abstract class Forma {
+  abstract area(): number;                // filha precisa implementar
+  descrever(): string {
+    return `Forma com área ${this.area()}`;
+  }
+}
+
+class Circulo extends Forma {
+  constructor(private raio: number) { super(); }
+  area(): number { return Math.PI * this.raio ** 2; }
+}
+
+class Retangulo extends Forma {
+  constructor(private largura: number, private altura: number) { super(); }
+  area(): number { return this.largura * this.altura; }
+}
+
+// const f = new Forma(); // ❌ não pode instanciar classe abstrata.
+
+// IMPLEMENTS — classe implementa interface:
+interface Identificavel {
+  id: string;
+  igual(outro: Identificavel): boolean;
+}
+
+class Produto implements Identificavel {
+  constructor(public id: string, public nome: string) {}
+  igual(outro: Identificavel): boolean {
+    return this.id === outro.id;
+  }
+}
+
+// Múltiplas interfaces:
+interface Serializavel { toJSON(): string; }
+class Pedido implements Identificavel, Serializavel {
+  constructor(public id: string) {}
+  igual(o: Identificavel) { return this.id === o.id; }
+  toJSON() { return JSON.stringify(this); }
+}</code></pre>
+      </div>
+
+      <div class="callout note">
+        <div class="callout-label">extends vs implements</div>
+        <div class="callout-body"><code>extends</code> herda comportamento de outra classe (podendo reaproveitar métodos). <code>implements</code> apenas exige que a classe tenha certo formato — não herda implementação nenhuma.</div>
+      </div>
+
+      <h3 class="topic" id="classes-genericas"><span class="hash">#</span> Classes genéricas</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">classes-genericas.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>class Pilha&lt;T&gt; {
+  private itens: T[] = [];
+
+  push(item: T): void { this.itens.push(item); }
+  pop(): T | undefined { return this.itens.pop(); }
+  get tamanho(): number { return this.itens.length; }
+}
+
+const nums = new Pilha&lt;number&gt;();
+nums.push(1);
+nums.push(2);
+
+const strs = new Pilha&lt;string&gt;();
+strs.push("a");
+// strs.push(1); // ❌ esperava string</code></pre>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 7: GENERICS ============ -->
+    <section class="chapter" id="generics">
+      <div class="chapter-number">Capítulo 07</div>
+      <h2 class="chapter-title"><em>Generics</em></h2>
+      <p class="chapter-intro">Generics são a ferramenta para escrever código que funciona com múltiplos tipos mantendo total segurança. Em vez de abrir mão da tipagem com <code>any</code>, você parametriza a função, classe ou tipo — o TypeScript preenche o parâmetro conforme o uso.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Generics em funções</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">generics.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Sem generics — perde informação:
+function primeiroRuim(arr: any[]): any {
+  return arr[0];
+}
+const x = primeiroRuim([1, 2, 3]); // x é any :(
+
+// Com generics — preserva o tipo:
+function primeiro&lt;T&gt;(arr: T[]): T | undefined {
+  return arr[0];
+}
+
+const a = primeiro([1, 2, 3]);      // number | undefined
+const b = primeiro(["x", "y"]);     // string | undefined
+const c = primeiro&lt;boolean&gt;([true]);// especificando manualmente
+
+// Múltiplos parâmetros de tipo:
+function par&lt;A, B&gt;(a: A, b: B): [A, B] {
+  return [a, b];
+}
+
+const p = par("idade", 30); // [string, number]</code></pre>
+      </div>
+
+      <h3 class="topic" id="constraints"><span class="hash">#</span> Constraints — restringindo T com extends</h3>
+      <p>Às vezes você precisa que o tipo tenha certas capacidades. <code>extends</code> em um generic significa "T precisa ser compatível com X".</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">constraints.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// T precisa ter length:
+function maisLongo&lt;T extends { length: number }&gt;(a: T, b: T): T {
+  return a.length &gt;= b.length ? a : b;
+}
+
+maisLongo([1, 2, 3], [1]);     // ✅ arrays têm length
+maisLongo("abcdef", "xyz");    // ✅ strings têm length
+// maisLongo(10, 20);           // ❌ number não tem length
+
+// T restrito a chaves de um objeto:
+function pegar&lt;T, K extends keyof T&gt;(obj: T, chave: K): T[K] {
+  return obj[chave];
+}
+
+const user = { nome: "Ana", idade: 30 };
+const nome = pegar(user, "nome");   // string
+const idade = pegar(user, "idade"); // number
+// pegar(user, "x"); // ❌ "x" não existe em user</code></pre>
+      </div>
+
+      <h3 class="topic" id="generics-defaults"><span class="hash">#</span> Generics com valores padrão</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">generics-defaults.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// T tem valor padrão string:
+interface Resposta&lt;T = string&gt; {
+  dados: T;
+  sucesso: boolean;
+}
+
+const r1: Resposta = { dados: "ok", sucesso: true };             // T = string
+const r2: Resposta&lt;number&gt; = { dados: 42, sucesso: true };
+
+// Generics em type aliases:
+type Resultado&lt;T, E = Error&gt; =
+  | { ok: true; valor: T }
+  | { ok: false; erro: E };
+
+function dividir(a: number, b: number): Resultado&lt;number&gt; {
+  if (b === 0) return { ok: false, erro: new Error("divisão por zero") };
+  return { ok: true, valor: a / b };
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 8: TIPOS AVANÇADOS ============ -->
+    <section class="chapter" id="keyof">
+      <div class="chapter-number">Capítulo 08</div>
+      <h2 class="chapter-title">Tipos <em>avançados</em></h2>
+      <p class="chapter-intro">A partir daqui, o sistema de tipos deixa de ser "mais um anotador" e começa a ser quase uma linguagem de programação própria. Esta é a parte que torna possível bibliotecas como Zod, tRPC e Prisma produzirem tipagens tão precisas.</p>
+
+      <h3 class="topic"><span class="hash">#</span> O operador keyof</h3>
+      <p><code>keyof T</code> produz uma união com as chaves de um tipo.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">keyof.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>interface Pessoa {
+  nome: string;
+  idade: number;
+  email: string;
+}
+
+type ChavesDePessoa = keyof Pessoa;
+// "nome" | "idade" | "email"
+
+function lerCampo&lt;T, K extends keyof T&gt;(obj: T, chave: K): T[K] {
+  return obj[chave];
+}
+
+const p: Pessoa = { nome: "Ana", idade: 30, email: "a@x.com" };
+const nome = lerCampo(p, "nome");  // string
+const idade = lerCampo(p, "idade"); // number</code></pre>
+      </div>
+
+      <h3 class="topic" id="typeof"><span class="hash">#</span> O operador typeof (em contexto de tipo)</h3>
+      <p>Dentro do contexto de tipos, <code>typeof</code> extrai o tipo de uma variável ou valor existente.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">typeof.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>const config = {
+  host: "localhost",
+  porta: 8080,
+  debug: true,
+};
+
+type Config = typeof config;
+// { host: string; porta: number; debug: boolean }
+
+// Combinando com 'as const' para precisão:
+const ROTAS = {
+  HOME: "/",
+  LOGIN: "/login",
+  PERFIL: "/perfil",
+} as const;
+
+type Rota = typeof ROTAS[keyof typeof ROTAS];
+// "/" | "/login" | "/perfil"</code></pre>
+      </div>
+
+      <h3 class="topic" id="indexed-access"><span class="hash">#</span> Indexed Access Types (T[K])</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">indexed-access.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>interface Produto {
+  id: number;
+  nome: string;
+  tags: string[];
+  dimensoes: { largura: number; altura: number };
+}
+
+type ID = Produto["id"];              // number
+type Nome = Produto["nome"];           // string
+type Tag = Produto["tags"][number];    // string (elemento do array)
+type Largura = Produto["dimensoes"]["largura"]; // number
+
+// Acesso por união de chaves:
+type Basico = Produto["id" | "nome"];  // number | string
+
+// Com arrays:
+const cores = ["red", "green", "blue"] as const;
+type Cor = typeof cores[number];       // "red" | "green" | "blue"</code></pre>
+      </div>
+
+      <h3 class="topic" id="conditional"><span class="hash">#</span> Conditional Types</h3>
+      <p>Tipos condicionais seguem a mesma ideia do operador ternário do JavaScript, mas no nível de tipos. A forma é <code>T extends U ? X : Y</code>: "se T é compatível com U, então X, senão Y".</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">conditional.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>type EhString&lt;T&gt; = T extends string ? "sim" : "nao";
+
+type A = EhString&lt;"ola"&gt;;    // "sim"
+type B = EhString&lt;42&gt;;       // "nao"
+
+// Distribui automaticamente em unions:
+type Envelope&lt;T&gt; = T extends unknown ? { valor: T } : never;
+
+type E = Envelope&lt;string | number&gt;;
+// { valor: string } | { valor: number }
+
+// Útil para "filtrar" unions:
+type ApenasStrings&lt;T&gt; = T extends string ? T : never;
+type Filtrado = ApenasStrings&lt;"a" | 1 | "b" | 2&gt;;
+// "a" | "b"</code></pre>
+      </div>
+
+      <h3 class="topic" id="infer"><span class="hash">#</span> A palavra-chave infer</h3>
+      <p><code>infer</code> aparece apenas dentro de conditional types e diz "crie uma variável de tipo com o que estiver nesta posição". É a ferramenta mais poderosa para extrair partes de um tipo.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">infer.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Extrair o tipo de retorno de uma função:
+type MeuReturnType&lt;T&gt; = T extends (...args: any[]) =&gt; infer R ? R : never;
+
+function usuario() { return { nome: "Ana", idade: 30 }; }
+type U = MeuReturnType&lt;typeof usuario&gt;;
+// { nome: string; idade: number }
+
+// Extrair o tipo dos parâmetros:
+type MeuParameters&lt;T&gt; = T extends (...args: infer P) =&gt; any ? P : never;
+
+type P = MeuParameters&lt;(a: string, b: number) =&gt; void&gt;;
+// [string, number]
+
+// Extrair o elemento de um array:
+type Elemento&lt;T&gt; = T extends (infer E)[] ? E : never;
+
+type X = Elemento&lt;number[]&gt;;     // number
+type Y = Elemento&lt;string[][]&gt;;   // string[]
+
+// Extrair o valor resolvido de uma Promise:
+type Desenrolar&lt;T&gt; = T extends Promise&lt;infer V&gt; ? V : T;
+
+type D = Desenrolar&lt;Promise&lt;string&gt;&gt;; // string</code></pre>
+      </div>
+
+      <h3 class="topic" id="mapped"><span class="hash">#</span> Mapped Types</h3>
+      <p>Mapped types geram novos tipos iterando sobre as chaves de um tipo existente. Essa é a engrenagem por trás de quase todos os utility types.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">mapped.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Torna todas as propriedades opcionais:
+type MeuPartial&lt;T&gt; = {
+  [K in keyof T]?: T[K];
+};
+
+// Torna todas readonly:
+type MeuReadonly&lt;T&gt; = {
+  readonly [K in keyof T]: T[K];
+};
+
+// Inverte — remove readonly e opcional:
+type Mutavel&lt;T&gt; = {
+  -readonly [K in keyof T]-?: T[K];
+};
+
+// Renomear chaves com 'as':
+type ComPrefixo&lt;T, P extends string&gt; = {
+  [K in keyof T as `${P}${Capitalize&lt;string &amp; K&gt;}`]: T[K];
+};
+
+type Eventos = { click: MouseEvent; hover: MouseEvent };
+type Handlers = ComPrefixo&lt;Eventos, "on"&gt;;
+// { onClick: MouseEvent; onHover: MouseEvent }
+
+// Filtrar propriedades com 'as ... never':
+type SomenteStrings&lt;T&gt; = {
+  [K in keyof T as T[K] extends string ? K : never]: T[K];
+};
+
+type Pessoa = { nome: string; idade: number; email: string };
+type SoStrings = SomenteStrings&lt;Pessoa&gt;;
+// { nome: string; email: string }</code></pre>
+      </div>
+
+      <h3 class="topic" id="template-literal"><span class="hash">#</span> Template Literal Types</h3>
+      <p>Templates de string no mundo dos tipos. Permitem descrever padrões textuais com precisão absurda.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">template-literal.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>type Saudacao = `ola, ${string}`;
+
+const a: Saudacao = "ola, mundo";       // ✅
+// const b: Saudacao = "tchau";          // ❌
+
+// Combinando unions:
+type Cor = "red" | "blue";
+type Intensidade = "100" | "500" | "900";
+type Classe = `bg-${Cor}-${Intensidade}`;
+// "bg-red-100" | "bg-red-500" | ... | "bg-blue-900"
+
+// Útil para CSS, rotas, eventos, etc.
+
+// Utilities de string embutidos:
+type A = Uppercase&lt;"hello"&gt;;   // "HELLO"
+type B = Lowercase&lt;"HELLO"&gt;;   // "hello"
+type C = Capitalize&lt;"hello"&gt;;  // "Hello"
+type D = Uncapitalize&lt;"Hello"&gt;;// "hello"
+
+// Extraindo partes com 'infer':
+type ExtrairID&lt;T&gt; = T extends `user_${infer ID}` ? ID : never;
+type X = ExtrairID&lt;"user_42"&gt;; // "42"</code></pre>
+      </div>
+
+      <h3 class="topic" id="recursive"><span class="hash">#</span> Tipos Recursivos</h3>
+      <p>Tipos podem se referir a si mesmos — útil para estruturas aninhadas como JSON, árvores e listas encadeadas.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">recursivos.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// JSON — um valor pode conter outros valores JSON:
+type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | Json[]
+  | { [k: string]: Json };
+
+const dados: Json = {
+  nome: "Ana",
+  idade: 30,
+  hobbies: ["leitura", { tipo: "esporte", nome: "natação" }],
+};
+
+// Árvore com filhos opcionais:
+interface No&lt;T&gt; {
+  valor: T;
+  filhos?: No&lt;T&gt;[];
+}
+
+// DeepReadonly — torna tudo readonly recursivamente:
+type DeepReadonly&lt;T&gt; = {
+  readonly [K in keyof T]: T[K] extends object
+    ? DeepReadonly&lt;T[K]&gt;
+    : T[K];
+};
+
+type Config = {
+  db: { host: string; porta: number };
+  cache: { ttl: number };
+};
+
+type ConfigCongelada = DeepReadonly&lt;Config&gt;;
+// tudo, em todos os níveis, fica readonly</code></pre>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 9: UTILITY TYPES ============ -->
+    <section class="chapter" id="utility">
+      <div class="chapter-number">Capítulo 09</div>
+      <h2 class="chapter-title">Catálogo de <em>Utility Types</em></h2>
+      <p class="chapter-intro">TypeScript vem com uma biblioteca embutida de utility types — transformadores de tipo úteis para o dia-a-dia. Todos são implementados usando os recursos do capítulo anterior (keyof, conditional types, mapped types e infer). Conhecê-los é economia de tempo pura.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Transformações de objeto</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">utility-objeto.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>interface Usuario {
+  id: number;
+  nome: string;
+  email: string;
+  senha: string;
+}
+
+// Partial&lt;T&gt; — todos os campos opcionais:
+type UsuarioParcial = Partial&lt;Usuario&gt;;
+// { id?: number; nome?: string; email?: string; senha?: string }
+
+// Required&lt;T&gt; — todos os campos obrigatórios (remove ?):
+interface Config { host?: string; porta?: number; }
+type ConfigCompleta = Required&lt;Config&gt;;
+
+// Readonly&lt;T&gt; — todos os campos imutáveis:
+type UsuarioImutavel = Readonly&lt;Usuario&gt;;
+
+// Pick&lt;T, K&gt; — só as chaves escolhidas:
+type UsuarioPublico = Pick&lt;Usuario, "id" | "nome" | "email"&gt;;
+
+// Omit&lt;T, K&gt; — tudo menos as chaves informadas:
+type UsuarioSemSenha = Omit&lt;Usuario, "senha"&gt;;
+
+// Record&lt;K, T&gt; — objeto com chaves K e valores T:
+type Permissoes = Record&lt;"ler" | "escrever" | "admin", boolean&gt;;
+// { ler: boolean; escrever: boolean; admin: boolean }
+
+const p: Permissoes = { ler: true, escrever: false, admin: false };</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Transformações de união</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">utility-uniao.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Exclude&lt;T, U&gt; — remove membros de U da união T:
+type Primitivos = string | number | boolean | null;
+type SemNulo = Exclude&lt;Primitivos, null&gt;;
+// string | number | boolean
+
+// Extract&lt;T, U&gt; — só os membros que combinam:
+type Numericos = Extract&lt;Primitivos, number | boolean&gt;;
+// number | boolean
+
+// NonNullable&lt;T&gt; — remove null e undefined:
+type Valor = string | null | undefined;
+type SemNulos = NonNullable&lt;Valor&gt;; // string</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Transformações de função</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">utility-funcao.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>function criar(nome: string, idade: number): { nome: string; idade: number } {
+  return { nome, idade };
+}
+
+// ReturnType&lt;T&gt; — o que a função retorna:
+type Usuario = ReturnType&lt;typeof criar&gt;;
+// { nome: string; idade: number }
+
+// Parameters&lt;T&gt; — tupla com os tipos dos parâmetros:
+type Args = Parameters&lt;typeof criar&gt;;
+// [string, number]
+
+// ConstructorParameters&lt;T&gt; — parâmetros do construtor de uma classe:
+class Foo { constructor(a: string, b: number) {} }
+type ArgsFoo = ConstructorParameters&lt;typeof Foo&gt;; // [string, number]
+
+// InstanceType&lt;T&gt; — o tipo da instância de uma classe:
+type F = InstanceType&lt;typeof Foo&gt;; // Foo
+
+// ThisParameterType e OmitThisParameter — manipulam o 'this' implícito.</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Utilitários de string e Promise</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">utility-outros.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// String utilities (já vistos no cap. anterior):
+type A = Uppercase&lt;"hi"&gt;;     // "HI"
+type B = Lowercase&lt;"HI"&gt;;     // "hi"
+type C = Capitalize&lt;"ok"&gt;;    // "Ok"
+type D = Uncapitalize&lt;"Ok"&gt;;  // "ok"
+
+// Awaited&lt;T&gt; — desempacota Promises (mesmo aninhadas):
+type X = Awaited&lt;Promise&lt;string&gt;&gt;;              // string
+type Y = Awaited&lt;Promise&lt;Promise&lt;number&gt;&gt;&gt;;    // number
+
+// NoInfer&lt;T&gt; (TS 5.4+) — bloqueia inferência em uma posição:
+function criar&lt;T&gt;(padrao: T, opcoes: NoInfer&lt;T&gt;[]): T {
+  return padrao;
+}
+// Força o chamador a definir T explicitamente ou via padrão.</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">Tabela de referência rápida</div>
+        <div class="callout-body">Os utility types mais usados no dia-a-dia, em ordem: <code>Partial</code>, <code>Pick</code>, <code>Omit</code>, <code>Record</code>, <code>Readonly</code>, <code>ReturnType</code>, <code>Awaited</code>, <code>NonNullable</code>, <code>Parameters</code>. Se você dominar estes, cobrirá 90% dos casos.</div>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 10: MÓDULOS ============ -->
+    <section class="chapter" id="modulos">
+      <div class="chapter-number">Capítulo 10</div>
+      <h2 class="chapter-title">Módulos</h2>
+      <p class="chapter-intro">Todo arquivo <code>.ts</code> que contém um <code>import</code> ou <code>export</code> é um módulo — seu escopo é isolado do restante do projeto. TypeScript aceita a sintaxe moderna ESM e também CommonJS, e oferece alguns refinamentos próprios.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Export e import</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">matematica.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Named exports:
+export const PI = 3.14159;
+export function somar(a: number, b: number): number { return a + b; }
+export interface Ponto { x: number; y: number; }
+
+// Default export (um por arquivo):
+export default class Calculadora { /* ... */ }
+
+// Re-export (atalho para centralizar):
+export { outra } from "./outra-coisa";
+export * from "./outro-modulo";</code></pre>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">app.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>import Calculadora, { PI, somar, type Ponto } from "./matematica";
+
+// 'type' só importa o tipo — é apagado no build final.
+// Equivalente completo:
+import type { Ponto } from "./matematica";
+
+// Alias em importação:
+import { somar as adicionar } from "./matematica";
+
+// Import como namespace:
+import * as Math from "./matematica";
+Math.somar(1, 2);</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">Type-only imports</div>
+        <div class="callout-body">Use <code>import type</code> ou o prefixo <code>type</code> em imports quando o que você importa é usado apenas em posição de tipo. Isso evita bundlers incluírem código desnecessário e deixa explícito para o leitor o que é tipo e o que é runtime.</div>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Namespaces</h3>
+      <p>Namespaces são a forma antiga (pré-ESM) de organizar código em TypeScript. Raramente são a melhor escolha em código novo, mas ainda aparecem em bibliotecas de terceiros e em declaration files.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">namespace.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>namespace Geometria {
+  export interface Ponto { x: number; y: number; }
+  export function distancia(a: Ponto, b: Ponto): number {
+    return Math.hypot(a.x - b.x, a.y - b.y);
+  }
+}
+
+const d = Geometria.distancia({ x: 0, y: 0 }, { x: 3, y: 4 });</code></pre>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 11: DECLARATION FILES ============ -->
+    <section class="chapter" id="declaration-files">
+      <div class="chapter-number">Capítulo 11</div>
+      <h2 class="chapter-title">Arquivos <em>.d.ts</em> e ambientes</h2>
+      <p class="chapter-intro">Declaration files descrevem, em tipos, a superfície de algo que já existe — uma biblioteca JavaScript, uma variável global, um módulo CSS importado. Eles são a forma como o TypeScript conversa com o mundo não-tipado.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Arquivos .d.ts</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">tipos-globais.d.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Declara uma variável global:
+declare const APP_VERSION: string;
+
+// Declara uma função global:
+declare function gtag(evento: string, parametros: object): void;
+
+// Declara o formato de um módulo JavaScript sem tipos:
+declare module "lib-sem-tipos" {
+  export function fazer(x: number): string;
+  export const versao: string;
+}
+
+// Declara que arquivos .css podem ser importados:
+declare module "*.css" {
+  const classes: { readonly [key: string]: string };
+  export default classes;
+}
+
+declare module "*.svg" {
+  const src: string;
+  export default src;
+}</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Estendendo globais (Window, process.env, etc)</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">env.d.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Adicionar propriedades a Window:
+declare global {
+  interface Window {
+    meuApp?: {
+      versao: string;
+      iniciar(): void;
+    };
+  }
+}
+
+// Tipar variáveis de ambiente do Node:
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      DATABASE_URL: string;
+      API_KEY: string;
+      NODE_ENV: "development" | "production" | "test";
+    }
+  }
+}
+
+export {}; // necessário para o arquivo ser tratado como módulo</code></pre>
+      </div>
+
+      <div class="callout note">
+        <div class="callout-label">DefinitelyTyped</div>
+        <div class="callout-body">Para bibliotecas JavaScript populares que não vêm com tipos próprios, existe o repositório <code>@types/*</code> no npm. Ex.: <code>npm install --save-dev @types/node @types/express</code>. Antes de escrever seu próprio <code>.d.ts</code>, verifique se já não existe um pacote <code>@types/</code>.</div>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 12: DECORATORS ============ -->
+    <section class="chapter" id="decorators">
+      <div class="chapter-number">Capítulo 12</div>
+      <h2 class="chapter-title">Decorators</h2>
+      <p class="chapter-intro">Decorators são funções que modificam classes, métodos, propriedades, acessores e parâmetros em tempo de declaração. TypeScript 5.0 adotou a sintaxe padrão do ECMAScript (Stage 3) — mais simples e alinhada com o futuro do JavaScript.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Decorators de classe</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">decorators-classe.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Um decorator é uma função com assinatura específica:
+function logado&lt;T extends new (...args: any[]) =&gt; object&gt;(
+  classe: T,
+  ctx: ClassDecoratorContext
+) {
+  return class extends classe {
+    constructor(...args: any[]) {
+      super(...args);
+      console.log(`[${String(ctx.name)}] instanciada`);
+    }
+  };
+}
+
+@logado
+class Servico {
+  constructor(public nome: string) {}
+}
+
+new Servico("auth"); // log: "[Servico] instanciada"</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Decorators de método</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">decorators-metodo.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>function medirTempo(
+  metodoOriginal: any,
+  ctx: ClassMethodDecoratorContext
+) {
+  return function (this: any, ...args: any[]) {
+    const inicio = performance.now();
+    const resultado = metodoOriginal.apply(this, args);
+    const fim = performance.now();
+    console.log(`${String(ctx.name)}: ${fim - inicio}ms`);
+    return resultado;
+  };
+}
+
+class API {
+  @medirTempo
+  buscarDados() {
+    // ... operação custosa
+    return [1, 2, 3];
+  }
+}</code></pre>
+      </div>
+
+      <div class="callout warn">
+        <div class="callout-label">Habilite com cuidado</div>
+        <div class="callout-body">Em projetos modernos, a sintaxe nativa de decorators (TS 5.0+) não requer <code>experimentalDecorators</code>. Se você trabalha com frameworks como Angular ou NestJS que dependem da versão antiga, mantenha <code>"experimentalDecorators": true</code> e <code>"emitDecoratorMetadata": true</code> no tsconfig.</div>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 13: ASYNC ============ -->
+    <section class="chapter" id="async">
+      <div class="chapter-number">Capítulo 13</div>
+      <h2 class="chapter-title">Tipos <em>assíncronos</em></h2>
+      <p class="chapter-intro">Promises e async/await são JavaScript puro, mas TypeScript traz tipagem rica para eles. Saber ler e escrever assinaturas assíncronas é requisito para qualquer código de backend ou de chamadas HTTP.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">async.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Funções async sempre retornam Promise&lt;T&gt;:
+async function buscarUsuario(id: number): Promise&lt;Usuario&gt; {
+  const res = await fetch(`/api/users/${id}`);
+  const json = await res.json();
+  return json as Usuario;
+}
+
+interface Usuario { id: number; nome: string; }
+
+// Promise.all é tipado por tupla:
+async function carregar(): Promise&lt;[Usuario, Post[]]&gt; {
+  const [u, p] = await Promise.all([
+    buscarUsuario(1),
+    buscarPosts(),
+  ]);
+  return [u, p];
+}
+
+async function buscarPosts(): Promise&lt;Post[]&gt; { return []; }
+interface Post { id: number; titulo: string; }
+
+// Awaited&lt;T&gt; — extrai o tipo resolvido:
+type DadosUsuario = Awaited&lt;ReturnType&lt;typeof buscarUsuario&gt;&gt;;
+// Usuario
+
+// Result pattern — alternativa a try/catch:
+type Resultado&lt;T, E = Error&gt; =
+  | { ok: true; valor: T }
+  | { ok: false; erro: E };
+
+async function pegarUsuarioSeguro(id: number): Promise&lt;Resultado&lt;Usuario&gt;&gt; {
+  try {
+    const u = await buscarUsuario(id);
+    return { ok: true, valor: u };
+  } catch (e) {
+    return { ok: false, erro: e as Error };
+  }
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 14: BOAS PRÁTICAS ============ -->
+    <section class="chapter" id="boas-praticas">
+      <div class="chapter-number">Capítulo 14</div>
+      <h2 class="chapter-title">Boas <em>práticas</em></h2>
+      <p class="chapter-intro">Você aprendeu a mecânica da linguagem. Esta última parte reúne regras não-oficiais que a comunidade TypeScript costuma seguir — o tipo de coisa que faz um código "cheirar" certo.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Ative o modo strict</h3>
+      <p>Todas as flags <code>strict*</code> ativadas por padrão. Em <code>tsconfig.json</code>, <code>"strict": true</code> é o primeiro passo de um projeto saudável. Também considere:</p>
+      <ul class="bullets">
+        <li><code>noUncheckedIndexedAccess</code> — acesso a <code>arr[i]</code> devolve <code>T | undefined</code>. Quase sempre o correto.</li>
+        <li><code>exactOptionalPropertyTypes</code> — diferencia "propriedade ausente" de "propriedade com valor <code>undefined</code>".</li>
+        <li><code>noImplicitOverride</code> — força <code>override</code> explícito em subclasses.</li>
+      </ul>
+
+      <h3 class="topic"><span class="hash">#</span> Prefira tipos a any</h3>
+      <p>Quando for tentador usar <code>any</code>, pare e pense: seria <code>unknown</code>? Um generic? Uma union? O <code>any</code> só deve aparecer em interop raro com código legado.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Deixe o TypeScript inferir</h3>
+      <p>Anotações em <strong>todo lugar</strong> não deixam o código mais seguro — apenas mais ruidoso. Escreva tipos em:</p>
+      <ul class="bullets">
+        <li>Assinaturas públicas (parâmetros e retorno de funções exportadas).</li>
+        <li>APIs de módulos e classes.</li>
+        <li>Casos onde a inferência fica ampla demais (ex.: array vazio).</li>
+      </ul>
+      <p>E confie na inferência em variáveis locais, callbacks inline e destructuring.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Modelos com discriminated unions</h3>
+      <p>Cada vez que você tem um objeto que "pode ser de três tipos" ou um estado com "várias fases", o padrão correto é quase sempre uma discriminated union. Evite optional chaining intrincado em estruturas que deveriam ser unions.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Valide entradas externas</h3>
+      <p>TypeScript protege você dentro do seu código. Tudo que vem de fora (JSON de APIs, localStorage, <code>process.env</code>, formulários) deve ser validado em runtime. Use bibliotecas como <strong>Zod</strong>, <strong>Valibot</strong> ou <strong>ArkType</strong>, que fornecem validação e tipos no mesmo gesto.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">com-zod.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>import { z } from "zod";
+
+const UsuarioSchema = z.object({
+  id: z.number(),
+  nome: z.string(),
+  email: z.string().email(),
+});
+
+type Usuario = z.infer&lt;typeof UsuarioSchema&gt;;
+// { id: number; nome: string; email: string }
+
+async function carregar(): Promise&lt;Usuario&gt; {
+  const res = await fetch("/api/me");
+  const json = await res.json();
+  return UsuarioSchema.parse(json); // valida + tipa em runtime
+}</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Nomenclatura</h3>
+      <ul class="bullets">
+        <li><strong>PascalCase</strong> para tipos, interfaces, classes e enums: <code>Usuario</code>, <code>StatusHttp</code>.</li>
+        <li><strong>camelCase</strong> para variáveis, funções e propriedades: <code>buscarUsuario</code>.</li>
+        <li><strong>CONSTANT_CASE</strong> para constantes de nível de módulo: <code>MAX_RETRIES</code>.</li>
+        <li>Evite prefixos tipo <code>IUsuario</code> — é cultura do C#, não casa com TypeScript.</li>
+        <li>Prefira nomes concretos a "genéricos demais". <code>T</code> em generics é tradicional, mas <code>TItem</code>, <code>TKey</code> comunicam mais.</li>
+      </ul>
+
+      <h3 class="topic"><span class="hash">#</span> Organize o tsconfig do projeto</h3>
+      <p>Em monorepos, use <strong>project references</strong> (<code>references</code> no tsconfig) para builds incrementais mais rápidos. Prefira um <code>tsconfig.base.json</code> que é estendido por cada pacote, em vez de duplicar configuração.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Ferramentas companheiras</h3>
+      <ul class="bullets">
+        <li><strong>ESLint</strong> com <code>@typescript-eslint</code> para regras de estilo e boas práticas.</li>
+        <li><strong>Prettier</strong> para formatação automática.</li>
+        <li><strong>tsx</strong> ou <strong>Bun</strong> para rodar <code>.ts</code> direto em desenvolvimento.</li>
+        <li><strong>vitest</strong> ou <strong>Jest + ts-jest</strong> para testes.</li>
+        <li><strong>zod</strong>, <strong>valibot</strong> para validação em runtime.</li>
+      </ul>
+
+      <div class="callout tip">
+        <div class="callout-label">Palavra final</div>
+        <div class="callout-body">TypeScript recompensa quem escreve com intenção. Cada tipo que você declara é uma pequena afirmação sobre o que seu código significa. Tratados com carinho, os tipos são a documentação mais honesta que sua equipe vai ter. Bom código.</div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="ornament">· ✦ ·</div>
+      <p>Manual TypeScript — um guia de referência feito para ser útil.</p>
+      <div class="line">Fim do documento · Volte ao topo quando precisar</div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+// ============ SYNTAX HIGHLIGHTING ============
+(function highlight() {
+  const keywords = new Set([
+    "abstract","any","as","asserts","async","await","boolean","break","case","catch",
+    "class","const","constructor","continue","declare","default","delete","do","else",
+    "enum","export","extends","false","finally","for","from","function","get","if",
+    "implements","import","in","infer","instanceof","interface","is","keyof","let",
+    "namespace","never","new","null","number","of","override","package","private",
+    "protected","public","readonly","return","satisfies","set","static","string","super",
+    "switch","symbol","this","throw","true","try","type","typeof","undefined","unique",
+    "unknown","var","void","while","with","yield","bigint","object"
+  ]);
+  const builtins = new Set([
+    "Array","Promise","Map","Set","Date","Error","RegExp","Object","Function",
+    "String","Number","Boolean","Symbol","BigInt","JSON","Math","console",
+    "Partial","Required","Readonly","Pick","Omit","Record","Exclude","Extract",
+    "NonNullable","ReturnType","Parameters","ConstructorParameters","InstanceType",
+    "Awaited","NoInfer","Uppercase","Lowercase","Capitalize","Uncapitalize",
+    "ReadonlyArray","Iterable","HTMLElement","HTMLInputElement","Window","NodeJS",
+    "MouseEvent","MessageEvent"
+  ]);
+
+  const escape = (s) => s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  function tokenize(raw) {
+    // tokens: comments, strings, template strings, numbers, identifiers, punct
+    const out = [];
+    let i = 0;
+    const n = raw.length;
+
+    const push = (cls, text) => out.push(`<span class="${cls}">${escape(text)}</span>`);
+    const pushRaw = (text) => out.push(escape(text));
+
+    while (i < n) {
+      const ch = raw[i];
+      const next = raw[i+1];
+
+      // line comment
+      if (ch === "/" && next === "/") {
+        let j = i;
+        while (j < n && raw[j] !== "\n") j++;
+        push("tk-cmt", raw.slice(i, j));
+        i = j;
+        continue;
+      }
+      // block comment
+      if (ch === "/" && next === "*") {
+        let j = i + 2;
+        while (j < n - 1 && !(raw[j] === "*" && raw[j+1] === "/")) j++;
+        j = Math.min(n, j + 2);
+        push("tk-cmt", raw.slice(i, j));
+        i = j;
+        continue;
+      }
+      // strings
+      if (ch === '"' || ch === "'") {
+        const q = ch;
+        let j = i + 1;
+        while (j < n && raw[j] !== q) {
+          if (raw[j] === "\\") j++;
+          j++;
+        }
+        j = Math.min(n, j + 1);
+        push("tk-str", raw.slice(i, j));
+        i = j;
+        continue;
+      }
+      // template strings (simple: no interpolation highlighting)
+      if (ch === "`") {
+        let j = i + 1;
+        while (j < n && raw[j] !== "`") {
+          if (raw[j] === "\\") j++;
+          j++;
+        }
+        j = Math.min(n, j + 1);
+        push("tk-str", raw.slice(i, j));
+        i = j;
+        continue;
+      }
+      // numbers
+      if (/[0-9]/.test(ch) || (ch === "." && /[0-9]/.test(next))) {
+        let j = i;
+        while (j < n && /[0-9a-fA-Fxbon._]/.test(raw[j])) j++;
+        push("tk-num", raw.slice(i, j));
+        i = j;
+        continue;
+      }
+      // identifiers / keywords
+      if (/[A-Za-z_$]/.test(ch)) {
+        let j = i;
+        while (j < n && /[A-Za-z0-9_$]/.test(raw[j])) j++;
+        const word = raw.slice(i, j);
+
+        if (keywords.has(word)) {
+          push("tk-kw", word);
+        } else if (builtins.has(word)) {
+          push("tk-bi", word);
+        } else if (/^[A-Z]/.test(word)) {
+          // PascalCase-ish — treat as type
+          push("tk-typ", word);
+        } else {
+          // check if followed by '(' => function call / definition
+          let k = j;
+          while (k < n && raw[k] === " ") k++;
+          if (raw[k] === "(") {
+            push("tk-fn", word);
+          } else {
+            pushRaw(word);
+          }
+        }
+        i = j;
+        continue;
+      }
+      // punctuation & operators
+      if (/[{}()\[\];,.]/.test(ch)) {
+        push("tk-punc", ch);
+        i++;
+        continue;
+      }
+      if (/[=+\-*/%&|!<>?:^~]/.test(ch)) {
+        let j = i;
+        while (j < n && /[=+\-*/%&|!<>?:^~]/.test(raw[j])) j++;
+        push("tk-op", raw.slice(i, j));
+        i = j;
+        continue;
+      }
+      // whitespace / anything else
+      pushRaw(ch);
+      i++;
+    }
+    return out.join("");
+  }
+
+  document.querySelectorAll("pre > code").forEach(el => {
+    const raw = el.textContent;
+    el.innerHTML = tokenize(raw);
+  });
+})();
+
+// ============ COPY BUTTONS ============
+document.querySelectorAll(".copy-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const wrap = btn.closest(".code-wrap");
+    const code = wrap.querySelector("pre").innerText;
+    navigator.clipboard.writeText(code).then(() => {
+      const prev = btn.textContent;
+      btn.textContent = "Copiado ✓";
+      btn.classList.add("copied");
+      setTimeout(() => {
+        btn.textContent = prev;
+        btn.classList.remove("copied");
+      }, 1500);
+    });
+  });
+});
+
+// ============ ACTIVE NAV ITEM (scroll spy) ============
+(function scrollSpy() {
+  const chapters = Array.from(document.querySelectorAll("section.chapter, h3.topic"));
+  const links = Array.from(document.querySelectorAll("aside.sidebar a"));
+  const byHref = new Map(links.map(l => [l.getAttribute("href"), l]));
+
+  function updateActive() {
+    let current = null;
+    const scrollTop = window.scrollY + 120;
+    for (const ch of chapters) {
+      if (ch.offsetTop <= scrollTop) current = ch.id;
+    }
+    links.forEach(l => l.classList.remove("active"));
+    if (current) {
+      const link = byHref.get("#" + current);
+      if (link) link.classList.add("active");
+    }
+
+    // progress bar
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = total > 0 ? (window.scrollY / total) * 100 : 0;
+    document.getElementById("progressBar").style.width = progress + "%";
+  }
+
+  window.addEventListener("scroll", updateActive, { passive: true });
+  window.addEventListener("resize", updateActive);
+  updateActive();
+})();
+
+// ============ SEARCH / FILTER ============
+(function search() {
+  const input = document.getElementById("search");
+  if (!input) return;
+
+  const navLinks = Array.from(document.querySelectorAll("aside.sidebar .nav-group a"));
+
+  input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) {
+      navLinks.forEach(a => {
+        a.classList.remove("nav-hidden");
+        a.parentElement.classList.remove("nav-hidden");
+      });
+      document.querySelectorAll(".nav-group").forEach(g => g.classList.remove("nav-hidden"));
+      return;
+    }
+    document.querySelectorAll(".nav-group").forEach(group => {
+      let anyMatch = false;
+      group.querySelectorAll("a").forEach(a => {
+        const matches = a.textContent.toLowerCase().includes(q);
+        a.parentElement.classList.toggle("nav-hidden", !matches);
+        if (matches) anyMatch = true;
+      });
+      group.classList.toggle("nav-hidden", !anyMatch);
+    });
+  });
+})();
+
+// Close mobile sidebar when link clicked
+document.querySelectorAll("aside.sidebar a").forEach(a => {
+  a.addEventListener("click", () => {
+    if (window.innerWidth <= 960) {
+      document.querySelector(".sidebar").classList.remove("open");
+    }
+  });
+});
+</script>
+</body>
+</html>
