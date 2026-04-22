@@ -1,0 +1,3233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual JavaScript — Referência Completa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0d0b; --bg-2: #17130f; --panel: #1c1712; --panel-2: #241d17;
+    --border: #2d251d; --border-strong: #3a3024;
+    --text: #f2ede4; --text-2: #cfc5b4; --muted: #a39a8e; --dim: #6a6258;
+    --accent: #f0a830; --accent-2: #e08c2a; --accent-soft: rgba(240, 168, 48, 0.12);
+    --teal: #5eead4; --rose: #f5a8a8; --sage: #b0c98c;
+    --sx-keyword: #e59866; --sx-string: #b0c98c; --sx-number: #e0a05a;
+    --sx-comment: #6a6258; --sx-type: #7fd4c4; --sx-func: #f0c878;
+    --sx-op: #a39a8e; --sx-builtin: #7fd4c4;
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body {
+    background: var(--bg); color: var(--text); font-family: var(--font-body);
+    font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background-image: radial-gradient(circle at 10% 0%, rgba(240, 168, 48, 0.04) 0%, transparent 50%), radial-gradient(circle at 90% 30%, rgba(94, 234, 212, 0.03) 0%, transparent 40%);
+  }
+  header.top { position: sticky; top: 0; z-index: 50; background: rgba(15, 13, 11, 0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); }
+  header.top .inner { max-width: 1440px; margin: 0 auto; padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--text); }
+  .brand-mark { width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-weight: 700; color: #1a1410; font-size: 15px; letter-spacing: -0.5px; box-shadow: 0 4px 20px rgba(240, 168, 48, 0.25); }
+  .brand-text .title { font-family: var(--font-display); font-weight: 600; font-size: 20px; font-style: italic; line-height: 1; }
+  .brand-text .sub { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
+  .search-wrap { flex: 1; max-width: 420px; position: relative; }
+  .search-wrap input { width: 100%; background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 10px 14px 10px 40px; border-radius: 8px; font-family: var(--font-body); font-size: 14px; transition: all 0.2s; }
+  .search-wrap input:focus { outline: none; border-color: var(--accent); background: var(--panel-2); }
+  .search-wrap::before { content: "⌕"; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px; }
+  .header-meta { display: flex; align-items: center; gap: 16px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .header-meta .dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .layout { max-width: 1440px; margin: 0 auto; display: grid; grid-template-columns: 280px 1fr; gap: 0; padding: 0 32px; }
+  aside.sidebar { position: sticky; top: 77px; height: calc(100vh - 77px); overflow-y: auto; padding: 32px 24px 32px 0; border-right: 1px solid var(--border); scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+  aside.sidebar::-webkit-scrollbar { width: 6px; }
+  aside.sidebar::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+  .nav-group { margin-bottom: 28px; }
+  .nav-group-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; padding: 0 12px; display: flex; align-items: center; gap: 10px; }
+  .nav-group-title::before { content: ""; width: 4px; height: 4px; background: var(--accent); transform: rotate(45deg); }
+  .nav-group ul { list-style: none; }
+  .nav-group a { display: block; padding: 7px 12px; color: var(--text-2); text-decoration: none; font-size: 14px; border-left: 2px solid transparent; transition: all 0.15s; border-radius: 0 4px 4px 0; }
+  .nav-group a:hover, .nav-group a.active { color: var(--accent); background: var(--accent-soft); border-left-color: var(--accent); }
+  .nav-group a.active { font-weight: 500; }
+  main { padding: 48px 48px 96px; min-width: 0; }
+  .hero { margin-bottom: 80px; padding: 48px 0 64px; border-bottom: 1px solid var(--border); position: relative; }
+  .hero::before { content: ""; position: absolute; top: 0; left: -48px; right: -48px; bottom: 0; background: radial-gradient(ellipse at top left, rgba(240, 168, 48, 0.08), transparent 50%), radial-gradient(ellipse at bottom right, rgba(94, 234, 212, 0.05), transparent 50%); pointer-events: none; z-index: -1; }
+  .eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 14px; }
+  .eyebrow::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border-strong), transparent); max-width: 280px; }
+  h1.hero-title { font-family: var(--font-display); font-weight: 600; font-size: clamp(48px, 8vw, 96px); line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 24px; color: var(--text); }
+  h1.hero-title em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .hero-lead { font-family: var(--font-display); font-size: clamp(18px, 2.4vw, 24px); line-height: 1.5; color: var(--text-2); max-width: 720px; font-weight: 400; }
+  .hero-lead::first-letter { font-size: 1.4em; font-weight: 600; color: var(--accent); }
+  .hero-meta { margin-top: 48px; display: flex; gap: 48px; flex-wrap: wrap; }
+  .hero-meta-item { border-left: 2px solid var(--accent); padding-left: 16px; }
+  .hero-meta-item .label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .hero-meta-item .value { font-family: var(--font-display); font-size: 20px; font-weight: 600; }
+  section.chapter { margin-bottom: 80px; scroll-margin-top: 90px; }
+  .chapter-number { font-family: var(--font-mono); font-size: 11px; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 14px; }
+  h2.chapter-title { font-family: var(--font-display); font-weight: 600; font-size: clamp(34px, 4.5vw, 52px); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 20px; color: var(--text); }
+  h2.chapter-title em { font-style: italic; color: var(--accent); }
+  .chapter-intro { font-family: var(--font-display); font-size: 19px; line-height: 1.55; color: var(--text-2); max-width: 780px; margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  h3.topic { font-family: var(--font-display); font-weight: 600; font-size: 28px; line-height: 1.2; margin: 56px 0 12px; color: var(--text); scroll-margin-top: 90px; display: flex; align-items: baseline; gap: 16px; }
+  h3.topic .hash { font-family: var(--font-mono); font-size: 14px; color: var(--accent); font-weight: 400; }
+  h4.subtopic { font-family: var(--font-body); font-weight: 600; font-size: 17px; margin: 36px 0 10px; color: var(--text); letter-spacing: -0.005em; }
+  p { margin-bottom: 16px; color: var(--text-2); max-width: 780px; }
+  p strong { color: var(--text); font-weight: 600; }
+  p em { color: var(--accent); font-style: italic; }
+  p code, li code { font-family: var(--font-mono); font-size: 0.88em; background: var(--panel); padding: 2px 7px; border-radius: 4px; border: 1px solid var(--border); color: var(--teal); white-space: nowrap; }
+  ul.bullets, ol.bullets { margin: 12px 0 20px 20px; max-width: 780px; }
+  ul.bullets li, ol.bullets li { margin-bottom: 8px; color: var(--text-2); padding-left: 6px; }
+  ul.bullets li::marker { color: var(--accent); }
+  .code-wrap { margin: 20px 0 28px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; position: relative; }
+  .code-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--panel); border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+  .code-header .filename { color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .code-header .filename::before { content: "●"; color: var(--accent); font-size: 8px; }
+  .code-header .copy-btn { background: transparent; border: 1px solid var(--border-strong); color: var(--muted); padding: 4px 10px; border-radius: 4px; font-family: var(--font-mono); font-size: 10px; cursor: pointer; letter-spacing: 1px; transition: all 0.15s; }
+  .code-header .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .code-header .copy-btn.copied { color: var(--sage); border-color: var(--sage); }
+  pre { margin: 0; padding: 20px 22px; overflow-x: auto; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.7; color: var(--text); scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+  pre::-webkit-scrollbar { height: 8px; }
+  pre::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+  pre code { display: block; }
+  .tk-kw { color: var(--sx-keyword); font-style: italic; }
+  .tk-str { color: var(--sx-string); }
+  .tk-num { color: var(--sx-number); }
+  .tk-cmt { color: var(--sx-comment); font-style: italic; }
+  .tk-typ { color: var(--sx-type); }
+  .tk-fn { color: var(--sx-func); }
+  .tk-op { color: var(--sx-op); }
+  .tk-bi { color: var(--sx-builtin); }
+  .tk-punc { color: var(--text-2); }
+  .callout { margin: 24px 0; padding: 16px 20px; border-radius: 8px; border-left: 3px solid; background: var(--panel); max-width: 860px; }
+  .callout-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; font-weight: 600; }
+  .callout-body { color: var(--text-2); font-size: 15px; line-height: 1.6; }
+  .callout-body code { font-family: var(--font-mono); font-size: 0.88em; background: var(--bg-2); padding: 1px 6px; border-radius: 3px; color: var(--teal); }
+  .callout.note { border-color: var(--teal); }
+  .callout.note .callout-label { color: var(--teal); }
+  .callout.warn { border-color: var(--rose); }
+  .callout.warn .callout-label { color: var(--rose); }
+  .callout.tip { border-color: var(--accent); }
+  .callout.tip .callout-label { color: var(--accent); }
+  .table-wrap { margin: 20px 0 32px; overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; max-width: 100%; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 11px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: var(--panel); font-family: var(--font-mono); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); font-weight: 500; }
+  td { color: var(--text-2); }
+  td:first-child { color: var(--teal); font-family: var(--font-mono); font-size: 13px; }
+  tr:last-child td { border-bottom: none; }
+  footer { margin-top: 120px; padding: 48px 0 64px; border-top: 1px solid var(--border); text-align: center; }
+  footer .ornament { font-family: var(--font-display); font-size: 32px; color: var(--accent); margin-bottom: 16px; font-style: italic; }
+  footer p { color: var(--muted); font-size: 13px; max-width: none; margin: 0; }
+  footer .line { font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-top: 12px; color: var(--dim); }
+  #progressBar { position: fixed; top: 0; left: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--teal)); z-index: 100; width: 0%; transition: width 0.1s; }
+  .mobile-toggle { display: none; }
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; padding: 0 20px; }
+    aside.sidebar { position: fixed; top: 70px; left: 0; width: 280px; height: calc(100vh - 70px); background: var(--bg); padding: 24px 20px; border-right: 1px solid var(--border); transform: translateX(-100%); transition: transform 0.3s; z-index: 40; }
+    aside.sidebar.open { transform: translateX(0); }
+    main { padding: 32px 0 64px; }
+    header.top .inner { padding: 14px 20px; }
+    .search-wrap { display: none; }
+    .mobile-toggle { display: flex; background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 6px; font-family: var(--font-mono); font-size: 11px; cursor: pointer; letter-spacing: 1px; }
+    .header-meta { display: none; }
+    .hero { padding: 24px 0 40px; }
+  }
+  .nav-hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div id="progressBar"></div>
+
+<header class="top">
+  <div class="inner">
+    <a class="brand" href="#top">
+      <div class="brand-mark">JS</div>
+      <div class="brand-text">
+        <div class="title">Manual JavaScript</div>
+        <div class="sub">Referência · Moderno (ES2015+)</div>
+      </div>
+    </a>
+    <div class="search-wrap">
+      <input id="search" type="text" placeholder="Buscar tópico, método ou palavra-chave..." autocomplete="off">
+    </div>
+    <button class="mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰ Menu</button>
+    <div class="header-meta">
+      <span class="dot"></span>
+      <span>PT-BR · Completo</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+
+    <div class="nav-group">
+      <div class="nav-group-title">Fundamentos</div>
+      <ul>
+        <li><a href="#introducao">Introdução</a></li>
+        <li><a href="#como-executar">Como executar JavaScript</a></li>
+        <li><a href="#strict-mode">Strict mode</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Variáveis e Tipos</div>
+      <ul>
+        <li><a href="#variaveis">var, let, const</a></li>
+        <li><a href="#hoisting">Hoisting e TDZ</a></li>
+        <li><a href="#primitivos">Tipos primitivos</a></li>
+        <li><a href="#typeof">typeof e armadilhas</a></li>
+        <li><a href="#coercao">Coerção e igualdade</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Fluxo de Controle</div>
+      <ul>
+        <li><a href="#operadores">Operadores modernos</a></li>
+        <li><a href="#condicionais">Condicionais</a></li>
+        <li><a href="#loops">Loops</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Strings, Números, Datas</div>
+      <ul>
+        <li><a href="#strings">Strings</a></li>
+        <li><a href="#numeros">Números e Math</a></li>
+        <li><a href="#datas">Datas e Intl</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Estruturas de Dados</div>
+      <ul>
+        <li><a href="#arrays">Arrays</a></li>
+        <li><a href="#metodos-array">Métodos de Array</a></li>
+        <li><a href="#objetos">Objetos</a></li>
+        <li><a href="#map-set">Map, Set, WeakMap, WeakSet</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Funções</div>
+      <ul>
+        <li><a href="#funcoes">Funções em profundidade</a></li>
+        <li><a href="#closures">Closures</a></li>
+        <li><a href="#this">O this em profundidade</a></li>
+        <li><a href="#call-apply-bind">call, apply, bind</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Orientação a Objetos</div>
+      <ul>
+        <li><a href="#classes">Classes modernas</a></li>
+        <li><a href="#prototypes">Prototypes</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Código Assíncrono</div>
+      <ul>
+        <li><a href="#event-loop">Event loop</a></li>
+        <li><a href="#promises">Promises</a></li>
+        <li><a href="#async-await">async / await</a></li>
+        <li><a href="#combinators">Promise combinators</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Recursos Avançados</div>
+      <ul>
+        <li><a href="#iteradores">Iterators</a></li>
+        <li><a href="#geradores">Generators</a></li>
+        <li><a href="#symbols">Symbols</a></li>
+        <li><a href="#proxy">Proxy e Reflect</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Módulos e Erros</div>
+      <ul>
+        <li><a href="#modulos">Módulos ESM</a></li>
+        <li><a href="#erros">Tratamento de erros</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">APIs Essenciais</div>
+      <ul>
+        <li><a href="#fetch">fetch e AbortController</a></li>
+        <li><a href="#json">JSON</a></li>
+        <li><a href="#url">URL e URLSearchParams</a></li>
+        <li><a href="#storage">Storage do browser</a></li>
+        <li><a href="#regex">Regex em JS</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Prática</div>
+      <ul>
+        <li><a href="#boas-praticas">Boas práticas</a></li>
+      </ul>
+    </div>
+
+  </aside>
+
+  <main id="top">
+
+    <section class="hero">
+      <div class="eyebrow">Volume II · Guia de referência definitivo</div>
+      <h1 class="hero-title">O manual de <em>JavaScript</em>.</h1>
+      <p class="hero-lead">Do <code>let</code> à reatividade com <code>Proxy</code>, passando pelo event loop, o <code>this</code> e o sistema de prototypes. Esta é a base sobre a qual todas as outras tecnologias fullstack são construídas — dominá-la é o investimento que mais rende ao longo da carreira.</p>
+      <div class="hero-meta">
+        <div class="hero-meta-item"><div class="label">Extensão</div><div class="value">25 capítulos</div></div>
+        <div class="hero-meta-item"><div class="label">Exemplos</div><div class="value">Mais de 200 snippets</div></div>
+        <div class="hero-meta-item"><div class="label">Nível</div><div class="value">Iniciante → Avançado</div></div>
+        <div class="hero-meta-item"><div class="label">Versão alvo</div><div class="value">ES2015 — ES2024</div></div>
+      </div>
+    </section>
+
+    <section class="chapter" id="introducao">
+      <div class="chapter-number">Capítulo 01</div>
+      <h2 class="chapter-title">O que é o <em>JavaScript</em></h2>
+      <p class="chapter-intro">JavaScript é a linguagem da web — e, cada vez mais, de tudo o que é digital. Ela começou em 1995 como um script de 10 dias dentro do Netscape, e hoje executa desde interfaces de usuário em navegadores até servidores, drones, apps de TV e impressoras 3D. Este capítulo é o mapa mental antes do tutorial propriamente dito.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Uma linguagem de múltiplos paradigmas</h3>
+      <p>JavaScript não é "só orientada a objetos" nem "só funcional". Ela aceita — e se beneficia de — misturar estilos. Você pode escrever:</p>
+      <ul class="bullets">
+        <li><strong>Imperativo:</strong> sequências de comandos que mudam estado.</li>
+        <li><strong>Orientado a objetos:</strong> classes, herança, encapsulamento.</li>
+        <li><strong>Funcional:</strong> funções puras, composição, imutabilidade.</li>
+        <li><strong>Orientado a eventos:</strong> reagir a cliques, timers, mensagens.</li>
+      </ul>
+      <p>Conhecer todos os quatro estilos — e saber quando cada um cabe melhor — é o que separa uma pessoa que <em>usa</em> JavaScript de alguém que <em>sabe</em> JavaScript.</p>
+
+      <h3 class="topic" id="como-executar"><span class="hash">#</span> Como executar JavaScript</h3>
+      <p>Código JavaScript precisa de um <strong>runtime</strong> — um programa capaz de interpretar e executar o código. Hoje existem quatro grandes famílias:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Runtime</th><th>Onde roda</th><th>Observações</th></tr></thead>
+          <tbody>
+            <tr><td>V8, SpiderMonkey, JavaScriptCore</td><td>Navegadores</td><td>Chrome, Firefox e Safari, respectivamente.</td></tr>
+            <tr><td>Node.js</td><td>Servidor</td><td>O padrão do back-end JavaScript há mais de uma década.</td></tr>
+            <tr><td>Bun</td><td>Servidor</td><td>Runtime moderno, muito rápido, compatível com Node.</td></tr>
+            <tr><td>Deno</td><td>Servidor</td><td>Seguro por padrão, TypeScript nativo, módulos via URL.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">terminal</span><button class="copy-btn">Copiar</button></div>
+        <pre><code># No browser, basta abrir o console do DevTools (F12):
+console.log("Olá, mundo!");
+
+# No Node.js:
+node arquivo.js
+node -e "console.log(2 + 2)"
+
+# Em modo REPL (interativo):
+node
+&gt; 1 + 1
+2
+
+# Com Bun (mais rápido, suporta TypeScript direto):
+bun run arquivo.js
+
+# Com Deno:
+deno run arquivo.js</code></pre>
+      </div>
+
+      <h3 class="topic" id="strict-mode"><span class="hash">#</span> Strict mode</h3>
+      <p>No começo da linguagem, o JavaScript permitia várias coisas estranhas em silêncio — variáveis globais acidentais, atribuições a propriedades read-only, números octais implícitos. O <strong>strict mode</strong>, introduzido em 2009, desliga esses comportamentos e impõe regras mais sensatas.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">strict.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>"use strict";
+
+// Sem declaração → erro (no modo não-strict, criaria variável global):
+// nome = "Ana"; // ❌ ReferenceError
+
+// Atribuição a variável readonly vira erro:
+const PI = 3.14;
+// PI = 3; // ❌ TypeError
+
+// Duplicar parâmetros é proibido:
+// function f(a, a) {} // ❌ SyntaxError
+
+// 'this' em função comum é undefined, não window:
+function f() { return this; }
+f(); // undefined (não window/global)</code></pre>
+      </div>
+
+      <div class="callout note">
+        <div class="callout-label">Observação</div>
+        <div class="callout-body">Em <strong>módulos ES</strong> (qualquer arquivo <code>.mjs</code> ou que tenha <code>import</code>/<code>export</code>), o strict mode é <strong>implícito e obrigatório</strong>. Você não precisa escrever <code>"use strict"</code>. O mesmo vale dentro de <code>class</code>.</div>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Interpretado, compilado ou ambos?</h3>
+      <p>JavaScript moderno usa <strong>JIT (Just-In-Time) compilation</strong>: o código é interpretado inicialmente e, conforme é executado, partes "quentes" (funções chamadas muitas vezes) são compiladas para código de máquina otimizado. Isso explica por que código idiomático e consistente costuma ser mais rápido do que truques aparentemente "otimizados".</p>
+      <p>Para o desenvolvedor, o efeito prático é: escreva código limpo; confie no motor. Otimize apenas quando medir um problema real.</p>
+    </section>
+
+    <section class="chapter" id="variaveis">
+      <div class="chapter-number">Capítulo 02</div>
+      <h2 class="chapter-title">Variáveis e <em>escopos</em></h2>
+      <p class="chapter-intro">JavaScript tem três palavras-chave para declarar variáveis — <code>var</code>, <code>let</code> e <code>const</code> — e a diferença entre elas não é só estilo. Elas obedecem a regras de escopo e inicialização radicalmente diferentes, e confundi-las é fonte de bugs sutis há mais de duas décadas.</p>
+
+      <h3 class="topic"><span class="hash">#</span> const, let e var</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">declaracoes.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// const — vínculo imutável (não pode ser reatribuído):
+const PI = 3.14159;
+// PI = 3; // ❌ TypeError
+
+// Mas atenção: o conteúdo de um objeto const pode mudar!
+const config = { tema: "dark" };
+config.tema = "light"; // ✅ permitido — não mudou a referência
+
+// let — reatribuível, escopo de bloco:
+let contador = 0;
+contador = 1; // ✅
+
+// var — reatribuível, escopo de FUNÇÃO (não de bloco):
+var velho = "evite";</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Escopo de bloco vs escopo de função</h3>
+      <p>Esta é a diferença mais importante entre <code>var</code> e <code>let/const</code>. Um <strong>bloco</strong> é qualquer coisa entre chaves <code>{ }</code> — um <code>if</code>, um <code>for</code>, um bloco solto.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">escopos.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// let/const respeitam o bloco:
+{
+  let x = 10;
+  const y = 20;
+}
+// console.log(x); // ❌ ReferenceError — x não existe aqui
+
+// var ignora o bloco — vaza para a função inteira:
+function exemplo() {
+  if (true) {
+    var z = 30;
+  }
+  console.log(z); // 30 — var vaza!
+}
+
+// O caso clássico do loop com var:
+for (var i = 0; i &lt; 3; i++) {
+  setTimeout(() =&gt; console.log(i), 100);
+}
+// Imprime: 3, 3, 3 — todos compartilham o mesmo i!
+
+// Com let, cada iteração tem seu próprio i:
+for (let i = 0; i &lt; 3; i++) {
+  setTimeout(() =&gt; console.log(i), 100);
+}
+// Imprime: 0, 1, 2</code></pre>
+      </div>
+
+      <h3 class="topic" id="hoisting"><span class="hash">#</span> Hoisting e Temporal Dead Zone</h3>
+      <p><strong>Hoisting</strong> é o comportamento pelo qual declarações são "içadas" para o topo do seu escopo antes da execução. As três formas sofrem hoisting, mas de maneiras diferentes.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">hoisting.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// VAR — içada e inicializada como undefined:
+console.log(a); // undefined (não erro!)
+var a = 10;
+
+// LET e CONST — içadas, MAS não inicializadas.
+// A zona entre o início do bloco e a declaração é a
+// Temporal Dead Zone (TDZ).
+console.log(b); // ❌ ReferenceError: Cannot access 'b' before initialization
+let b = 20;
+
+// Funções declaradas são totalmente içadas:
+dizerOi(); // ✅ funciona
+function dizerOi() { console.log("oi"); }
+
+// Mas funções em expressões NÃO são içadas:
+// dizerTchau(); // ❌ TypeError
+const dizerTchau = function() { console.log("tchau"); };</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">Regra de ouro</div>
+        <div class="callout-body">Use <code>const</code> como padrão. Troque para <code>let</code> quando precisar reatribuir. Só use <code>var</code> em código legado ou quando você <strong>precisa</strong> explicitamente do escopo de função (o que é quase nunca).</div>
+      </div>
+    </section>
+
+    <section class="chapter" id="primitivos">
+      <div class="chapter-number">Capítulo 03</div>
+      <h2 class="chapter-title">Tipos <em>primitivos</em></h2>
+      <p class="chapter-intro">JavaScript tem oito tipos fundamentais — sete primitivos e o tipo "objeto". Primitivos são imutáveis e passados por valor; objetos são mutáveis e passados por referência. Entender essa distinção é pré-requisito para não apanhar da linguagem.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Os sete primitivos</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">primitivos.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// 1) string — texto
+const nome = "Ana";
+const saudacao = `Olá, ${nome}`;
+
+// 2) number — inteiros e decimais (mesmo tipo!)
+const idade = 30;
+const preco = 19.99;
+const infinito = Infinity;
+const naoNumero = NaN; // "Not a Number"
+
+// 3) bigint — inteiros arbitrariamente grandes
+const gigante = 9007199254740993n; // note o 'n' no final
+
+// 4) boolean — true ou false
+const ativo = true;
+
+// 5) null — "valor intencionalmente ausente"
+const resultado = null;
+
+// 6) undefined — "ainda não foi atribuído"
+let indefinido;
+console.log(indefinido); // undefined
+
+// 7) symbol — identificadores únicos (cap. dedicado adiante)
+const id = Symbol("identificador");</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> null vs undefined</h3>
+      <p>Esta é uma distinção frequentemente confundida. Os dois representam "ausência de valor", mas com intenções diferentes:</p>
+      <ul class="bullets">
+        <li><code>undefined</code> é o valor padrão do JavaScript quando nada foi atribuído (variável sem valor, parâmetro não passado, propriedade inexistente).</li>
+        <li><code>null</code> é um valor que <strong>você</strong>, programador, coloca para dizer "aqui não há nada intencionalmente".</li>
+      </ul>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">null-vs-undefined.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>let x;                     // x é undefined (sem atribuição)
+function f(a, b) {
+  console.log(b);          // undefined se chamada com f(1)
+}
+
+const usuario = { nome: null }; // "nome não existe, e eu sei disso"
+
+// Na comparação rasa, eles são iguais (==), mas não idênticos (===):
+null == undefined;  // true  (coerção)
+null === undefined; // false (tipos diferentes)</code></pre>
+      </div>
+
+      <h3 class="topic" id="typeof"><span class="hash">#</span> O operador typeof e suas armadilhas</h3>
+      <p><code>typeof</code> devolve uma string que descreve o tipo de um valor. É útil, mas tem duas peculiaridades históricas que você <strong>precisa</strong> conhecer.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">typeof.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>typeof "oi";        // "string"
+typeof 42;          // "number"
+typeof true;        // "boolean"
+typeof undefined;   // "undefined"
+typeof 10n;         // "bigint"
+typeof Symbol();    // "symbol"
+typeof function(){};// "function"
+typeof {};          // "object"
+typeof [];          // "object"  ← arrays são objetos!
+
+// ⚠️ Armadilha #1: null retorna "object" — um bug histórico:
+typeof null;        // "object" (deveria ser "null")
+
+// ⚠️ Armadilha #2: NaN é do tipo "number":
+typeof NaN;         // "number"
+
+// Para testar array, use Array.isArray:
+Array.isArray([1, 2, 3]); // true
+Array.isArray("abc");     // false</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Primitivos vs objetos — valor vs referência</h3>
+      <p>Entender isto é essencial. Primitivos são copiados ao serem atribuídos ou passados como argumento. Objetos são compartilhados por referência.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">valor-vs-ref.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Primitivos — cópia por valor:
+let a = 10;
+let b = a;      // b recebe uma cópia
+b = 20;
+console.log(a); // 10 (a não mudou)
+
+// Objetos — cópia por referência:
+const obj1 = { x: 10 };
+const obj2 = obj1; // obj2 aponta para o MESMO objeto
+obj2.x = 20;
+console.log(obj1.x); // 20 (o mesmo objeto mudou!)
+
+// Para copiar de verdade:
+const copia = { ...obj1 };           // shallow copy
+const funda = structuredClone(obj1); // deep clone nativo</code></pre>
+      </div>
+
+      <h3 class="topic" id="coercao"><span class="hash">#</span> Coerção de tipos e igualdade</h3>
+      <p>JavaScript converte tipos automaticamente em muitas operações — isso é a famosa "coerção". Ela explica comportamentos surpreendentes que viraram memes (<code>[] + [] === ""</code>). A regra prática é: <strong>use sempre <code>===</code> e <code>!==</code></strong> e escolha a conversão explicitamente.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">coercao.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// == (igualdade frouxa) — aplica coerção:
+"5" == 5;          // true  (string vira number)
+null == undefined; // true
+[] == false;       // true  (!!)
+"0" == false;      // true
+
+// === (igualdade estrita) — não aplica coerção:
+"5" === 5;         // false
+0 === -0;          // true
+NaN === NaN;       // false (!) — NaN nunca é igual a nada, nem a si mesmo!
+
+// Para testar NaN:
+Number.isNaN(NaN);   // true
+Object.is(NaN, NaN); // true — quase como ===, mas NaN é igual a NaN
+
+// Conversões explícitas (SEMPRE prefira):
+Number("42");     // 42
+Number("abc");    // NaN
+String(42);       // "42"
+Boolean(0);       // false
+Boolean("");      // false
+Boolean("0");     // true (!) — strings não-vazias são truthy
+
+// Falsy values — convertidos para false:
+// false, 0, -0, 0n, "", null, undefined, NaN
+// Tudo o mais é truthy (incluindo [], {}, "false")</code></pre>
+      </div>
+
+      <div class="callout warn">
+        <div class="callout-label">Nunca use ==</div>
+        <div class="callout-body">A única exceção legítima é <code>x == null</code>, que testa <code>null</code> e <code>undefined</code> ao mesmo tempo. Fora isso, use <code>===</code> sempre. Seu linter provavelmente já impõe isso.</div>
+      </div>
+    </section>
+
+    <section class="chapter" id="operadores">
+      <div class="chapter-number">Capítulo 04</div>
+      <h2 class="chapter-title">Operadores e <em>fluxo</em></h2>
+      <p class="chapter-intro">Além dos operadores tradicionais, JavaScript moderno acrescentou um punhado de novos operadores que substituíram com elegância padrões comuns feitos à mão. Dominá-los deixa o código mais curto e mais legível ao mesmo tempo.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Operadores aritméticos e lógicos</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">operadores.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Aritméticos:
+10 + 3;    // 13
+10 - 3;    // 7
+10 * 3;    // 30
+10 / 3;    // 3.333...
+10 % 3;    // 1 (resto)
+10 ** 3;   // 1000 (potência — equivalente a Math.pow)
+
+// Lógicos (com short-circuit):
+true &amp;&amp; "oi";     // "oi" — retorna o último valor se tudo truthy
+false &amp;&amp; "oi";    // false — para no primeiro falsy
+null || "padrão"; // "padrão" — retorna o primeiro truthy
+"ana" || "padrão";// "ana"
+
+// Negação:
+!true;     // false
+!"oi";     // false (string não-vazia é truthy)
+!!"oi";    // true (truque: converte em boolean)</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Operadores modernos essenciais</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">modernos.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Nullish coalescing (??) — fallback SÓ em null/undefined:
+const porta = config.porta ?? 8080;
+// Diferente de || que também dispara em 0, "", false:
+0 || 8080;   // 8080 (porque 0 é falsy) ← pode ser bug!
+0 ?? 8080;   // 0 (porque 0 não é null/undefined) ← correto
+
+// Optional chaining (?.) — acessa com segurança:
+const cidade = usuario?.endereco?.cidade;
+// Sem erro se usuario ou endereco forem null/undefined
+
+// Chamada opcional:
+usuario?.salvar?.();
+
+// Acesso opcional de array:
+const primeiro = lista?.[0];
+
+// Atribuições compostas (ES2021):
+let x = null;
+x ??= 10;    // x = x ?? 10 → x agora é 10
+x ||= 5;     // x = x || 5
+x &amp;&amp;= 20;   // x = x &amp;&amp; 20
+
+// Spread (...) — expande iteráveis:
+const a = [1, 2, 3];
+const b = [...a, 4, 5];       // [1, 2, 3, 4, 5]
+const max = Math.max(...a);   // equivalente a Math.max(1, 2, 3)
+
+// Spread em objetos:
+const base = { nome: "Ana" };
+const completo = { ...base, idade: 30 }; // { nome: "Ana", idade: 30 }</code></pre>
+      </div>
+
+      <h3 class="topic" id="condicionais"><span class="hash">#</span> Condicionais</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">condicionais.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// if / else if / else
+const idade = 20;
+if (idade &lt; 18) {
+  console.log("menor");
+} else if (idade &lt; 65) {
+  console.log("adulto");
+} else {
+  console.log("sênior");
+}
+
+// Ternário (expressão, pode retornar valor):
+const tipo = idade &lt; 18 ? "menor" : "adulto";
+const classe = idade &lt; 18 ? "menor" : idade &lt; 65 ? "adulto" : "sênior";
+
+// switch com fall-through:
+switch (idade) {
+  case 0:
+  case 1:
+  case 2:
+    console.log("bebê");
+    break;
+  case 18:
+    console.log("maioridade");
+    break;
+  default:
+    console.log("outra idade");
+}
+
+// Padrão moderno — objeto como "switch":
+const mensagens = {
+  loading: "Carregando...",
+  ok: "Tudo certo!",
+  erro: "Falhou.",
+};
+const msg = mensagens[estado] ?? "desconhecido";</code></pre>
+      </div>
+
+      <h3 class="topic" id="loops"><span class="hash">#</span> Loops</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">loops.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// for clássico — quando você precisa do índice:
+for (let i = 0; i &lt; 5; i++) {
+  console.log(i);
+}
+
+// while — enquanto condição é verdadeira:
+let n = 0;
+while (n &lt; 5) {
+  console.log(n);
+  n++;
+}
+
+// do...while — executa pelo menos uma vez:
+do {
+  n++;
+} while (n &lt; 10);
+
+// for...of — itera sobre valores de iteráveis (arrays, strings, Map, Set):
+const cores = ["red", "green", "blue"];
+for (const cor of cores) {
+  console.log(cor);
+}
+
+// for...of com índice (usando entries):
+for (const [i, cor] of cores.entries()) {
+  console.log(i, cor);
+}
+
+// for...in — itera sobre CHAVES de um objeto (cuidado!):
+const obj = { a: 1, b: 2, c: 3 };
+for (const chave in obj) {
+  console.log(chave, obj[chave]);
+}
+
+// break e continue:
+for (let i = 0; i &lt; 10; i++) {
+  if (i === 3) continue;   // pula essa iteração
+  if (i === 7) break;      // encerra o loop
+  console.log(i);
+}
+
+// Labels — break de loops aninhados:
+externo: for (let i = 0; i &lt; 3; i++) {
+  for (let j = 0; j &lt; 3; j++) {
+    if (i === 1 &amp;&amp; j === 1) break externo;
+  }
+}</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">Qual loop usar?</div>
+        <div class="callout-body">Para arrays, prefira métodos como <code>.forEach()</code>, <code>.map()</code>, <code>.filter()</code>. Quando precisar de <code>break</code>/<code>continue</code>, use <code>for...of</code>. Evite <code>for...in</code> com arrays — ele itera sobre chaves (incluindo herdadas), não valores.</div>
+      </div>
+    </section>
+
+    <section class="chapter" id="strings">
+      <div class="chapter-number">Capítulo 05</div>
+      <h2 class="chapter-title">Strings</h2>
+      <p class="chapter-intro">Strings em JavaScript são imutáveis — toda "modificação" retorna uma nova string. A linguagem oferece uma biblioteca rica de métodos, e os template literals de ES2015 transformaram completamente como escrevemos texto dinâmico.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Template literals</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">templates.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>const nome = "Ana";
+const idade = 30;
+
+// Interpolação com ${}:
+const frase = `${nome} tem ${idade} anos`;
+
+// Multi-linhas sem truques:
+const html = `
+  &lt;div&gt;
+    &lt;h1&gt;${nome}&lt;/h1&gt;
+    &lt;p&gt;Idade: ${idade}&lt;/p&gt;
+  &lt;/div&gt;
+`;
+
+// Expressões dentro de ${}:
+const maior = `${idade &gt;= 18 ? "adulto" : "menor"}`;
+const dobro = `O dobro de ${idade} é ${idade * 2}`;
+
+// Tagged templates — função que processa o template:
+function destacar(strings, ...valores) {
+  return strings.reduce((acc, str, i) =&gt; {
+    const v = valores[i] ? `[${valores[i]}]` : "";
+    return acc + str + v;
+  }, "");
+}
+
+const resultado = destacar`Olá ${nome}, você tem ${idade} anos.`;
+// "Olá [Ana], você tem [30] anos."</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Métodos essenciais</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">metodos-string.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>const s = "JavaScript moderno";
+
+// Comprimento:
+s.length; // 18
+
+// Acesso por índice:
+s[0];           // "J"
+s.at(-1);       // "o" (índice negativo suportado)
+s.charAt(4);    // "S"
+
+// Busca:
+s.includes("Script");     // true
+s.startsWith("Java");     // true
+s.endsWith("no");         // true
+s.indexOf("a");           // 1 (primeira ocorrência)
+s.lastIndexOf("a");       // 3 (última)
+
+// Transformação (lembre: strings são imutáveis):
+s.toUpperCase();          // "JAVASCRIPT MODERNO"
+s.toLowerCase();          // "javascript moderno"
+s.trim();                 // remove espaços nas pontas
+s.trimStart();            // só no início
+s.trimEnd();              // só no fim
+s.padStart(25, "-");      // "-------JavaScript moderno"
+s.padEnd(25, ".");        // "JavaScript moderno......."
+
+// Substrings:
+s.slice(0, 10);           // "JavaScript"
+s.slice(-7);              // "moderno" (do fim)
+s.substring(0, 10);       // "JavaScript"
+
+// Substituição:
+"banana".replace("a", "X");      // "bXnana" (primeira ocorrência)
+"banana".replaceAll("a", "X");   // "bXnXnX" (todas)
+"banana".replace(/a/g, "X");     // mesma coisa, via regex
+
+// Divisão e junção:
+"a,b,c".split(",");        // ["a", "b", "c"]
+["a", "b", "c"].join("-"); // "a-b-c"
+"abc".split("");           // ["a", "b", "c"]
+
+// Repetir:
+"ab".repeat(3);            // "ababab"
+
+// Escape de HTML (não embutido — implemente ou use lib):
+function escapar(s) {
+  return s.replace(/[&amp;&lt;&gt;"']/g, c =&gt; ({
+    "&amp;": "&amp;amp;", "&lt;": "&amp;lt;", "&gt;": "&amp;gt;",
+    '"': "&amp;quot;", "'": "&amp;#39;",
+  })[c]);
+}</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Unicode e caracteres especiais</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">unicode.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Escape padrão (4 dígitos hex):
+"\u00E9";           // "é"
+
+// Escape de code point (para caracteres fora do BMP):
+"\u{1F600}";        // "😀"
+
+// Emojis e length — cuidado!
+"😀".length;         // 2 (!) — surrogate pair
+
+// Para contar "caracteres visíveis", use iteração:
+[..."😀"].length;    // 1
+
+// Normalização (acentos podem ter formas diferentes):
+"é" === "é";        // pode ser true ou false dependendo da forma!
+"é".normalize("NFC") === "é".normalize("NFC"); // confiável</code></pre>
+      </div>
+    </section>
+
+    <section class="chapter" id="numeros">
+      <div class="chapter-number">Capítulo 06</div>
+      <h2 class="chapter-title">Números e <em>matemática</em></h2>
+      <p class="chapter-intro">Em JavaScript, "number" é um tipo único que cobre inteiros e decimais — usando internamente IEEE 754 de 64 bits, igual a <code>double</code> em C. Isso traz consequências: <code>0.1 + 0.2</code> não é <code>0.3</code>, e há limites para inteiros seguros. Conhecê-los evita bugs financeiros clássicos.</p>
+
+      <h3 class="topic"><span class="hash">#</span> O tipo Number</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">numeros.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Literais numéricos:
+const decimal = 1000000;
+const legivel = 1_000_000;      // underscore para legibilidade
+const hex = 0xff;               // 255
+const bin = 0b1010;             // 10
+const oct = 0o17;               // 15
+const cientifico = 1.5e3;       // 1500
+const pequeno = 1.5e-4;         // 0.00015
+
+// Valores especiais:
+Infinity;
+-Infinity;
+NaN;
+Number.MAX_SAFE_INTEGER;  // 9007199254740991 (2^53 - 1)
+Number.MIN_SAFE_INTEGER;  // -9007199254740991
+Number.EPSILON;           // menor diferença representável
+
+// Métodos do objeto Number:
+Number.isInteger(42);       // true
+Number.isFinite(Infinity);  // false
+Number.isNaN(NaN);          // true (mais confiável que isNaN global)
+Number.isSafeInteger(2n);   // false (não é number)
+
+// Parsing (o Number() vs parseInt/parseFloat):
+Number("42");        // 42
+Number("42abc");     // NaN (precisa ser string limpa)
+parseInt("42abc");   // 42 (lê até achar não-dígito)
+parseInt("ff", 16);  // 255 (com base)
+parseFloat("3.14x"); // 3.14
+
+// Métodos de instância:
+(3.14159).toFixed(2);       // "3.14" (string!)
+(1234.5678).toPrecision(6); // "1234.57"
+(255).toString(16);         // "ff"
+(10).toString(2);           // "1010"</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> A armadilha do ponto flutuante</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">precisao.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>0.1 + 0.2;         // 0.30000000000000004 (!)
+0.1 + 0.2 === 0.3; // false
+
+// Motivo: números binários não representam 0.1 exatamente.
+// Soluções:
+
+// 1) Comparar com margem de erro:
+Math.abs(0.1 + 0.2 - 0.3) &lt; Number.EPSILON; // true
+
+// 2) Arredondar:
++(0.1 + 0.2).toFixed(10) === 0.3; // true
+
+// 3) Para dinheiro, trabalhe em centavos (inteiros):
+const precoCent = 1999;     // R$ 19,99
+const total = precoCent * 3; // 5997 (correto!)
+
+// 4) Use bibliotecas como decimal.js ou dinero.js
+//    para dinheiro em produção.</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> O objeto Math</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">math.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Constantes:
+Math.PI;         // 3.14159...
+Math.E;          // 2.71828...
+
+// Arredondamento:
+Math.round(1.5);   // 2
+Math.floor(1.9);   // 1 (para baixo)
+Math.ceil(1.1);    // 2 (para cima)
+Math.trunc(-1.9);  // -1 (remove decimais)
+
+// Mínimo, máximo:
+Math.min(1, 2, 3);     // 1
+Math.max(1, 2, 3);     // 3
+Math.min(...[1,2,3]);  // uso com spread
+
+// Potência e raiz:
+Math.pow(2, 10);   // 1024 (ou use 2 ** 10)
+Math.sqrt(16);     // 4
+Math.cbrt(27);     // 3
+
+// Absoluto e sinal:
+Math.abs(-5);      // 5
+Math.sign(-42);    // -1 (-1, 0 ou 1)
+
+// Logs e exponenciais:
+Math.log(Math.E);  // 1 (ln natural)
+Math.log2(8);      // 3
+Math.log10(1000);  // 3
+Math.exp(1);       // 2.718... (e^x)
+
+// Aleatório (0 inclusive, 1 exclusive):
+Math.random();                   // [0, 1)
+Math.floor(Math.random() * 10);  // inteiro [0, 9]
+
+// Trigonometria (radianos):
+Math.sin(Math.PI / 2);  // 1
+Math.cos(0);            // 1
+Math.atan2(1, 1);       // π/4 (ângulo a partir de x, y)</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> BigInt — inteiros arbitrariamente grandes</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">bigint.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Criação — literal com 'n' ou função:
+const gigante = 9007199254740993n;
+const outro = BigInt("123456789012345678901234567890");
+
+// Operações — só com outros BigInts:
+gigante + 1n;       // ✅ 9007199254740994n
+// gigante + 1;      // ❌ TypeError: não mistura com number
+
+// Conversão explícita:
+Number(gigante);    // 9007199254740992 (perde precisão!)
+BigInt(10);         // 10n
+
+// Comparação entre tipos funciona:
+10n === 10;         // false (tipos diferentes)
+10n == 10;          // true  (coerção)
+10n &lt; 11;           // true</code></pre>
+      </div>
+    </section>
+
+    <section class="chapter" id="datas">
+      <div class="chapter-number">Capítulo 07</div>
+      <h2 class="chapter-title">Datas</h2>
+      <p class="chapter-intro">A classe <code>Date</code> é uma das APIs mais antigas e criticadas de JavaScript — cheia de pegadinhas (meses começam em 0), meio imutável, meio não. A proposta <code>Temporal</code>, ainda em estágio 3, promete resolver tudo isso. Até lá, conhecer o <code>Date</code> é obrigatório.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Trabalhando com Date</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">datas.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Criação:
+const agora = new Date();                    // agora
+const epoca = new Date(0);                   // 1970-01-01T00:00:00Z
+const iso = new Date("2024-03-15T14:30:00Z");
+const especifica = new Date(2024, 2, 15);    // ⚠️ mês é 0-indexado! março = 2
+const comTudo = new Date(2024, 2, 15, 14, 30, 0, 0);
+
+// Timestamps (ms desde 1970):
+Date.now();                  // timestamp atual
+agora.getTime();             // timestamp desta Date
+new Date(1710504000000);     // a partir de timestamp
+
+// Getters — locais (do fuso do usuário):
+agora.getFullYear();         // 2025
+agora.getMonth();            // 0-11 (⚠️ zero-indexado)
+agora.getDate();             // 1-31
+agora.getDay();              // 0-6 (domingo = 0)
+agora.getHours();
+agora.getMinutes();
+agora.getSeconds();
+agora.getMilliseconds();
+
+// Versões UTC:
+agora.getUTCHours();
+agora.getUTCDate();
+
+// Setters (mutam a data!):
+const d = new Date();
+d.setDate(d.getDate() + 7); // adiciona 7 dias
+
+// Formatação:
+agora.toISOString();         // "2024-03-15T14:30:00.000Z"
+agora.toDateString();        // "Fri Mar 15 2024"
+agora.toLocaleDateString("pt-BR"); // "15/03/2024"
+agora.toLocaleString("pt-BR", {
+  dateStyle: "full",
+  timeStyle: "short",
+});</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">Para produção</div>
+        <div class="callout-body">Para manipulação complexa de datas, use <strong>date-fns</strong> (funções puras, tree-shakable) ou aguarde <strong>Temporal</strong>. Evite <code>moment.js</code> em código novo — está em modo "manutenção" há anos e é pesado.</div>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Intl — formatação internacional nativa</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">intl.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Intl é uma família de APIs para formatação sensível a locale.
+// Incluído em todo JS moderno — sem libs.
+
+// Datas:
+new Intl.DateTimeFormat("pt-BR", {
+  day: "2-digit",
+  month: "long",
+  year: "numeric",
+}).format(new Date());
+// "15 de março de 2024"
+
+// Números:
+new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+}).format(1234.5); // "R$ 1.234,50"
+
+new Intl.NumberFormat("pt-BR", {
+  style: "percent",
+}).format(0.42); // "42%"
+
+// Tempo relativo:
+const rtf = new Intl.RelativeTimeFormat("pt-BR", { numeric: "auto" });
+rtf.format(-1, "day");  // "ontem"
+rtf.format(2, "hour");  // "em 2 horas"
+
+// Plurais:
+const pr = new Intl.PluralRules("pt-BR");
+pr.select(1);  // "one"
+pr.select(3);  // "other"</code></pre>
+      </div>
+    </section>
+
+    <section class="chapter" id="arrays">
+      <div class="chapter-number">Capítulo 08</div>
+      <h2 class="chapter-title">Arrays</h2>
+      <p class="chapter-intro">Arrays em JavaScript são objetos especializados: chaves numéricas, uma propriedade <code>length</code> mágica, e uma coleção generosa de métodos. Dominar a API de arrays é dominar boa parte do que se faz no dia-a-dia — desde manipular listas até transformar dados de APIs.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Criação e acesso</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">arrays-basico.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Criação:
+const a = [1, 2, 3];
+const b = new Array(3);           // array de tamanho 3, vazio
+const c = Array.of(1, 2, 3);      // [1, 2, 3] — mais confiável
+const d = Array.from("abc");      // ["a", "b", "c"]
+const e = Array.from({ length: 5 }, (_, i) =&gt; i * 2); // [0, 2, 4, 6, 8]
+
+// Acesso:
+a[0];                // 1
+a.at(-1);            // 3 (índice negativo suportado)
+a.length;            // 3
+
+// Mutação:
+a[0] = 99;           // permitido
+a.length = 2;        // trunca! a = [99, 2]
+a[10] = "x";         // cria buracos (sparse array)
+
+// Destructuring:
+const [primeiro, segundo, ...resto] = [1, 2, 3, 4, 5];
+// primeiro = 1, segundo = 2, resto = [3, 4, 5]
+
+// Com defaults e swap:
+const [a1 = 10, b1 = 20] = [];        // a1=10, b1=20
+let x = 1, y = 2;
+[x, y] = [y, x];                      // troca: x=2, y=1
+
+// Spread para copiar:
+const copia = [...a];                 // shallow copy
+const juntos = [...a, ...c];          // concatenação</code></pre>
+      </div>
+
+      <h3 class="topic" id="metodos-array"><span class="hash">#</span> Métodos essenciais — transformação</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">transformacao.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>const nums = [1, 2, 3, 4, 5];
+
+// map — transforma cada elemento:
+nums.map(n =&gt; n * 2);           // [2, 4, 6, 8, 10]
+nums.map((n, i) =&gt; ({ i, n })); // com índice
+
+// filter — mantém os que passam no teste:
+nums.filter(n =&gt; n % 2 === 0);  // [2, 4]
+
+// reduce — acumula em um valor:
+nums.reduce((acc, n) =&gt; acc + n, 0); // 15 (soma)
+nums.reduce((max, n) =&gt; n &gt; max ? n : max); // 5
+
+// reduceRight — da direita para a esquerda:
+["a","b","c"].reduceRight((acc, v) =&gt; acc + v); // "cba"
+
+// flat — achata arrays aninhados:
+[1, [2, [3, [4]]]].flat();         // [1, 2, [3, [4]]]
+[1, [2, [3, [4]]]].flat(Infinity); // [1, 2, 3, 4]
+
+// flatMap — map + flat(1):
+["a b", "c d"].flatMap(s =&gt; s.split(" ")); // ["a", "b", "c", "d"]</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Métodos essenciais — busca</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">busca.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>const users = [
+  { id: 1, nome: "Ana" },
+  { id: 2, nome: "Bruno" },
+  { id: 3, nome: "Carla" },
+];
+
+// find — primeiro que passa no teste (ou undefined):
+users.find(u =&gt; u.id === 2);      // { id: 2, nome: "Bruno" }
+
+// findIndex — índice do primeiro que passa (ou -1):
+users.findIndex(u =&gt; u.id === 2); // 1
+
+// findLast / findLastIndex — o último que passa:
+users.findLast(u =&gt; u.id &lt; 3);    // { id: 2, nome: "Bruno" }
+
+// includes — testa igualdade (===):
+[1, 2, 3].includes(2);              // true
+[NaN].includes(NaN);                // true (!) diferente de indexOf
+
+// indexOf / lastIndexOf — índice de igualdade estrita:
+[1, 2, 3, 2].indexOf(2);            // 1
+[1, 2, 3, 2].lastIndexOf(2);        // 3
+
+// some — algum elemento passa?
+[1, 2, 3].some(n =&gt; n &gt; 2);         // true
+
+// every — todos passam?
+[1, 2, 3].every(n =&gt; n &gt; 0);        // true</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Métodos essenciais — ordem e mutação</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">ordem.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// sort — MUTA o array. Sem comparator, ordena como STRING!
+[10, 2, 30, 4].sort();                // [10, 2, 30, 4] → ["10","2","30","4"] — ERRADO
+[10, 2, 30, 4].sort((a, b) =&gt; a - b); // [2, 4, 10, 30] ✅ crescente
+[10, 2, 30, 4].sort((a, b) =&gt; b - a); // [30, 10, 4, 2] ✅ decrescente
+
+// Ordenar objetos:
+users.sort((a, b) =&gt; a.nome.localeCompare(b.nome));
+
+// reverse — MUTA:
+[1, 2, 3].reverse(); // [3, 2, 1]
+
+// MÉTODOS IMUTÁVEIS (ES2023) — retornam nova cópia:
+[3, 1, 2].toSorted();       // [1, 2, 3] — original intacto
+[1, 2, 3].toReversed();     // [3, 2, 1]
+[1, 2, 3].toSpliced(1, 1);  // [1, 3]
+[1, 2, 3].with(1, 99);      // [1, 99, 3] (substitui índice 1)
+
+// push / pop — no FIM:
+const arr = [1, 2];
+arr.push(3);       // [1, 2, 3] — retorna novo length
+arr.pop();         // 3 — retorna removido
+
+// shift / unshift — no INÍCIO:
+arr.unshift(0);    // [0, 1, 2]
+arr.shift();       // 0 — removido
+
+// splice — remove/insere no meio (MUTA):
+const lista = ["a", "b", "c", "d"];
+lista.splice(1, 2);           // remove 2 desde índice 1 → ["a", "d"]
+lista.splice(1, 0, "x", "y"); // insere sem remover → ["a", "x", "y", "d"]
+
+// slice — retorna parte (NÃO muta):
+["a","b","c","d"].slice(1, 3); // ["b", "c"]
+["a","b","c","d"].slice(-2);   // ["c", "d"]
+
+// concat — junta (NÃO muta):
+[1, 2].concat([3, 4], [5]);    // [1, 2, 3, 4, 5]</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Iteração</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">iteracao.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>const arr = ["a", "b", "c"];
+
+// forEach — apenas executa, não retorna:
+arr.forEach((v, i) =&gt; console.log(i, v));
+
+// for...of — para quando você precisa de break/continue:
+for (const v of arr) {
+  if (v === "b") continue;
+  console.log(v);
+}
+
+// entries, keys, values — retornam iteradores:
+for (const [i, v] of arr.entries()) console.log(i, v);
+for (const i of arr.keys()) console.log(i);
+for (const v of arr.values()) console.log(v);
+
+// Array.from com mapper (útil para criar sequências):
+Array.from({ length: 5 }, (_, i) =&gt; i);    // [0, 1, 2, 3, 4]
+Array.from({ length: 3 }, () =&gt; Math.random());
+
+// Group (ES2024) — agrupa em objeto ou Map:
+const people = [
+  { nome: "Ana", idade: 20 },
+  { nome: "Bruno", idade: 20 },
+  { nome: "Carla", idade: 30 },
+];
+Object.groupBy(people, p =&gt; p.idade);
+// { "20": [Ana, Bruno], "30": [Carla] }</code></pre>
+      </div>
+
+      <div class="callout note">
+        <div class="callout-label">Métodos imutáveis vs mutáveis</div>
+        <div class="callout-body">Em código moderno, prefira os métodos que <strong>retornam novo array</strong> (<code>map</code>, <code>filter</code>, <code>slice</code>, <code>toSorted</code>, <code>toReversed</code>, <code>with</code>). Eles são mais previsíveis, combinam bem e evitam bugs de estado compartilhado. Use mutadores (<code>push</code>, <code>sort</code>, <code>splice</code>) conscientemente, não por reflexo.</div>
+      </div>
+    </section>
+
+    <section class="chapter" id="objetos">
+      <div class="chapter-number">Capítulo 09</div>
+      <h2 class="chapter-title">Objetos</h2>
+      <p class="chapter-intro">Em JavaScript, quase tudo é um objeto — arrays, funções, classes, até algumas formas de primitivos se "embrulham" em objetos temporariamente. Dominar objetos significa dominar a linguagem. Esta seção cobre criação, acesso, métodos estáticos e os recursos modernos que tornam trabalhar com objetos algo fluente.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Criação e acesso</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">objetos.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Literal:
+const pessoa = {
+  nome: "Ana",
+  idade: 30,
+  "chave com espaço": true,
+};
+
+// Acesso:
+pessoa.nome;                    // "Ana"
+pessoa["idade"];                // 30
+pessoa["chave com espaço"];     // true
+
+// Shorthand (chave igual ao nome da variável):
+const nome = "Bruno";
+const idade = 25;
+const novo = { nome, idade };   // { nome: "Bruno", idade: 25 }
+
+// Computed property names (chaves dinâmicas):
+const campo = "email";
+const usuario = {
+  nome: "Ana",
+  [campo]: "ana@x.com",         // key = "email"
+  [`${campo}_backup`]: "...",   // key = "email_backup"
+};
+
+// Métodos (shorthand):
+const calc = {
+  somar(a, b) { return a + b; },        // equivalente a: somar: function(a, b) {...}
+  dobrar: x =&gt; x * 2,                  // arrow — cuidado com 'this'!
+};</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Destructuring e spread</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">destructuring.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>const user = { nome: "Ana", idade: 30, email: "a@x.com" };
+
+// Destructuring básico:
+const { nome, idade } = user;
+
+// Renomear:
+const { nome: n, idade: i } = user;
+
+// Default:
+const { sobrenome = "sem sobrenome" } = user;
+
+// Rest (o que sobrou):
+const { nome: primeiroNome, ...outros } = user;
+// outros = { idade: 30, email: "a@x.com" }
+
+// Aninhado:
+const resposta = { dados: { user: { nome: "Ana" } } };
+const { dados: { user: { nome: n2 } } } = resposta;
+
+// Em parâmetros de função:
+function saudar({ nome, idade = 0 } = {}) {
+  return `${nome} (${idade})`;
+}
+
+// Spread — cópia rasa e merge:
+const clone = { ...user };
+const atualizado = { ...user, idade: 31 }; // override
+
+// Ordem importa — a última chave vence:
+const merged = { a: 1, b: 2, ...{ b: 99, c: 3 } }; // { a:1, b:99, c:3 }</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Métodos estáticos de Object</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">object-static.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>const user = { nome: "Ana", idade: 30 };
+
+// Introspecção:
+Object.keys(user);           // ["nome", "idade"]
+Object.values(user);         // ["Ana", 30]
+Object.entries(user);        // [["nome","Ana"], ["idade",30]]
+
+// Reconstrução a partir de entries:
+Object.fromEntries([["a", 1], ["b", 2]]); // { a: 1, b: 2 }
+
+// Útil para transformar objetos:
+const uppercased = Object.fromEntries(
+  Object.entries(user).map(([k, v]) =&gt; [k.toUpperCase(), v])
+);
+
+// Merge (atualmente prefere-se spread, mas Object.assign ainda aparece):
+Object.assign({}, base, extra);  // equivalente a { ...base, ...extra }
+
+// Congelamento:
+const imutavel = Object.freeze({ x: 1 });
+// imutavel.x = 2; // erro em strict (silenciosamente ignorado fora)
+
+// Checagens:
+Object.isFrozen(imutavel);      // true
+Object.hasOwn(user, "nome");    // true (moderno, substitui hasOwnProperty)
+
+// Comparação (rasa):
+Object.is(NaN, NaN);            // true (diferente de ===)
+Object.is(-0, 0);               // false
+
+// Prototype:
+Object.getPrototypeOf(user);    // Object.prototype
+Object.setPrototypeOf(user, null); // muda (evite em runtime!)
+Object.create(proto, propsObj); // cria com prototype específico</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Property descriptors</h3>
+      <p>Cada propriedade de um objeto tem metadados: se é gravável, enumerável, configurável. Na maioria das vezes você não mexe nisso — mas conhecer é útil para entender APIs e frameworks.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">descriptors.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>const obj = { x: 10 };
+
+// Ver o descriptor:
+Object.getOwnPropertyDescriptor(obj, "x");
+// { value: 10, writable: true, enumerable: true, configurable: true }
+
+// Definir com controle fino:
+Object.defineProperty(obj, "y", {
+  value: 20,
+  writable: false,      // não pode ser reatribuída
+  enumerable: false,    // não aparece em for...in, Object.keys
+  configurable: false,  // não pode ser deletada ou redefinida
+});
+
+// Getter/setter via descriptor:
+Object.defineProperty(obj, "dobrado", {
+  get() { return this.x * 2; },
+  enumerable: true,
+});
+obj.dobrado; // 20</code></pre>
+      </div>
+    </section>
+
+    <section class="chapter" id="map-set">
+      <div class="chapter-number">Capítulo 10</div>
+      <h2 class="chapter-title">Map, Set e variantes <em>Weak</em></h2>
+      <p class="chapter-intro">Objetos comuns servem como dicionários desde sempre — mas têm limitações (chaves só strings/símbolos, prototype herdado, ordem de inserção não-garantida em casos extremos). ES2015 introduziu estruturas dedicadas: <code>Map</code>, <code>Set</code>, <code>WeakMap</code>, <code>WeakSet</code>. Cada uma resolve um problema específico.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Map — dicionário de qualquer coisa para qualquer coisa</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">map.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>const m = new Map();
+
+// Set / get:
+m.set("chave", "valor");
+m.set(42, "numérico");
+m.set(true, "booleano");
+const objChave = { id: 1 };
+m.set(objChave, "usando objeto como chave!");
+
+m.get("chave");       // "valor"
+m.get(objChave);      // "usando objeto como chave!"
+m.has("chave");       // true
+m.size;               // 4
+m.delete("chave");
+m.clear();
+
+// Inicialização com entries:
+const m2 = new Map([
+  ["nome", "Ana"],
+  ["idade", 30],
+]);
+
+// Iteração (mantém ordem de inserção):
+for (const [k, v] of m2) console.log(k, v);
+for (const k of m2.keys()) console.log(k);
+for (const v of m2.values()) console.log(v);
+m2.forEach((v, k) =&gt; console.log(k, v));
+
+// Conversão:
+Object.fromEntries(m2);    // { nome: "Ana", idade: 30 }
+new Map(Object.entries({a:1, b:2}));</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">Map vs Object</div>
+        <div class="callout-body">Use <code>Map</code> quando: as chaves não são strings/símbolos; você precisa iterar em ordem garantida; você muda o conjunto de chaves frequentemente; o tamanho importa (<code>.size</code> é O(1)). Use objeto comum para estruturas com chaves fixas conhecidas na compilação — é mais leve e tem sintaxe melhor.</div>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Set — conjunto de valores únicos</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">set.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>const s = new Set([1, 2, 3, 2, 1]); // duplicatas ignoradas
+console.log(s.size);                 // 3
+
+s.add(4);
+s.has(2);          // true
+s.delete(1);
+s.clear();
+
+// Idioma comum — remover duplicatas:
+const unicos = [...new Set([1, 2, 2, 3, 3, 3])]; // [1, 2, 3]
+
+// Iteração:
+for (const v of s) console.log(v);
+
+// Operações de conjunto (ES2025, amplamente suportadas):
+const a = new Set([1, 2, 3]);
+const b = new Set([2, 3, 4]);
+
+a.union(b);               // Set {1, 2, 3, 4}
+a.intersection(b);        // Set {2, 3}
+a.difference(b);          // Set {1}
+a.symmetricDifference(b); // Set {1, 4}
+a.isSubsetOf(b);
+a.isSupersetOf(b);
+a.isDisjointFrom(b);</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> WeakMap e WeakSet</h3>
+      <p>Versões "fracas" cujos valores (em WeakMap) ou membros (em WeakSet) <strong>não impedem o garbage collector</strong> de limpá-los quando nenhuma outra referência existe. Chaves precisam ser objetos. Sem <code>.size</code>, sem iteração — o GC pode remover qualquer coisa a qualquer momento.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">weak.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// WeakMap — útil para associar dados privados a objetos:
+const dadosPrivados = new WeakMap();
+
+class Usuario {
+  constructor(nome) {
+    dadosPrivados.set(this, { senha: "secreta" });
+    this.nome = nome;
+  }
+  verificar(senha) {
+    return dadosPrivados.get(this).senha === senha;
+  }
+}
+
+let u = new Usuario("Ana");
+u.verificar("secreta");  // true
+
+// Quando u sai de escopo, o dado privado é coletado — sem vazamento.
+u = null;
+
+// WeakSet — rastreia objetos sem segurá-los:
+const visitados = new WeakSet();
+function visitar(obj) {
+  if (visitados.has(obj)) return;
+  visitados.add(obj);
+  // ...
+}</code></pre>
+      </div>
+    </section>
+
+    <section class="chapter" id="funcoes">
+      <div class="chapter-number">Capítulo 11</div>
+      <h2 class="chapter-title">Funções em <em>profundidade</em></h2>
+      <p class="chapter-intro">Funções em JavaScript são cidadãs de primeira classe: podem ser atribuídas a variáveis, passadas como argumento, retornadas de outras funções, e guardam estado através de closures. Elas são o bloco de construção mais fundamental da linguagem — mais do que objetos, mais do que classes.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Formas de declaração</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">formas.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// 1) Function declaration (içada por completo):
+function somar(a, b) {
+  return a + b;
+}
+
+// 2) Function expression (não içada):
+const subtrair = function(a, b) {
+  return a - b;
+};
+
+// 3) Named function expression (útil para recursão/debug):
+const fatorial = function fact(n) {
+  return n &lt;= 1 ? 1 : n * fact(n - 1);
+};
+
+// 4) Arrow function (sem 'this' próprio, sem 'arguments', sem 'new'):
+const dobrar = n =&gt; n * 2;
+const somarArrow = (a, b) =&gt; a + b;
+const criar = () =&gt; ({ x: 10 }); // parênteses para retornar objeto literal
+
+// 5) Método em objeto (shorthand):
+const obj = {
+  saudar(nome) { return `Olá, ${nome}`; },
+};
+
+// 6) Generator function (cap. dedicado):
+function* contar() { yield 1; yield 2; yield 3; }
+
+// 7) Async function:
+async function carregar() { return await fetch("/api"); }</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Parâmetros modernos</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">parametros.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Defaults:
+function saudar(nome = "visitante", saudacao = "Olá") {
+  return `${saudacao}, ${nome}!`;
+}
+saudar();                // "Olá, visitante!"
+saudar("Ana");           // "Olá, Ana!"
+saudar("Ana", "Oi");     // "Oi, Ana!"
+saudar(undefined, "Oi"); // "Oi, visitante!" — default só dispara em undefined
+
+// Rest — coleta argumentos:
+function somarTodos(...nums) {
+  return nums.reduce((a, b) =&gt; a + b, 0);
+}
+somarTodos(1, 2, 3, 4); // 10
+
+// Rest + args nomeados:
+function log(prefixo, ...itens) {
+  itens.forEach(i =&gt; console.log(prefixo, i));
+}
+
+// Destructuring em parâmetros:
+function criarUsuario({ nome, idade = 0, ...outros } = {}) {
+  return { nome, idade, extras: outros };
+}
+criarUsuario({ nome: "Ana", cidade: "SP" });
+
+// 'arguments' (array-like) — só em funções comuns, NÃO em arrow:
+function legado() {
+  console.log(arguments);       // objeto parecido com array
+  return Array.from(arguments); // convertido em array real
+}
+// Em código moderno, prefira ...rest a 'arguments'.</code></pre>
+      </div>
+
+      <h3 class="topic" id="closures"><span class="hash">#</span> Closures</h3>
+      <p>Uma closure é uma função que "se lembra" do escopo onde foi criada, mesmo quando executada fora dele. Esse é possivelmente o conceito mais poderoso de JavaScript — e o alicerce de padrões como hooks em React, factories, módulos e callbacks.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">closures.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Exemplo clássico — contador com estado privado:
+function criarContador() {
+  let count = 0;                 // variável "capturada" pela closure
+  return {
+    incrementar() { count++; },
+    valor() { return count; },
+  };
+}
+
+const c = criarContador();
+c.incrementar();
+c.incrementar();
+c.valor();        // 2
+// count é inacessível de fora — está encapsulado.
+
+// Factory de funções:
+function multiplicadorPor(fator) {
+  return (n) =&gt; n * fator;
+}
+const dobrar = multiplicadorPor(2);
+const triplicar = multiplicadorPor(3);
+dobrar(5);      // 10
+triplicar(5);   // 15
+
+// Memoization — cache em closure:
+function memoize(fn) {
+  const cache = new Map();
+  return function(...args) {
+    const chave = JSON.stringify(args);
+    if (!cache.has(chave)) cache.set(chave, fn.apply(this, args));
+    return cache.get(chave);
+  };
+}
+
+// Armadilha clássica — var em loop:
+for (var i = 0; i &lt; 3; i++) {
+  setTimeout(() =&gt; console.log(i), 0); // 3, 3, 3
+}
+// Com let, cada iteração cria nova closure:
+for (let i = 0; i &lt; 3; i++) {
+  setTimeout(() =&gt; console.log(i), 0); // 0, 1, 2
+}</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Funções de ordem superior</h3>
+      <p>Funções que recebem outras funções, ou retornam funções. Essa é a base do paradigma funcional em JS.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">higher-order.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Composição — encadeia funções:
+const compor = (...fns) =&gt; x =&gt; fns.reduceRight((v, f) =&gt; f(v), x);
+const pipe = (...fns) =&gt; x =&gt; fns.reduce((v, f) =&gt; f(v), x);
+
+const somarDois = n =&gt; n + 2;
+const dobrar = n =&gt; n * 2;
+const quadrado = n =&gt; n ** 2;
+
+const processo = pipe(somarDois, dobrar, quadrado);
+processo(3); // ((3+2)*2)^2 = 100
+
+// Currying — transforma f(a,b,c) em f(a)(b)(c):
+const curry = (fn) =&gt; {
+  return function curried(...args) {
+    if (args.length &gt;= fn.length) return fn(...args);
+    return (...next) =&gt; curried(...args, ...next);
+  };
+};
+
+const somar = (a, b, c) =&gt; a + b + c;
+const somarCurry = curry(somar);
+somarCurry(1)(2)(3);     // 6
+somarCurry(1, 2)(3);     // 6
+somarCurry(1)(2, 3);     // 6
+
+// Debounce — adia execução:
+function debounce(fn, ms) {
+  let timer;
+  return (...args) =&gt; {
+    clearTimeout(timer);
+    timer = setTimeout(() =&gt; fn(...args), ms);
+  };
+}
+
+// Throttle — limita frequência:
+function throttle(fn, ms) {
+  let ultimo = 0;
+  return (...args) =&gt; {
+    const agora = Date.now();
+    if (agora - ultimo &gt;= ms) {
+      ultimo = agora;
+      fn(...args);
+    }
+  };
+}</code></pre>
+      </div>
+    </section>
+
+    <section class="chapter" id="this">
+      <div class="chapter-number">Capítulo 12</div>
+      <h2 class="chapter-title">O <em>this</em> em profundidade</h2>
+      <p class="chapter-intro">Nenhum tópico causou mais confusão na história de JavaScript do que o <code>this</code>. Em outras linguagens, <code>this</code> sempre se refere à "instância atual". Em JavaScript, o valor de <code>this</code> depende <strong>de como a função foi chamada</strong>, não de onde foi definida. Dominar isso é separador de águas.</p>
+
+      <h3 class="topic"><span class="hash">#</span> As cinco regras do this</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">this-regras.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// REGRA 1 — Chamada de método: this é o objeto antes do ponto.
+const user = {
+  nome: "Ana",
+  falar() { return this.nome; },
+};
+user.falar();              // "Ana" — this = user
+
+// REGRA 2 — Chamada standalone: this é undefined (strict) ou global (não-strict).
+const f = user.falar;
+f();                       // undefined (ou "" no modo não-strict)
+
+// REGRA 3 — new: this é o objeto novo criado.
+function Produto(nome) {
+  this.nome = nome;         // this = objeto novo
+}
+const p = new Produto("Livro");
+
+// REGRA 4 — call/apply/bind: this é o primeiro argumento.
+function falar() { return this.nome; }
+falar.call({ nome: "Bruno" });  // "Bruno"
+falar.apply({ nome: "Carla" }); // "Carla"
+const ligado = falar.bind({ nome: "Dora" });
+ligado();                       // "Dora"
+
+// REGRA 5 — Arrow functions: this vem do escopo léxico de ONDE foi definida.
+const obj = {
+  nome: "Ana",
+  falarArrow: () =&gt; this.nome,   // this NÃO é obj — é o escopo de fora!
+  esperar() {
+    setTimeout(() =&gt; console.log(this.nome), 100); // ✅ this é obj
+  },
+  esperarRuim() {
+    setTimeout(function() { console.log(this.nome); }, 100); // ❌ this não é obj
+  },
+};</code></pre>
+      </div>
+
+      <h3 class="topic" id="call-apply-bind"><span class="hash">#</span> call, apply e bind</h3>
+      <p>Três métodos que todas as funções herdam, para controlar manualmente o <code>this</code>.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">call-apply-bind.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>function apresentar(saudacao, pontuacao) {
+  return `${saudacao}, ${this.nome}${pontuacao}`;
+}
+
+const ana = { nome: "Ana" };
+
+// call — argumentos separados:
+apresentar.call(ana, "Olá", "!");     // "Olá, Ana!"
+
+// apply — argumentos em array:
+apresentar.apply(ana, ["Oi", "."]);   // "Oi, Ana."
+
+// bind — retorna NOVA função ligada ao this:
+const cumprimentar = apresentar.bind(ana, "Hey");
+cumprimentar("?");                    // "Hey, Ana?"
+
+// Aplicações úteis:
+// 1) Emprestar método de array:
+const aLike = { 0: "a", 1: "b", length: 2 };
+const arr = Array.prototype.slice.call(aLike); // ["a", "b"]
+
+// 2) Encontrar máximo em array:
+Math.max.apply(null, [1, 2, 3]);      // ou Math.max(...[1,2,3])
+
+// 3) "Congelar" this em event handler:
+class Componente {
+  constructor() {
+    this.nome = "Botão";
+    this.handleClick = this.handleClick.bind(this); // clássico
+  }
+  handleClick() { console.log(this.nome); }
+}</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">Arrow function no salvamento</div>
+        <div class="callout-body">Grande parte das "correções" com <code>.bind(this)</code> em código legado foram substituídas por arrow functions, que capturam o <code>this</code> léxicamente. Em código moderno, defina métodos de classe como arrow functions (ou use <code>.bind</code> no construtor) quando quiser garantir o <code>this</code>.</div>
+      </div>
+    </section>
+
+    <section class="chapter" id="classes">
+      <div class="chapter-number">Capítulo 13</div>
+      <h2 class="chapter-title">Classes <em>modernas</em></h2>
+      <p class="chapter-intro">Classes, introduzidas no ES2015, são açúcar sintático sobre o sistema de prototypes (próximo capítulo) — mas um açúcar muito conveniente. Com os recentes <em>private fields</em> e <em>static blocks</em>, a sintaxe se tornou poderosa o suficiente para a maioria dos casos de OOP.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Anatomia de uma classe</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">classes.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>class Pessoa {
+  // Campos públicos (ES2022):
+  nome;
+  idade = 0;
+
+  // Campos privados (# de verdade, runtime):
+  #cpf;
+
+  // Static — pertence à classe, não à instância:
+  static especie = "Homo sapiens";
+  static criar(nome) { return new Pessoa(nome, 0); }
+
+  // Static block (ES2022) — inicialização complexa:
+  static {
+    console.log(`Classe ${this.name} carregada`);
+  }
+
+  // Construtor:
+  constructor(nome, idade, cpf) {
+    this.nome = nome;
+    this.idade = idade;
+    this.#cpf = cpf;
+  }
+
+  // Método:
+  apresentar() {
+    return `${this.nome}, ${this.idade} anos`;
+  }
+
+  // Getter:
+  get ehAdulto() {
+    return this.idade &gt;= 18;
+  }
+
+  // Setter:
+  set novaIdade(valor) {
+    if (valor &lt; 0) throw new Error("inválido");
+    this.idade = valor;
+  }
+
+  // Método privado:
+  #validar() { /* ... */ }
+}
+
+const ana = new Pessoa("Ana", 30, "000");
+ana.apresentar();       // "Ana, 30 anos"
+ana.ehAdulto;           // true (get, sem parênteses)
+ana.novaIdade = 31;
+Pessoa.especie;         // "Homo sapiens"
+// ana.#cpf;            // ❌ SyntaxError — privado de verdade</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Herança</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">heranca.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>class Animal {
+  constructor(nome) {
+    this.nome = nome;
+  }
+  falar() {
+    return `${this.nome} faz algum som`;
+  }
+}
+
+class Cachorro extends Animal {
+  constructor(nome, raca) {
+    super(nome);            // chama o constructor do pai
+    this.raca = raca;
+  }
+  falar() {                 // override
+    return `${this.nome} late`;
+  }
+  falarComoPai() {
+    return super.falar();   // chama método do pai
+  }
+}
+
+const rex = new Cachorro("Rex", "Lab");
+rex.falar();                // "Rex late"
+rex.falarComoPai();         // "Rex faz algum som"
+rex instanceof Cachorro;    // true
+rex instanceof Animal;      // true
+
+// extends também funciona com built-ins:
+class MinhaArray extends Array {
+  primeiro() { return this[0]; }
+  ultimo() { return this.at(-1); }
+}
+const arr = new MinhaArray(1, 2, 3);
+arr.primeiro(); // 1</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Mixins e composição</h3>
+      <p>JavaScript não tem herança múltipla, mas permite "mixins" — funções que adicionam capabilidades a classes. A comunidade moderna geralmente prefere composição sobre herança.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">mixins.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Mixin — função que recebe uma base e retorna classe estendida:
+const Serializavel = (Base) =&gt; class extends Base {
+  toJSON() { return JSON.stringify(this); }
+  serializar() { return this.toJSON(); }
+};
+
+const Logavel = (Base) =&gt; class extends Base {
+  log() { console.log(this); }
+};
+
+class User { constructor(nome) { this.nome = nome; } }
+
+class UserCompleto extends Serializavel(Logavel(User)) {}
+
+const u = new UserCompleto("Ana");
+u.log();
+u.toJSON(); // '{"nome":"Ana"}'</code></pre>
+      </div>
+    </section>
+
+    <section class="chapter" id="prototypes">
+      <div class="chapter-number">Capítulo 14</div>
+      <h2 class="chapter-title">Prototypes</h2>
+      <p class="chapter-intro">Por baixo de <code>class</code>, JavaScript usa um modelo de herança por <strong>prototype</strong> — uma cadeia de objetos onde cada um aponta para o seu "pai", e a busca por propriedades sobe essa cadeia. Entender prototypes é o que transforma compreensão sintática em compreensão profunda da linguagem.</p>
+
+      <h3 class="topic"><span class="hash">#</span> A cadeia de prototypes</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">prototypes.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Todo objeto tem um "prototype interno" (exposto como [[Prototype]]).
+// Na API, acessamos via:
+
+const arr = [1, 2, 3];
+Object.getPrototypeOf(arr);              // Array.prototype
+Object.getPrototypeOf(Array.prototype);  // Object.prototype
+Object.getPrototypeOf(Object.prototype); // null — topo da cadeia
+
+// Quando você acessa uma propriedade que não existe no objeto,
+// JS SOBE a cadeia procurando:
+arr.map;                  // não está em arr, está em Array.prototype ✓
+arr.toString;             // em Object.prototype ✓
+arr.qualquerCoisa;        // undefined — não encontrada
+
+// Criação com prototype específico:
+const animal = {
+  respirar() { return "inspira, expira"; },
+};
+
+const cao = Object.create(animal);  // cao.__proto__ = animal
+cao.latir = function() { return "au!"; };
+
+cao.respirar();   // "inspira, expira" — herdado via prototype
+cao.latir();      // "au!"
+Object.getPrototypeOf(cao) === animal; // true</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> prototype vs __proto__ vs [[Prototype]]</h3>
+      <p>Três coisas diferentes com nomes parecidos — fonte de confusão infinita.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">vs.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// [[Prototype]] — slot interno, referência ao prototype.
+// Acessado via Object.getPrototypeOf / setPrototypeOf.
+
+// __proto__ — getter/setter legado (não recomendado, mas funciona).
+
+// .prototype — propriedade SÓ DE FUNÇÕES.
+// É o objeto que será o [[Prototype]] de instâncias criadas com 'new'.
+
+function Pessoa(nome) {
+  this.nome = nome;
+}
+Pessoa.prototype.falar = function() {
+  return `Eu sou ${this.nome}`;
+};
+
+const ana = new Pessoa("Ana");
+
+Object.getPrototypeOf(ana) === Pessoa.prototype; // true
+ana.falar();            // "Eu sou Ana"
+
+// Classe é só açúcar sobre isso:
+class Pessoa2 {
+  constructor(nome) { this.nome = nome; }
+  falar() { return `Eu sou ${this.nome}`; }
+}
+// Equivalente ao modelo acima.</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Uso prático — monkey patching e herança manual</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">manual.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Adicionar método a tipo built-in (geralmente má ideia, mas possível):
+Array.prototype.primeiro = function() { return this[0]; };
+[1, 2, 3].primeiro(); // 1
+// ⚠️ Evite em código compartilhado — pode conflitar com updates futuros.
+
+// Herança manual (pré-class):
+function Animal(nome) { this.nome = nome; }
+Animal.prototype.respirar = function() { return "..."; };
+
+function Cachorro(nome, raca) {
+  Animal.call(this, nome);   // equivalente a super()
+  this.raca = raca;
+}
+Cachorro.prototype = Object.create(Animal.prototype);
+Cachorro.prototype.constructor = Cachorro;
+Cachorro.prototype.latir = function() { return "au"; };
+
+const rex = new Cachorro("Rex", "Lab");
+rex.respirar(); // herdado
+rex.latir();
+
+// hasOwn — verifica se a propriedade é do próprio objeto
+// (não herdada pelo prototype):
+Object.hasOwn(rex, "nome");     // true
+Object.hasOwn(rex, "respirar"); // false (está no prototype)</code></pre>
+      </div>
+    </section>
+
+    <section class="chapter" id="event-loop">
+      <div class="chapter-number">Capítulo 15</div>
+      <h2 class="chapter-title">Event loop e o <em>modelo assíncrono</em></h2>
+      <p class="chapter-intro">JavaScript é single-threaded — roda uma coisa de cada vez. Como, então, ele consegue lidar com requisições simultâneas, timers, eventos? A resposta é o <strong>event loop</strong>, um mecanismo elegante que separa o que roda <em>agora</em> do que roda <em>depois</em>. Este é o capítulo que desmistifica assíncrono.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Como o event loop funciona</h3>
+      <p>Imagine três estruturas principais:</p>
+      <ul class="bullets">
+        <li><strong>Call stack</strong> — onde as funções em execução vivem. Empilham quando chamadas, desempilham quando retornam.</li>
+        <li><strong>Task queue (macrotasks)</strong> — fila de coisas agendadas: <code>setTimeout</code>, eventos de I/O, mensagens.</li>
+        <li><strong>Microtask queue</strong> — fila prioritária: <code>Promise.then</code>, <code>queueMicrotask</code>, <code>MutationObserver</code>.</li>
+      </ul>
+      <p>O event loop roda num ciclo: (1) executa até esvaziar a call stack, (2) drena toda a microtask queue, (3) pega uma macrotask, volta ao passo 1.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">ordem.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>console.log("1 — síncrono");
+
+setTimeout(() =&gt; console.log("4 — macrotask"), 0);
+
+Promise.resolve().then(() =&gt; console.log("3 — microtask"));
+
+console.log("2 — síncrono");
+
+// Saída:
+// 1 — síncrono
+// 2 — síncrono
+// 3 — microtask   ← antes do setTimeout!
+// 4 — macrotask</code></pre>
+      </div>
+
+      <div class="callout note">
+        <div class="callout-label">Microtasks primeiro</div>
+        <div class="callout-body">Microtasks são executadas <strong>antes</strong> da próxima macrotask — mesmo que o <code>setTimeout</code> esteja com 0ms. Isso é a razão pela qual <code>await</code>/<code>then</code> "encadeiam rápido" e o UI não fica travado por promises.</div>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> setTimeout, setInterval, queueMicrotask</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">timers.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// setTimeout — executa uma vez, após ms:
+const id = setTimeout(() =&gt; console.log("depois"), 1000);
+clearTimeout(id); // cancela
+
+// setInterval — executa repetidamente:
+const intId = setInterval(() =&gt; console.log("tick"), 1000);
+clearInterval(intId);
+
+// Cuidado — "0ms" não é zero. O mínimo prático é 4ms em navegadores,
+// e o callback só roda quando a stack esvaziar.
+setTimeout(() =&gt; console.log("imediato"), 0);
+for (let i = 0; i &lt; 1e9; i++) {} // bloqueia
+// "imediato" imprime SÓ depois do loop.
+
+// queueMicrotask — agenda microtask:
+queueMicrotask(() =&gt; console.log("microtask"));
+
+// requestAnimationFrame — sincroniza com o próximo frame de renderização (browser):
+requestAnimationFrame(() =&gt; {
+  // executa antes do próximo paint (~16ms a 60fps)
+});</code></pre>
+      </div>
+    </section>
+
+    <section class="chapter" id="promises">
+      <div class="chapter-number">Capítulo 16</div>
+      <h2 class="chapter-title">Promises</h2>
+      <p class="chapter-intro">Uma promise representa um valor que pode ainda não existir — o resultado futuro de uma operação assíncrona. Ela substitui callbacks aninhados ("callback hell") por uma API encadeável e componível, que serviu de base para o <code>async/await</code>.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Estados e criação</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">promises.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Uma promise está em 1 de 3 estados:
+// - pending  (pendente)
+// - fulfilled (resolvida)  — tem um valor
+// - rejected  (rejeitada)  — tem um motivo
+
+// Criação a partir de um executor:
+const p = new Promise((resolve, reject) =&gt; {
+  setTimeout(() =&gt; {
+    if (Math.random() &gt; 0.5) resolve("deu certo");
+    else reject(new Error("falhou"));
+  }, 1000);
+});
+
+// Consumo:
+p.then(valor =&gt; console.log("ok:", valor))
+ .catch(erro =&gt; console.log("erro:", erro.message))
+ .finally(() =&gt; console.log("limpa"));
+
+// Promises "já resolvidas" — úteis em código que precisa retornar promise:
+Promise.resolve(42);
+Promise.reject(new Error("erro"));</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Encadeamento e transformação</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">encadeamento.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>fetch("/api/user")
+  .then(res =&gt; res.json())          // cada then pode retornar nova promise
+  .then(user =&gt; fetch(`/api/posts?user=${user.id}`))
+  .then(res =&gt; res.json())
+  .then(posts =&gt; console.log(posts))
+  .catch(erro =&gt; console.error(erro));
+
+// Erros "pulam" para o catch mais próximo:
+Promise.resolve(10)
+  .then(n =&gt; { throw new Error("ops"); })
+  .then(n =&gt; n * 2)      // NÃO executa
+  .catch(e =&gt; console.log(e.message)) // "ops"
+  .then(() =&gt; console.log("continua depois do catch"));
+
+// Cuidado — esquecer de retornar quebra a cadeia:
+p.then(x =&gt; {
+  fetch("/api").then(() =&gt; {}); // promise "perdida"!
+})
+// Correto:
+p.then(x =&gt; {
+  return fetch("/api").then(() =&gt; {}); // ou use async/await
+})</code></pre>
+      </div>
+
+      <h3 class="topic" id="combinators"><span class="hash">#</span> Promise combinators</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">combinators.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>const p1 = Promise.resolve(1);
+const p2 = Promise.resolve(2);
+const p3 = Promise.reject(new Error("x"));
+
+// Promise.all — espera TODAS; falha se qualquer uma falhar:
+await Promise.all([p1, p2]);           // [1, 2]
+await Promise.all([p1, p3]);           // ❌ rejected com Error("x")
+
+// Promise.allSettled — espera todas; retorna status individual:
+await Promise.allSettled([p1, p3]);
+// [
+//   { status: "fulfilled", value: 1 },
+//   { status: "rejected", reason: Error("x") }
+// ]
+
+// Promise.race — resolve/rejeita com a primeira a terminar:
+await Promise.race([p1, p3]);          // 1
+
+// Promise.any — resolve com a primeira a cumprir (ignora rejeições,
+// só falha se TODAS falharem, com AggregateError):
+await Promise.any([p3, p1]);           // 1
+
+// Uso real — timeout manual:
+function comTimeout(promise, ms) {
+  const timeout = new Promise((_, reject) =&gt;
+    setTimeout(() =&gt; reject(new Error("timeout")), ms)
+  );
+  return Promise.race([promise, timeout]);
+}</code></pre>
+      </div>
+    </section>
+
+    <section class="chapter" id="async-await">
+      <div class="chapter-number">Capítulo 17</div>
+      <h2 class="chapter-title"><em>async</em> / <em>await</em></h2>
+      <p class="chapter-intro">Adicionado em ES2017, <code>async/await</code> é açúcar sintático sobre promises — mas um açúcar transformador. Código assíncrono passa a <strong>parecer</strong> síncrono, o que resolve boa parte dos problemas de legibilidade que os <code>.then</code> em cadeia ainda causavam.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Escrevendo código assíncrono claro</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">async-await.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Função async SEMPRE retorna uma Promise:
+async function carregarUsuario(id) {
+  const res = await fetch(`/api/users/${id}`);
+  if (!res.ok) throw new Error("404");
+  const user = await res.json();
+  return user;
+}
+
+// Uso:
+carregarUsuario(1).then(u =&gt; console.log(u));
+// ou dentro de outra async:
+const u = await carregarUsuario(1);
+
+// Top-level await — funciona em módulos ESM:
+// arquivo.mjs
+const dados = await fetch("/api").then(r =&gt; r.json());
+
+// Tratamento de erros com try/catch:
+async function carregarSeguro(id) {
+  try {
+    const user = await carregarUsuario(id);
+    return user;
+  } catch (e) {
+    console.error("falhou:", e);
+    return null;
+  } finally {
+    console.log("limpa sempre");
+  }
+}
+
+// Sequencial vs paralelo:
+// ❌ sequencial — lento (um depois do outro):
+const a = await carregarUsuario(1);
+const b = await carregarUsuario(2);
+
+// ✅ paralelo — começam juntos, aguarda os dois:
+const [a2, b2] = await Promise.all([
+  carregarUsuario(1),
+  carregarUsuario(2),
+]);</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Async em loops</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">async-loops.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>const ids = [1, 2, 3, 4];
+
+// Sequencial — uma de cada vez:
+for (const id of ids) {
+  const user = await carregarUsuario(id);
+  console.log(user);
+}
+
+// Paralelo — todas de uma vez (CUIDADO: pode sobrecarregar):
+const users = await Promise.all(ids.map(id =&gt; carregarUsuario(id)));
+
+// ❌ forEach NÃO respeita await:
+ids.forEach(async (id) =&gt; {
+  const user = await carregarUsuario(id);
+  // rodam em paralelo mas 'forEach' não espera!
+});
+
+// Paralelo com limite — em batches:
+async function emBatches(items, tamanho, fn) {
+  const resultados = [];
+  for (let i = 0; i &lt; items.length; i += tamanho) {
+    const batch = items.slice(i, i + tamanho);
+    const res = await Promise.all(batch.map(fn));
+    resultados.push(...res);
+  }
+  return resultados;
+}</code></pre>
+      </div>
+
+      <div class="callout warn">
+        <div class="callout-label">Erro comum</div>
+        <div class="callout-body">Uma função <code>async</code> SEMPRE retorna uma Promise — mesmo que você devolva um valor literal. Se você esquecer o <code>await</code> ao chamar uma função async, vai trabalhar com a Promise em vez do valor.</div>
+      </div>
+    </section>
+
+    <section class="chapter" id="iteradores">
+      <div class="chapter-number">Capítulo 18</div>
+      <h2 class="chapter-title">Iterators e <em>Generators</em></h2>
+      <p class="chapter-intro">O protocolo de iteração é o contrato secreto que faz <code>for...of</code>, spread e destructuring funcionarem com qualquer coisa. Generators são funções especiais que produzem sequências preguiçosas — valores só são calculados quando pedidos.</p>
+
+      <h3 class="topic"><span class="hash">#</span> O protocolo iterável</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">iteradores.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Um OBJETO É ITERÁVEL se tem método [Symbol.iterator]() que retorna um ITERATOR.
+// Um ITERATOR é um objeto com método next() que retorna { value, done }.
+
+// Arrays, strings, Map, Set, NodeList — todos iteráveis:
+for (const c of "abc") console.log(c); // "a", "b", "c"
+
+// Criando um iterável manualmente:
+const range = {
+  inicio: 1,
+  fim: 5,
+  [Symbol.iterator]() {
+    let atual = this.inicio;
+    const fim = this.fim;
+    return {
+      next() {
+        if (atual &lt;= fim) return { value: atual++, done: false };
+        return { value: undefined, done: true };
+      },
+    };
+  },
+};
+
+for (const n of range) console.log(n);  // 1, 2, 3, 4, 5
+[...range];                               // [1, 2, 3, 4, 5]</code></pre>
+      </div>
+
+      <h3 class="topic" id="geradores"><span class="hash">#</span> Generators</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">generators.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// function* define um generator; 'yield' emite valor e pausa.
+function* contar() {
+  yield 1;
+  yield 2;
+  yield 3;
+}
+
+const gen = contar();
+gen.next(); // { value: 1, done: false }
+gen.next(); // { value: 2, done: false }
+gen.next(); // { value: 3, done: false }
+gen.next(); // { value: undefined, done: true }
+
+// Generators são iteráveis:
+for (const v of contar()) console.log(v); // 1, 2, 3
+[...contar()];                             // [1, 2, 3]
+
+// Sequências infinitas (uma das magias):
+function* naturais() {
+  let n = 1;
+  while (true) yield n++;
+}
+
+const n = naturais();
+n.next().value; // 1
+n.next().value; // 2
+
+// yield* — delega a outro iterável:
+function* a() { yield 1; yield 2; }
+function* b() { yield* a(); yield 3; } // 1, 2, 3
+
+// Comunicação bidirecional — next(arg) passa valor de volta:
+function* conversa() {
+  const x = yield "qual seu nome?";
+  yield `olá, ${x}`;
+}
+const c = conversa();
+c.next();           // { value: "qual seu nome?", done: false }
+c.next("Ana");      // { value: "olá, Ana", done: false }</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Async iterators</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">async-iter.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Generator async — produz valores assíncronos:
+async function* buscarPaginas(url) {
+  let prox = url;
+  while (prox) {
+    const res = await fetch(prox);
+    const dados = await res.json();
+    yield dados.items;
+    prox = dados.next;
+  }
+}
+
+// for await...of — consome iterável assíncrono:
+for await (const itens of buscarPaginas("/api/start")) {
+  console.log(itens);
+}
+
+// Útil para ler streams (Node, fetch response body):
+const res = await fetch("/large-file");
+for await (const chunk of res.body) {
+  process(chunk);
+}</code></pre>
+      </div>
+    </section>
+
+    <section class="chapter" id="symbols">
+      <div class="chapter-number">Capítulo 19</div>
+      <h2 class="chapter-title">Symbols</h2>
+      <p class="chapter-intro">Symbols são identificadores únicos — dois símbolos nunca são iguais, mesmo que tenham a mesma descrição. São usados principalmente como chaves de propriedade para evitar colisões, e como "protocolos" que estendem o comportamento da linguagem (como <code>Symbol.iterator</code>).</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">symbols.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Criação:
+const a = Symbol();
+const b = Symbol("descrição");   // descrição é só para debug
+const c = Symbol("descrição");
+
+a === b;           // false
+b === c;           // false (sempre único!)
+
+// Symbol.for — busca/cria em registro global:
+const g1 = Symbol.for("app.id");
+const g2 = Symbol.for("app.id");
+g1 === g2;         // true
+
+// Usar como chave privada (convencionalmente):
+const _private = Symbol("private");
+class Cofre {
+  constructor() { this[_private] = "secreto"; }
+  revelar() { return this[_private]; }
+}
+// Difícil de acessar por fora — não impossível, mas desencoraja.
+
+// Well-known symbols — ganchos da linguagem:
+class Rang {
+  constructor(inicio, fim) { this.inicio = inicio; this.fim = fim; }
+  [Symbol.iterator]() { /* implementa iteração */ }
+  [Symbol.toPrimitive](hint) {  // controla conversão para primitivo
+    if (hint === "number") return this.fim - this.inicio;
+    return `${this.inicio}..${this.fim}`;
+  }
+}
+
+// Symbols NÃO aparecem em for...in, Object.keys, JSON.stringify:
+const obj = { visivel: 1, [Symbol("oculto")]: 2 };
+Object.keys(obj);                 // ["visivel"]
+Object.getOwnPropertySymbols(obj); // [Symbol(oculto)]</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Well-known symbols mais úteis</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Symbol</th><th>Para que serve</th></tr></thead>
+          <tbody>
+            <tr><td>Symbol.iterator</td><td>Torna um objeto iterável com <code>for...of</code></td></tr>
+            <tr><td>Symbol.asyncIterator</td><td>Iteração assíncrona (<code>for await...of</code>)</td></tr>
+            <tr><td>Symbol.toPrimitive</td><td>Controla conversão para primitivo</td></tr>
+            <tr><td>Symbol.hasInstance</td><td>Customiza comportamento de <code>instanceof</code></td></tr>
+            <tr><td>Symbol.toStringTag</td><td>Personaliza <code>Object.prototype.toString</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="chapter" id="proxy">
+      <div class="chapter-number">Capítulo 20</div>
+      <h2 class="chapter-title">Proxy e <em>Reflect</em></h2>
+      <p class="chapter-intro"><code>Proxy</code> permite interceptar praticamente qualquer operação em um objeto — leitura, escrita, deletar, testar propriedade. É a ferramenta por trás de sistemas de reatividade como Vue e algumas partes do SolidJS, e de ORMs como Prisma e Drizzle.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Proxy — interceptando operações</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">proxy.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>const alvo = { nome: "Ana", idade: 30 };
+
+const proxy = new Proxy(alvo, {
+  get(obj, prop) {
+    console.log(`lendo ${String(prop)}`);
+    return obj[prop];
+  },
+  set(obj, prop, valor) {
+    console.log(`escrevendo ${String(prop)} = ${valor}`);
+    obj[prop] = valor;
+    return true;  // indica sucesso
+  },
+  has(obj, prop) {
+    console.log(`testando ${String(prop)} in`);
+    return prop in obj;
+  },
+  deleteProperty(obj, prop) {
+    console.log(`deletando ${String(prop)}`);
+    delete obj[prop];
+    return true;
+  },
+});
+
+proxy.nome;         // "lendo nome" → "Ana"
+proxy.idade = 31;   // "escrevendo idade = 31"
+"nome" in proxy;    // "testando nome in" → true
+delete proxy.idade; // "deletando idade"</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Casos de uso práticos</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">proxy-usos.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// 1) Defaults automáticos:
+function comDefaults(obj, defaultValue) {
+  return new Proxy(obj, {
+    get: (t, p) =&gt; p in t ? t[p] : defaultValue,
+  });
+}
+const cfg = comDefaults({}, "—");
+cfg.qualquer; // "—"
+
+// 2) Validação automática:
+function validado(schema) {
+  return new Proxy({}, {
+    set(t, p, v) {
+      if (!schema[p]) throw new Error(`${String(p)} inválido`);
+      if (typeof v !== schema[p]) throw new TypeError();
+      t[p] = v;
+      return true;
+    },
+  });
+}
+const u = validado({ nome: "string", idade: "number" });
+u.nome = "Ana";     // ok
+// u.cor = "azul";   // ❌
+
+// 3) Objetos reativos (princípio do Vue/Svelte runes/etc):
+function reativo(obj, onChange) {
+  return new Proxy(obj, {
+    set(t, p, v) {
+      const antigo = t[p];
+      t[p] = v;
+      if (antigo !== v) onChange(p, v, antigo);
+      return true;
+    },
+  });
+}
+
+// 4) Acesso profundo seguro:
+function seguro(obj) {
+  return new Proxy(obj, {
+    get: (t, p) =&gt; {
+      const v = t[p];
+      return v &amp;&amp; typeof v === "object" ? seguro(v) : (v ?? undefined);
+    },
+  });
+}</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Reflect — API espelhada</h3>
+      <p><code>Reflect</code> é um objeto com métodos estáticos que correspondem exatamente às operações que Proxy pode interceptar. É mais expressivo do que acessar diretamente e, dentro de handlers de Proxy, é o jeito canônico de "delegar para o comportamento padrão".</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">reflect.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>const obj = { x: 10 };
+
+// Operações espelhadas:
+Reflect.get(obj, "x");              // 10 (equivale a obj.x)
+Reflect.set(obj, "y", 20);          // true
+Reflect.has(obj, "x");              // true
+Reflect.deleteProperty(obj, "x");
+Reflect.ownKeys(obj);               // ["y"]
+Reflect.defineProperty(obj, "z", { value: 30 });
+
+// Construção dinâmica:
+class Foo { constructor(a, b) { this.a = a; this.b = b; } }
+const f = Reflect.construct(Foo, [1, 2]);
+
+// Uso canônico dentro de Proxy — delegar ao alvo:
+new Proxy(obj, {
+  get(t, p, receiver) {
+    console.log("log");
+    return Reflect.get(t, p, receiver);  // preserva semântica correta
+  },
+});</code></pre>
+      </div>
+    </section>
+
+    <section class="chapter" id="modulos">
+      <div class="chapter-number">Capítulo 21</div>
+      <h2 class="chapter-title">Módulos ESM</h2>
+      <p class="chapter-intro">ES Modules (ESM) é o sistema de módulos nativo de JavaScript — padronizado em ES2015 e hoje universalmente suportado. Cada arquivo é um módulo com seu próprio escopo; você compartilha explicitamente o que quer com <code>export</code> e usa o que precisa com <code>import</code>.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Exportando de um módulo</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">matematica.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Named exports:
+export const PI = 3.14159;
+export function somar(a, b) { return a + b; }
+export class Calculadora { /* ... */ }
+
+// Exportar em bloco no final:
+function multiplicar(a, b) { return a * b; }
+const E = 2.71828;
+export { multiplicar, E };
+
+// Renomear na exportação:
+export { multiplicar as multiply };
+
+// Default export (um por módulo):
+export default function principal() { /* ... */ }
+
+// Re-export (atalhos de módulo — "barrel"):
+export * from "./outro.js";
+export { algo } from "./outro.js";
+export { default as Util } from "./util.js";</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Importando em outro módulo</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">app.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Named imports:
+import { PI, somar } from "./matematica.js";
+
+// Renomear:
+import { somar as soma } from "./matematica.js";
+
+// Namespace — importa tudo como um objeto:
+import * as Math from "./matematica.js";
+Math.somar(1, 2);
+
+// Default:
+import principal from "./matematica.js";
+
+// Mistura:
+import principal, { PI } from "./matematica.js";
+
+// Só efeitos colaterais (sem nomes):
+import "./reset.css";
+import "./polyfill.js";
+
+// Dynamic import — assíncrono, retorna Promise:
+const mod = await import("./pesado.js");
+mod.usar();
+
+// Útil para code splitting (imports condicionais):
+if (usuario.admin) {
+  const { painel } = await import("./admin.js");
+  painel();
+}
+
+// import.meta — metadados do módulo:
+console.log(import.meta.url);    // URL deste módulo</code></pre>
+      </div>
+
+      <div class="callout note">
+        <div class="callout-label">CommonJS (require/module.exports)</div>
+        <div class="callout-body">É o sistema antigo de módulos do Node.js, síncrono. Você encontrará muito em código legado. Node moderno aceita ambos, mas um projeto novo deve usar ESM (<code>"type": "module"</code> no <code>package.json</code>, ou extensão <code>.mjs</code>).</div>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Características dos módulos ES</h3>
+      <ul class="bullets">
+        <li><strong>Strict mode implícito</strong> — todo módulo é sempre strict, não precisa declarar.</li>
+        <li><strong>Escopo próprio</strong> — variáveis e funções não vazam para o global.</li>
+        <li><strong>Executado uma vez</strong> — mesmo importado em vários lugares, o código do módulo roda só uma vez; as exportações são compartilhadas.</li>
+        <li><strong>Top-level await</strong> — em ESM, você pode usar <code>await</code> direto no nível do arquivo.</li>
+        <li><strong>Estático por padrão</strong> — <code>import</code>/<code>export</code> são analisáveis em tempo de build, permitindo <em>tree-shaking</em>.</li>
+      </ul>
+    </section>
+
+    <section class="chapter" id="erros">
+      <div class="chapter-number">Capítulo 22</div>
+      <h2 class="chapter-title">Tratamento de <em>erros</em></h2>
+      <p class="chapter-intro">Todo programa não-trivial precisa lidar com o que dá errado — falhas de rede, inputs inválidos, estados impossíveis. JavaScript oferece <code>try/catch/finally</code>, uma hierarquia de tipos de erro, e a possibilidade de lançar e criar erros customizados.</p>
+
+      <h3 class="topic"><span class="hash">#</span> try, catch, finally, throw</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">try-catch.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>try {
+  const dados = JSON.parse(entrada);
+  processar(dados);
+} catch (e) {
+  console.error("falha:", e.message);
+} finally {
+  limpar(); // roda sempre, com ou sem erro
+}
+
+// catch sem binding (ES2019):
+try { pode_falhar(); } catch { fallback(); }
+
+// throw — qualquer valor, mas SEMPRE lance Error (ou subclasse):
+throw new Error("algo deu errado");
+throw new TypeError("esperava número");
+
+// ❌ Evite lançar strings ou outros valores:
+// throw "erro"; // funciona, mas perde stack trace e info
+
+// try/catch em torno de assíncrono — NÃO pega rejeições de promises
+// a menos que você use await:
+try {
+  minhaPromise();  // rejeição aqui NÃO é capturada
+} catch {}
+
+try {
+  await minhaPromise();  // agora sim
+} catch {}</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Tipos de erro embutidos</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tipo</th><th>Quando ocorre</th></tr></thead>
+          <tbody>
+            <tr><td>Error</td><td>Genérico; base de todos</td></tr>
+            <tr><td>TypeError</td><td>Operação com valor de tipo errado</td></tr>
+            <tr><td>ReferenceError</td><td>Acesso a variável não declarada</td></tr>
+            <tr><td>SyntaxError</td><td>Código mal-formado (em parse)</td></tr>
+            <tr><td>RangeError</td><td>Valor fora do intervalo válido</td></tr>
+            <tr><td>URIError</td><td>Em encodeURI/decodeURI inválidos</td></tr>
+            <tr><td>AggregateError</td><td>Múltiplos erros (Promise.any)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Erros customizados</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">custom-errors.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>class ValidationError extends Error {
+  constructor(campo, mensagem) {
+    super(`${campo}: ${mensagem}`);
+    this.name = "ValidationError";
+    this.campo = campo;
+  }
+}
+
+class NotFoundError extends Error {
+  constructor(recurso) {
+    super(`${recurso} não encontrado`);
+    this.name = "NotFoundError";
+    this.status = 404;
+  }
+}
+
+try {
+  throw new ValidationError("email", "inválido");
+} catch (e) {
+  if (e instanceof ValidationError) {
+    console.log("campo:", e.campo);
+  } else if (e instanceof NotFoundError) {
+    console.log("status:", e.status);
+  } else {
+    throw e; // re-throw o que não reconheço
+  }
+}
+
+// Error cause (ES2022) — preserva a causa original:
+try {
+  await banco.conectar();
+} catch (causa) {
+  throw new Error("falha ao iniciar", { cause: causa });
+}
+// Quando printa, a cadeia inteira de causes aparece.</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">Onde tratar</div>
+        <div class="callout-body">Não embrulhe tudo em <code>try/catch</code> defensivamente. Deixe o erro propagar até o lugar onde há informação suficiente para tratar. Em aplicações reais, isso costuma ser: um handler de rota (back-end) ou um <em>error boundary</em> de UI (front-end).</div>
+      </div>
+    </section>
+
+    <section class="chapter" id="fetch">
+      <div class="chapter-number">Capítulo 23</div>
+      <h2 class="chapter-title">fetch e <em>APIs essenciais</em></h2>
+      <p class="chapter-intro">A API <code>fetch</code> substituiu <code>XMLHttpRequest</code> como a forma moderna de fazer requisições HTTP no browser — e hoje está disponível também no Node.js (18+), Bun e Deno. Junto com <code>AbortController</code>, <code>URL</code>, <code>structuredClone</code> e a família <code>Storage</code>, ela forma o conjunto de APIs de browser que todo dev usa diariamente.</p>
+
+      <h3 class="topic"><span class="hash">#</span> fetch — o básico</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">fetch.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// GET simples:
+const res = await fetch("/api/users");
+if (!res.ok) throw new Error(`HTTP ${res.status}`);
+const users = await res.json();
+
+// fetch NÃO rejeita em 404/500 — só em erro de rede!
+// Você precisa checar res.ok ou res.status manualmente.
+
+// POST com JSON:
+await fetch("/api/users", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`,
+  },
+  body: JSON.stringify({ nome: "Ana", idade: 30 }),
+});
+
+// Outros métodos e formatos de body:
+await fetch(url, {
+  method: "PATCH",
+  body: new URLSearchParams({ a: 1, b: 2 }),  // form-urlencoded
+});
+
+// FormData — upload de arquivo:
+const form = new FormData();
+form.append("nome", "Ana");
+form.append("avatar", arquivoInput.files[0]);
+await fetch("/upload", { method: "POST", body: form });
+// NÃO defina Content-Type; o browser coloca o boundary correto.
+
+// Lendo a resposta em diferentes formatos:
+res.json();       // parseia JSON
+res.text();       // como string
+res.blob();       // como Blob
+res.arrayBuffer();// como bytes
+res.formData();   // como FormData</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> AbortController — cancelamento</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">abort.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>const controller = new AbortController();
+
+// Cancelar após 5 segundos:
+setTimeout(() =&gt; controller.abort(), 5000);
+
+try {
+  const res = await fetch("/slow", { signal: controller.signal });
+  const dados = await res.json();
+} catch (e) {
+  if (e.name === "AbortError") console.log("cancelada");
+  else throw e;
+}
+
+// Cancelar manualmente:
+botaoCancelar.onclick = () =&gt; controller.abort();
+
+// Atalho — AbortSignal.timeout(ms):
+await fetch("/api", { signal: AbortSignal.timeout(3000) });
+
+// Combinar sinais:
+const c1 = new AbortController();
+const c2 = new AbortController();
+await fetch("/api", { signal: AbortSignal.any([c1.signal, c2.signal]) });</code></pre>
+      </div>
+
+      <h3 class="topic" id="json"><span class="hash">#</span> JSON — parse e stringify</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">json.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Serializar:
+JSON.stringify({ a: 1, b: [2, 3] });  // '{"a":1,"b":[2,3]}'
+JSON.stringify(obj, null, 2);          // pretty-print com 2 espaços
+
+// Replacer — filtra ou transforma:
+JSON.stringify(user, ["nome", "idade"]); // só essas chaves
+JSON.stringify(obj, (k, v) =&gt; typeof v === "bigint" ? v.toString() : v);
+
+// Parsear:
+const dados = JSON.parse('{"x": 10}');
+
+// Reviver — transforma durante o parse:
+const d = JSON.parse(texto, (k, v) =&gt; {
+  if (k === "data") return new Date(v);
+  return v;
+});
+
+// O que NÃO serializa:
+JSON.stringify({ f: () =&gt; {} });     // '{}' (funções ignoradas)
+JSON.stringify({ x: undefined });    // '{}'
+JSON.stringify({ d: new Date() });   // string ISO (perde o tipo)
+JSON.stringify({ b: 10n });          // ❌ TypeError — BigInt não serializa</code></pre>
+      </div>
+
+      <h3 class="topic" id="url"><span class="hash">#</span> URL e URLSearchParams</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">url.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Parsing e construção:
+const u = new URL("https://exemplo.com/path?q=foo#sec");
+u.hostname;      // "exemplo.com"
+u.pathname;      // "/path"
+u.search;        // "?q=foo"
+u.hash;          // "#sec"
+u.searchParams;  // URLSearchParams
+
+// Construir URLs relativas:
+new URL("/perfil", "https://site.com/").toString();
+// "https://site.com/perfil"
+
+// Manipular query string:
+const p = new URLSearchParams();
+p.set("pagina", "2");
+p.set("busca", "olá mundo");  // encoda automaticamente
+p.toString(); // "pagina=2&amp;busca=ol%C3%A1+mundo"
+
+// A partir de objeto:
+new URLSearchParams({ a: 1, b: 2 }).toString(); // "a=1&amp;b=2"
+
+// Parsing query atual:
+const params = new URLSearchParams(window.location.search);
+params.get("id");
+
+// Iteração:
+for (const [k, v] of params) console.log(k, v);</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> structuredClone e crypto</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">utils.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// structuredClone — deep clone nativo:
+const original = { a: 1, b: { c: [1, 2, 3] }, d: new Date() };
+const clone = structuredClone(original);
+clone.b.c.push(4);              // não afeta original
+clone.d instanceof Date;        // true — preserva tipos!
+
+// Funciona com: Map, Set, Date, RegExp, Error, TypedArray, Blob, File,
+// ArrayBuffer, objetos cíclicos...
+// Não funciona com: funções, DOM nodes, símbolos como chaves.
+
+// crypto — APIs criptográficas:
+crypto.randomUUID();              // "e8b1..." — UUID v4
+crypto.getRandomValues(new Uint8Array(16));
+
+// Hash SHA-256:
+async function hash(mensagem) {
+  const bytes = new TextEncoder().encode(mensagem);
+  const buf = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(buf)]
+    .map(b =&gt; b.toString(16).padStart(2, "0"))
+    .join("");
+}</code></pre>
+      </div>
+
+      <h3 class="topic" id="storage"><span class="hash">#</span> Storage — localStorage e sessionStorage</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">storage.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// localStorage — persiste até ser limpo; ~5MB por origin.
+// sessionStorage — igual, mas só enquanto a aba estiver aberta.
+// Ambos armazenam só STRINGS.
+
+localStorage.setItem("tema", "dark");
+localStorage.getItem("tema");     // "dark"
+localStorage.removeItem("tema");
+localStorage.clear();
+localStorage.length;
+localStorage.key(0);              // nome da primeira chave
+
+// Objetos — serialize/parse:
+localStorage.setItem("user", JSON.stringify({ nome: "Ana" }));
+const u = JSON.parse(localStorage.getItem("user") ?? "null");
+
+// Evento storage — dispara em OUTRAS abas quando muda:
+window.addEventListener("storage", (e) =&gt; {
+  if (e.key === "tema") atualizarTema(e.newValue);
+});
+
+// Para dados complexos em quantidade, use IndexedDB (API mais rica
+// mas verbosa — considere libs como Dexie, idb-keyval).</code></pre>
+      </div>
+
+
+
+    </section>
+
+    <section class="chapter" id="regex">
+      <div class="chapter-number">Capítulo 24</div>
+      <h2 class="chapter-title">Regex em <em>JavaScript</em></h2>
+      <p class="chapter-intro">Expressões regulares em JavaScript têm uma sintaxe própria (literais <code>/.../</code>), flags específicas, e se integram a vários métodos de string. Esta seção é uma referência rápida — para o estudo profundo de regex em geral, existe um manual dedicado mais adiante na coleção.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Criação e uso</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">regex.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Duas formas:
+const r1 = /\d+/g;                       // literal
+const r2 = new RegExp("\\d+", "g");      // construtor (strings escapam de novo)
+
+// Flags:
+// g  — global (todas as ocorrências)
+// i  — case-insensitive
+// m  — multi-linha (^ $ casam com início/fim de linha)
+// s  — dotAll (. casa com \n também)
+// u  — unicode (para \u{xxxx})
+// y  — sticky (busca a partir do lastIndex)
+// d  — retorna índices dos grupos
+
+// Métodos em STRING:
+"abc123".match(/\d+/);              // ["123", index: 3, ...]
+"abc123".match(/\d+/g);             // ["123"] — só matches, sem detalhes
+"abc123".matchAll(/\d+/g);          // iterator com todos os detalhes
+[..."a1b2c3".matchAll(/\d/g)];      // [["1"], ["2"], ["3"]]
+"abc".replace(/b/, "X");            // "aXc"
+"abc".replaceAll("a", "X");
+"ab1cd2".split(/\d/);               // ["ab", "cd", ""]
+"abc".search(/b/);                  // 1 (índice)
+
+// Métodos em REGEX:
+/\d+/.test("abc123");               // true (mais rápido se só quer bool)
+/\d+/.exec("abc123");               // ["123", index: 3, ...]</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Grupos nomeados e referências</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">grupos.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Grupos de captura (numerados):
+"2024-03-15".match(/(\d{4})-(\d{2})-(\d{2})/);
+// ["2024-03-15", "2024", "03", "15"]
+
+// Grupos nomeados — mais legível:
+const m = "2024-03-15".match(/(?&lt;ano&gt;\d{4})-(?&lt;mes&gt;\d{2})-(?&lt;dia&gt;\d{2})/);
+m.groups;  // { ano: "2024", mes: "03", dia: "15" }
+
+// Replace usando grupos:
+"2024-03-15".replace(
+  /(?&lt;ano&gt;\d{4})-(?&lt;mes&gt;\d{2})-(?&lt;dia&gt;\d{2})/,
+  "$&lt;dia&gt;/$&lt;mes&gt;/$&lt;ano&gt;"
+);
+// "15/03/2024"
+
+// Replace com função:
+"abc 123 def 456".replace(/\d+/g, (match) =&gt; Number(match) * 2);
+// "abc 246 def 912"
+
+// Lookahead e lookbehind:
+/foo(?=bar)/      // "foo" seguido de "bar", sem consumir bar
+/foo(?!bar)/      // "foo" NÃO seguido de "bar"
+/(?&lt;=\$)\d+/      // dígitos precedidos de $
+/(?&lt;!\$)\d+/      // dígitos NÃO precedidos de $</code></pre>
+      </div>
+
+      <h3 class="topic"><span class="hash">#</span> Padrões úteis no dia-a-dia</h3>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">patterns.js</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Validação simples de email (bom o suficiente na prática):
+/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test("ana@exemplo.com");
+
+// CEP brasileiro (00000-000):
+/^\d{5}-?\d{3}$/.test("01310-100");
+
+// Apenas dígitos:
+/^\d+$/.test("42");
+
+// Slug (letras minúsculas, números, hifens):
+/^[a-z0-9-]+$/.test("meu-post-2024");
+
+// Extrair números de um texto:
+"Preço: R$ 1.999,90".match(/[\d.,]+/)[0];
+
+// Remover acentos (normalizando antes):
+"ação".normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+// "acao"</code></pre>
+      </div>
+    </section>
+
+    <section class="chapter" id="boas-praticas">
+      <div class="chapter-number">Capítulo 25</div>
+      <h2 class="chapter-title">Boas <em>práticas</em></h2>
+      <p class="chapter-intro">A mecânica da linguagem você já conhece. Agora, um conjunto de princípios que a comunidade JavaScript desenvolveu ao longo de décadas — o tipo de coisa que faz o código envelhecer bem.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Use const como padrão</h3>
+      <p>A maior parte das suas variáveis não precisa mudar. Começar tudo com <code>const</code> e só trocar para <code>let</code> quando necessário elimina uma categoria inteira de bugs — a reatribuição acidental.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Prefira imutabilidade</h3>
+      <p>Use <code>map</code>, <code>filter</code>, spread e os novos métodos imutáveis de array (<code>toSorted</code>, <code>toReversed</code>, <code>with</code>) em vez de mutar estruturas. Isso torna o código mais previsível e trabalha muito melhor com React e paradigmas funcionais.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Sempre ===</h3>
+      <p>Ignore <code>==</code>. A única exceção defensável é <code>x == null</code> para testar "null ou undefined" — e mesmo isso é controverso. Linters modernos impõem <code>===</code> por padrão.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Nomes comunicam intenção</h3>
+      <ul class="bullets">
+        <li><strong>camelCase</strong> para variáveis e funções: <code>buscarUsuario</code>, <code>totalCarrinho</code>.</li>
+        <li><strong>PascalCase</strong> para classes e construtores: <code>Usuario</code>, <code>HttpClient</code>.</li>
+        <li><strong>CONSTANT_CASE</strong> para constantes verdadeiras de módulo: <code>MAX_RETRIES</code>, <code>DEFAULT_TIMEOUT</code>.</li>
+        <li>Booleanos começam com verbo: <code>estaAtivo</code>, <code>temPermissao</code>, <code>podeEditar</code>.</li>
+        <li>Prefira nomes descritivos e pronunciáveis — <code>usrCnt</code> economiza 3 letras e custa semanas de clareza.</li>
+      </ul>
+
+      <h3 class="topic"><span class="hash">#</span> Funções pequenas, com uma responsabilidade</h3>
+      <p>Uma função que faz uma coisa bem é mais reutilizável, testável e legível do que uma que faz cinco coisas razoavelmente. Se uma função está ficando difícil de nomear, é provavelmente porque está fazendo coisas demais.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Trate erros onde faz sentido</h3>
+      <p>Não embrulhe tudo em <code>try/catch</code> defensivamente. Deixe o erro propagar até o lugar onde há informação suficiente para tratar. Em aplicações reais, isso costuma ser: um handler de rota (back-end) ou um <em>error boundary</em> de UI (front-end).</p>
+
+      <h3 class="topic"><span class="hash">#</span> Prefira async/await a then chains</h3>
+      <p>São equivalentes tecnicamente, mas <code>async/await</code> resulta em código linear, com estruturas de controle familiares (<code>try/catch</code>, <code>for</code>) — muito mais legível para código com mais de dois passos.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Valide dados externos</h3>
+      <p>Tudo que vem de fora do seu código — respostas de API, <code>localStorage</code>, variáveis de ambiente, inputs de usuário — precisa ser validado antes de ser usado. Bibliotecas como <strong>Zod</strong>, <strong>Valibot</strong> e <strong>ArkType</strong> facilitam isso criando schemas reutilizáveis.</p>
+
+      <h3 class="topic"><span class="hash">#</span> Use ferramentas modernas</h3>
+      <ul class="bullets">
+        <li><strong>ESLint</strong> com regras recomendadas — detecta bugs e impõe estilo.</li>
+        <li><strong>Prettier</strong> — formatação automática.</li>
+        <li><strong>TypeScript</strong> — a maior evolução que JS recebeu na última década; vale o custo inicial.</li>
+        <li><strong>Vitest</strong> ou <strong>Node test runner</strong> — testes rápidos e modernos.</li>
+        <li><strong>Bun</strong> ou <strong>tsx</strong> — para rodar arquivos direto sem build.</li>
+      </ul>
+
+      <h3 class="topic"><span class="hash">#</span> Leia o código que você usa</h3>
+      <p>Bibliotecas populares — Lodash, date-fns, React, Vue — são algumas das melhores fontes de aprendizado de JavaScript moderno. Abra os fontes delas de vez em quando. Você vai ver padrões, truques e decisões de design que não aparecem em tutorial nenhum.</p>
+
+      <div class="callout tip">
+        <div class="callout-label">Palavra final</div>
+        <div class="callout-body">JavaScript recompensa quem persiste. A linguagem tem esquinas estranhas — fruto de 30 anos de retrocompatibilidade — mas também tem recursos que poucas outras oferecem: closures poderosas, sistema de prototypes flexível, iteradores preguiçosos, proxies para meta-programação. Aprender bem o básico <strong>e</strong> os recantos é o que transforma um dev em alguém que faz JavaScript trabalhar para si.</div>
+      </div>
+    </section>
+
+
+
+    <footer>
+      <div class="ornament">· ✦ ·</div>
+      <p>Manual JavaScript — Volume II da coleção de referência fullstack.</p>
+      <div class="line">Fim do documento · Próximo: HTML semântico + Acessibilidade</div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+(function highlight() {
+  const keywords = new Set(["abstract","any","as","async","await","boolean","break","case","catch","class","const","constructor","continue","debugger","declare","default","delete","do","else","enum","export","extends","false","finally","for","from","function","get","if","implements","import","in","instanceof","interface","is","keyof","let","namespace","never","new","null","number","of","package","private","protected","public","readonly","return","set","static","string","super","switch","symbol","this","throw","true","try","type","typeof","undefined","var","void","while","with","yield","bigint","object"]);
+  const builtins = new Set(["Array","Promise","Map","Set","WeakMap","WeakSet","Date","Error","RegExp","Object","Function","String","Number","Boolean","Symbol","BigInt","JSON","Math","console","TypeError","RangeError","ReferenceError","SyntaxError","URIError","AggregateError","Proxy","Reflect","Intl","URL","URLSearchParams","FormData","AbortController","AbortSignal","Infinity","NaN","globalThis","crypto","structuredClone","queueMicrotask","setTimeout","setInterval","clearTimeout","clearInterval","requestAnimationFrame","fetch","localStorage","sessionStorage","window","document","HTMLElement","HTMLInputElement","Window","NodeJS","MouseEvent","MessageEvent","TextEncoder","TextDecoder","ArrayBuffer","Uint8Array","Int32Array","Float64Array"]);
+  const escape = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  function tokenize(raw) {
+    const out = []; let i = 0; const n = raw.length;
+    const push = (cls, text) => out.push(`<span class="${cls}">${escape(text)}</span>`);
+    const pushRaw = (text) => out.push(escape(text));
+    while (i < n) {
+      const ch = raw[i]; const next = raw[i+1];
+      if (ch === "/" && next === "/") { let j = i; while (j < n && raw[j] !== "\n") j++; push("tk-cmt", raw.slice(i, j)); i = j; continue; }
+      if (ch === "/" && next === "*") { let j = i + 2; while (j < n - 1 && !(raw[j] === "*" && raw[j+1] === "/")) j++; j = Math.min(n, j + 2); push("tk-cmt", raw.slice(i, j)); i = j; continue; }
+      if (ch === '"' || ch === "'") { const q = ch; let j = i + 1; while (j < n && raw[j] !== q) { if (raw[j] === "\\") j++; j++; } j = Math.min(n, j + 1); push("tk-str", raw.slice(i, j)); i = j; continue; }
+      if (ch === "`") { let j = i + 1; while (j < n && raw[j] !== "`") { if (raw[j] === "\\") j++; j++; } j = Math.min(n, j + 1); push("tk-str", raw.slice(i, j)); i = j; continue; }
+      if (/[0-9]/.test(ch) || (ch === "." && /[0-9]/.test(next))) { let j = i; while (j < n && /[0-9a-fA-Fxbon._]/.test(raw[j])) j++; push("tk-num", raw.slice(i, j)); i = j; continue; }
+      if (/[A-Za-z_$]/.test(ch)) {
+        let j = i; while (j < n && /[A-Za-z0-9_$]/.test(raw[j])) j++;
+        const word = raw.slice(i, j);
+        if (keywords.has(word)) push("tk-kw", word);
+        else if (builtins.has(word)) push("tk-bi", word);
+        else if (/^[A-Z]/.test(word)) push("tk-typ", word);
+        else { let k = j; while (k < n && raw[k] === " ") k++; if (raw[k] === "(") push("tk-fn", word); else pushRaw(word); }
+        i = j; continue;
+      }
+      if (/[{}()\[\];,.]/.test(ch)) { push("tk-punc", ch); i++; continue; }
+      if (/[=+\-*/%&|!<>?:^~]/.test(ch)) { let j = i; while (j < n && /[=+\-*/%&|!<>?:^~]/.test(raw[j])) j++; push("tk-op", raw.slice(i, j)); i = j; continue; }
+      pushRaw(ch); i++;
+    }
+    return out.join("");
+  }
+  document.querySelectorAll("pre > code").forEach(el => { const raw = el.textContent; el.innerHTML = tokenize(raw); });
+})();
+
+document.querySelectorAll(".copy-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const wrap = btn.closest(".code-wrap");
+    const code = wrap.querySelector("pre").innerText;
+    navigator.clipboard.writeText(code).then(() => {
+      const prev = btn.textContent; btn.textContent = "Copiado ✓"; btn.classList.add("copied");
+      setTimeout(() => { btn.textContent = prev; btn.classList.remove("copied"); }, 1500);
+    });
+  });
+});
+
+(function scrollSpy() {
+  const chapters = Array.from(document.querySelectorAll("section.chapter, h3.topic"));
+  const links = Array.from(document.querySelectorAll("aside.sidebar a"));
+  const byHref = new Map(links.map(l => [l.getAttribute("href"), l]));
+  function updateActive() {
+    let current = null;
+    const scrollTop = window.scrollY + 120;
+    for (const ch of chapters) { if (ch.offsetTop <= scrollTop) current = ch.id; }
+    links.forEach(l => l.classList.remove("active"));
+    if (current) { const link = byHref.get("#" + current); if (link) link.classList.add("active"); }
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = total > 0 ? (window.scrollY / total) * 100 : 0;
+    document.getElementById("progressBar").style.width = progress + "%";
+  }
+  window.addEventListener("scroll", updateActive, { passive: true });
+  window.addEventListener("resize", updateActive);
+  updateActive();
+})();
+
+(function search() {
+  const input = document.getElementById("search"); if (!input) return;
+  const navLinks = Array.from(document.querySelectorAll("aside.sidebar .nav-group a"));
+  input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) {
+      navLinks.forEach(a => { a.classList.remove("nav-hidden"); a.parentElement.classList.remove("nav-hidden"); });
+      document.querySelectorAll(".nav-group").forEach(g => g.classList.remove("nav-hidden"));
+      return;
+    }
+    document.querySelectorAll(".nav-group").forEach(group => {
+      let anyMatch = false;
+      group.querySelectorAll("a").forEach(a => {
+        const matches = a.textContent.toLowerCase().includes(q);
+        a.parentElement.classList.toggle("nav-hidden", !matches);
+        if (matches) anyMatch = true;
+      });
+      group.classList.toggle("nav-hidden", !anyMatch);
+    });
+  });
+})();
+
+document.querySelectorAll("aside.sidebar a").forEach(a => {
+  a.addEventListener("click", () => {
+    if (window.innerWidth <= 960) document.querySelector(".sidebar").classList.remove("open");
+  });
+});
+</script>
+</body>
+</html>
