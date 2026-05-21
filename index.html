@@ -1,72 +1,590 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutoriais</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FullStack Manual — Coleção de referência</title>
+<meta name="description" content="Coleção de manuais de referência fullstack em PT-BR. JavaScript, TypeScript, HTML, CSS, React, Tailwind, Next.js, Node.js, Hono, SQL + PostgreSQL e mais.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+<style>
+  :root {
+    --bg: #0f0d0b; --bg-2: #17130f; --panel: #1c1712; --panel-2: #241d17;
+    --border: #2d251d; --border-strong: #3a3024;
+    --text: #f2ede4; --text-2: #cfc5b4; --muted: #a39a8e; --dim: #6a6258;
+    --accent: #f0a830; --accent-2: #e08c2a; --accent-soft: rgba(240, 168, 48, 0.12);
+    --teal: #5eead4; --rose: #f5a8a8; --sage: #b0c98c; --sky: #7dd3fc;
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--text); font-family: var(--font-body);
+    font-size: 16px; line-height: 1.6;
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(240, 168, 48, 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 90% 30%, rgba(125, 211, 252, 0.03) 0%, transparent 40%),
+      radial-gradient(circle at 50% 90%, rgba(176, 201, 140, 0.025) 0%, transparent 45%);
+    min-height: 100vh;
+  }
+  .page { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem 6rem; }
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            background: #fff;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
+  /* ─── HERO ─── */
+  .hero {
+    display: flex; gap: 2.5rem; align-items: flex-start;
+    padding-bottom: 3rem; margin-bottom: 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand {
+    flex-shrink: 0;
+    width: 84px; height: 84px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    border-radius: 18px;
+    display: grid; place-items: center;
+    font-family: var(--font-mono); font-weight: 700;
+    font-size: 2.1rem; color: var(--bg);
+    box-shadow: 0 8px 32px rgba(240, 168, 48, 0.25);
+    letter-spacing: -0.02em;
+  }
+  .hero-text { flex: 1; }
+  .hero h1 {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    line-height: 1.1; letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+  .hero h1 em {
+    font-style: italic; font-weight: 500;
+    color: var(--accent);
+  }
+  .hero-sub {
+    color: var(--text-2); font-size: 1.1rem; max-width: 60ch;
+    margin-bottom: 1.5rem;
+  }
+  .hero-meta {
+    display: flex; flex-wrap: wrap; gap: 1.5rem;
+    font-size: 0.875rem; color: var(--muted);
+    font-family: var(--font-mono);
+  }
+  .hero-meta span { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .hero-meta strong { color: var(--text); font-weight: 700; }
+  .hero-meta .dot { color: var(--dim); }
 
-        .container a {
-            padding: 1rem;
-            border: 2px solid #007BFF;
-            border-radius: 5px;
-            text-decoration: none;
-            color: #007BFF;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
+  /* progress bar */
+  .progress {
+    margin-top: 1.5rem;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 999px; height: 8px; overflow: hidden;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-2), var(--accent));
+    border-radius: 999px;
+    transition: width 0.8s ease;
+  }
 
-        .container a:hover {
-            background-color: #007BFF;
-            color: #fff;
-        }
+  /* ─── WAVES ─── */
+  .wave { margin-top: 4rem; }
+  .wave-header {
+    display: flex; align-items: baseline; gap: 1rem;
+    margin-bottom: 1.5rem; padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .wave-label {
+    font-family: var(--font-mono); font-size: 0.75rem;
+    color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase;
+    font-weight: 700;
+  }
+  .wave-title {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 1.7rem; letter-spacing: -0.01em;
+  }
+  .wave-desc {
+    color: var(--muted); font-size: 0.95rem;
+    margin-left: auto;
+  }
 
-        .container h1 {
-            margin-bottom: 1rem;
-            font-size: 2rem;
-            color: #007BFF;
-        }
-    </style>
+  /* ─── CARDS ─── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+  .card {
+    display: flex; flex-direction: column;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.4rem 1.3rem 1.2rem;
+    text-decoration: none; color: inherit;
+    transition: transform 0.18s ease, border-color 0.18s ease,
+                box-shadow 0.18s ease, background 0.18s ease;
+    position: relative; overflow: hidden;
+  }
+  .card::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at 0% 0%, var(--accent-soft) 0%, transparent 50%);
+    opacity: 0; transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-strong);
+    background: var(--panel-2);
+    box-shadow: 0 12px 32px -8px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(240, 168, 48, 0.15);
+  }
+  .card:hover::before { opacity: 1; }
+  .card:hover .mark { color: var(--accent); border-color: var(--accent); }
+  .card:hover .arrow { color: var(--accent); transform: translateX(3px); }
+
+  .card-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.1rem;
+  }
+  .mark {
+    font-family: var(--font-mono); font-weight: 700;
+    font-size: 1.05rem;
+    width: 44px; height: 44px;
+    display: grid; place-items: center;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 10px;
+    color: var(--text-2);
+    transition: color 0.18s ease, border-color 0.18s ease;
+    letter-spacing: -0.02em;
+  }
+  .vol {
+    font-family: var(--font-mono); font-size: 0.7rem;
+    color: var(--muted); letter-spacing: 0.1em;
+    text-transform: uppercase; font-weight: 500;
+  }
+  .card-title {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 1.2rem; line-height: 1.25; margin-bottom: 0.4rem;
+    letter-spacing: -0.01em;
+  }
+  .card-desc {
+    color: var(--muted); font-size: 0.875rem; line-height: 1.5;
+    flex: 1; margin-bottom: 1rem;
+  }
+  .card-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--font-mono); font-size: 0.75rem;
+    color: var(--dim); letter-spacing: 0.04em;
+  }
+  .status { display: inline-flex; align-items: center; gap: 0.35rem; }
+  .status::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--sage);
+  }
+  .arrow {
+    font-family: var(--font-mono); color: var(--dim);
+    transition: color 0.18s ease, transform 0.18s ease;
+  }
+
+  /* ─── PLANNED / DISABLED ─── */
+  .card.planned {
+    background: var(--bg-2); border-style: dashed;
+    cursor: default; opacity: 0.7;
+  }
+  .card.planned:hover {
+    transform: none; background: var(--bg-2);
+    border-color: var(--border); box-shadow: none;
+  }
+  .card.planned:hover::before { opacity: 0; }
+  .card.planned:hover .mark { color: var(--text-2); border-color: var(--border-strong); }
+  .card.planned:hover .arrow { color: var(--dim); transform: none; }
+  .card.planned .status::before { background: var(--dim); }
+  .card.planned .arrow { opacity: 0; }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    margin-top: 5rem; padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted); font-size: 0.875rem;
+    display: flex; flex-wrap: wrap; gap: 1rem;
+    justify-content: space-between; align-items: center;
+  }
+  .footer a {
+    color: var(--text-2); text-decoration: none;
+    font-family: var(--font-mono); font-size: 0.8rem;
+    border-bottom: 1px dotted var(--border-strong);
+    padding-bottom: 1px;
+    transition: color 0.18s ease, border-color 0.18s ease;
+  }
+  .footer a:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 720px) {
+    .page { padding: 2.5rem 1.25rem 4rem; }
+    .hero { flex-direction: column; gap: 1.5rem; }
+    .brand { width: 64px; height: 64px; font-size: 1.6rem; border-radius: 14px; }
+    .wave-header { flex-wrap: wrap; }
+    .wave-desc { width: 100%; margin-left: 0; margin-top: 0.25rem; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Bem-vindo aos Tutoriais</h1>
-        <a href="pages/typescript.html" target="_blank">Typescript</a>
-        <a href="pages/javascript.html" target="_blank">Javascript</a>
-        <a href="pages/manual-html.html" target="_blank">HTML Semântico + Acessibilidade</a>
-        <a href="pages/manual-css.html" target="_blank">CSS</a>
-        <a href="pages/manual-react.html" target="_blank">React</a>
-        <a href="pages/manual-tailwind.html" target="_blank">Tailwind CSS</a>
-        <a href="pages/manual-nextjs.html" target="_blank">Next.js</a>
-        <a href="pages/manual-nodejs.html" target="_blank">Node.js</a>
-        <a href="pages/manual-hono.html" target="_blank">Hono</a>
-        <a href="pages/manual-sql-postgresql.html" target="_blank">SQL + PostgreSQL</a>
-    </div>
-</body>
+<main class="page">
 
+  <!-- ═══ HERO ═══ -->
+  <header class="hero">
+    <div class="brand">FS</div>
+    <div class="hero-text">
+      <h1>FullStack <em>Manual</em></h1>
+      <p class="hero-sub">
+        Coleção de manuais de referência <strong>fullstack</strong> em português brasileiro.
+        Cada volume é um arquivo único e autocontido, com sintaxe destacada,
+        navegação por capítulos e zero dependências.
+      </p>
+      <div class="hero-meta">
+        <span><strong>10</strong>&nbsp;/&nbsp;17 publicados</span>
+        <span class="dot">·</span>
+        <span>4 ondas temáticas</span>
+        <span class="dot">·</span>
+        <span>PT-BR</span>
+      </div>
+      <div class="progress" aria-label="Progresso da coleção">
+        <div class="progress-fill" style="width: 58.8%"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ ONDA 1 ═══ -->
+  <section class="wave" id="onda-1">
+    <div class="wave-header">
+      <span class="wave-label">Onda 01</span>
+      <h2 class="wave-title">Fundamentos da web</h2>
+      <span class="wave-desc">A base que sustenta todo o stack</span>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="pages/typescript.html">
+        <div class="card-head">
+          <div class="mark">Ts</div>
+          <span class="vol">Volume I</span>
+        </div>
+        <h3 class="card-title">TypeScript</h3>
+        <p class="card-desc">
+          Tipos, inferência, genéricos, utility types e o sistema de tipos
+          que sustenta o resto da coleção.
+        </p>
+        <div class="card-foot">
+          <span class="status">Pronto</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a class="card" href="pages/javascript.html">
+        <div class="card-head">
+          <div class="mark">Js</div>
+          <span class="vol">Volume II</span>
+        </div>
+        <h3 class="card-title">JavaScript moderno</h3>
+        <p class="card-desc">
+          ES2024+, escopo, closures, promises, async/await, módulos
+          e os recursos da linguagem em uso real.
+        </p>
+        <div class="card-foot">
+          <span class="status">Pronto</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a class="card" href="pages/manual-html.html">
+        <div class="card-head">
+          <div class="mark">Hs</div>
+          <span class="vol">Volume III</span>
+        </div>
+        <h3 class="card-title">HTML semântico + acessibilidade</h3>
+        <p class="card-desc">
+          Elementos semânticos, ARIA, navegação por teclado, formulários
+          e os fundamentos de WCAG aplicados.
+        </p>
+        <div class="card-foot">
+          <span class="status">Pronto</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a class="card" href="pages/manual-css.html">
+        <div class="card-head">
+          <div class="mark">Cs</div>
+          <span class="vol">Volume IV</span>
+        </div>
+        <h3 class="card-title">CSS moderno</h3>
+        <p class="card-desc">
+          Cascade layers, container queries, flexbox e grid, custom
+          properties e os recursos atuais sem dependências.
+        </p>
+        <div class="card-foot">
+          <span class="status">Pronto</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ═══ ONDA 2 ═══ -->
+  <section class="wave" id="onda-2">
+    <div class="wave-header">
+      <span class="wave-label">Onda 02</span>
+      <h2 class="wave-title">Camada visual</h2>
+      <span class="wave-desc">Interfaces que escalam em complexidade</span>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="pages/manual-react.html">
+        <div class="card-head">
+          <div class="mark">Rc</div>
+          <span class="vol">Volume V</span>
+        </div>
+        <h3 class="card-title">React</h3>
+        <p class="card-desc">
+          Componentes, hooks, estado, efeitos, contexto, suspense
+          e os padrões idiomáticos do React moderno.
+        </p>
+        <div class="card-foot">
+          <span class="status">Pronto</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a class="card" href="pages/manual-tailwind.html">
+        <div class="card-head">
+          <div class="mark">Tw</div>
+          <span class="vol">Volume VI</span>
+        </div>
+        <h3 class="card-title">Tailwind CSS</h3>
+        <p class="card-desc">
+          Utility-first, design tokens, variantes, plugins e a filosofia
+          de estilizar componentes diretamente no markup.
+        </p>
+        <div class="card-foot">
+          <span class="status">Pronto</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a class="card" href="pages/manual-nextjs.html">
+        <div class="card-head">
+          <div class="mark">Nx</div>
+          <span class="vol">Volume VII</span>
+        </div>
+        <h3 class="card-title">Next.js</h3>
+        <p class="card-desc">
+          App Router, Server Components, Server Actions, streaming,
+          cache e o modelo mental de full-stack React.
+        </p>
+        <div class="card-foot">
+          <span class="status">Pronto</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ═══ ONDA 3 ═══ -->
+  <section class="wave" id="onda-3">
+    <div class="wave-header">
+      <span class="wave-label">Onda 03</span>
+      <h2 class="wave-title">Backend TypeScript</h2>
+      <span class="wave-desc">Do runtime ao banco de dados</span>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="pages/manual-nodejs.html">
+        <div class="card-head">
+          <div class="mark">Nd</div>
+          <span class="vol">Volume VIII</span>
+        </div>
+        <h3 class="card-title">Node.js</h3>
+        <p class="card-desc">
+          Runtime, módulos, streams, event loop, workers e a base
+          para qualquer backend JavaScript em produção.
+        </p>
+        <div class="card-foot">
+          <span class="status">Pronto</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a class="card" href="pages/manual-hono.html">
+        <div class="card-head">
+          <div class="mark">Hn</div>
+          <span class="vol">Volume IX</span>
+        </div>
+        <h3 class="card-title">Hono</h3>
+        <p class="card-desc">
+          Framework web minimalista, middleware, validação, RPC
+          e deploy em múltiplos runtimes (Node, Bun, edge).
+        </p>
+        <div class="card-foot">
+          <span class="status">Pronto</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a class="card" href="pages/manual-sql-postgresql.html">
+        <div class="card-head">
+          <div class="mark">Pg</div>
+          <span class="vol">Volume X</span>
+        </div>
+        <h3 class="card-title">SQL + PostgreSQL</h3>
+        <p class="card-desc">
+          Modelo relacional, JOINs, transações, índices, JSONB,
+          full-text search e PostgreSQL 16/17 em produção.
+        </p>
+        <div class="card-foot">
+          <span class="status">Pronto</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <div class="card planned" aria-disabled="true">
+        <div class="card-head">
+          <div class="mark">Dz</div>
+          <span class="vol">Volume XI</span>
+        </div>
+        <h3 class="card-title">Drizzle ORM</h3>
+        <p class="card-desc">
+          ORM TypeScript-first, schema-as-code, queries tipadas
+          e migrations integradas ao Volume X.
+        </p>
+        <div class="card-foot">
+          <span class="status">Em produção</span>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+
+      <div class="card planned" aria-disabled="true">
+        <div class="card-head">
+          <div class="mark">Zd</div>
+          <span class="vol">Volume XII</span>
+        </div>
+        <h3 class="card-title">Zod</h3>
+        <p class="card-desc">
+          Validação de schemas em runtime, inferência de tipos
+          e o contrato entre fronteiras da aplicação.
+        </p>
+        <div class="card-foot">
+          <span class="status">Planejado</span>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+
+      <div class="card planned" aria-disabled="true">
+        <div class="card-head">
+          <div class="mark">Au</div>
+          <span class="vol">Volume XIII</span>
+        </div>
+        <h3 class="card-title">Autenticação moderna</h3>
+        <p class="card-desc">
+          Sessões, JWT, OAuth, OIDC, passkeys e a anatomia
+          de autenticação segura em apps web atuais.
+        </p>
+        <div class="card-foot">
+          <span class="status">Planejado</span>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ ONDA 4 ═══ -->
+  <section class="wave" id="onda-4">
+    <div class="wave-header">
+      <span class="wave-label">Onda 04</span>
+      <h2 class="wave-title">Ferramentas do ofício</h2>
+      <span class="wave-desc">As ferramentas que sustentam o dia a dia</span>
+    </div>
+    <div class="grid">
+
+      <div class="card planned" aria-disabled="true">
+        <div class="card-head">
+          <div class="mark">Gt</div>
+          <span class="vol">Volume XIV</span>
+        </div>
+        <h3 class="card-title">Git</h3>
+        <p class="card-desc">
+          Modelo mental de commits, branches, rebase, merge,
+          worktree e fluxos de colaboração em equipe.
+        </p>
+        <div class="card-foot">
+          <span class="status">Planejado</span>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+
+      <div class="card planned" aria-disabled="true">
+        <div class="card-head">
+          <div class="mark">Dk</div>
+          <span class="vol">Volume XV</span>
+        </div>
+        <h3 class="card-title">Docker</h3>
+        <p class="card-desc">
+          Imagens, containers, multi-stage builds, Compose
+          e a anatomia de ambientes reproduzíveis.
+        </p>
+        <div class="card-foot">
+          <span class="status">Planejado</span>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+
+      <div class="card planned" aria-disabled="true">
+        <div class="card-head">
+          <div class="mark">Sh</div>
+          <span class="vol">Volume XVI</span>
+        </div>
+        <h3 class="card-title">Terminal &amp; Bash</h3>
+        <p class="card-desc">
+          Shell, pipes, redirecionamento, scripts, variáveis
+          e os utilitários POSIX essenciais.
+        </p>
+        <div class="card-foot">
+          <span class="status">Planejado</span>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+
+      <div class="card planned" aria-disabled="true">
+        <div class="card-head">
+          <div class="mark">Rx</div>
+          <span class="vol">Volume XVII</span>
+        </div>
+        <h3 class="card-title">Regex</h3>
+        <p class="card-desc">
+          Expressões regulares do básico ao avançado, com sabores
+          POSIX, PCRE, JavaScript e padrões idiomáticos.
+        </p>
+        <div class="card-foot">
+          <span class="status">Planejado</span>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <div>FullStack Manual · Coleção de referência em construção</div>
+    <a href="https://github.com/vitormattosdev/FullStack-Manual" target="_blank" rel="noopener">
+      github.com/vitormattosdev/FullStack-Manual
+    </a>
+  </footer>
+
+</main>
+</body>
 </html>
