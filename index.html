@@ -241,13 +241,14 @@
       <h1>FullStack <em>Manual</em></h1>
       <p class="hero-sub">
         Coleção de manuais de referência <strong>fullstack</strong> em português brasileiro.
-        Cada volume é um arquivo único e autocontido, com sintaxe destacada,
-        navegação por capítulos e zero dependências.
+        Cada volume é um arquivo único e autocontido. Os volumes estão organizados como uma
+        <strong>trilha de aprendizado</strong> — siga os passos em ordem se está começando no fullstack;
+        o número do <em>Volume</em> é apenas a referência canônica de cada manual.
       </p>
       <div class="hero-meta">
         <span><strong>17</strong>&nbsp;/&nbsp;17 publicados</span>
         <span class="dot">·</span>
-        <span>4 ondas temáticas</span>
+        <span>trilha de aprendizado</span>
         <span class="dot">·</span>
         <span>PT-BR</span>
       </div>
@@ -257,51 +258,19 @@
     </div>
   </header>
 
-  <!-- ═══ ONDA 1 ═══ -->
-  <section class="wave" id="onda-1">
+    <!-- Fase 01 -->
+  <section class="wave" id="fase-1">
     <div class="wave-header">
-      <span class="wave-label">Onda 01</span>
-      <h2 class="wave-title">Fundamentos da web</h2>
-      <span class="wave-desc">A base que sustenta todo o stack</span>
+      <span class="wave-label">Fase 01</span>
+      <h2 class="wave-title">A base da web</h2>
+      <span class="wave-desc">O que o navegador entende — comece aqui</span>
     </div>
     <div class="grid">
-
-      <a class="card" href="pages/typescript.html">
-        <div class="card-head">
-          <div class="mark">Ts</div>
-          <span class="vol">Volume I</span>
-        </div>
-        <h3 class="card-title">TypeScript</h3>
-        <p class="card-desc">
-          Tipos, inferência, genéricos, utility types e o sistema de tipos
-          que sustenta o resto da coleção.
-        </p>
-        <div class="card-foot">
-          <span class="status">Pronto</span>
-          <span class="arrow">→</span>
-        </div>
-      </a>
-
-      <a class="card" href="pages/javascript.html">
-        <div class="card-head">
-          <div class="mark">Js</div>
-          <span class="vol">Volume II</span>
-        </div>
-        <h3 class="card-title">JavaScript moderno</h3>
-        <p class="card-desc">
-          ES2024+, escopo, closures, promises, async/await, módulos
-          e os recursos da linguagem em uso real.
-        </p>
-        <div class="card-foot">
-          <span class="status">Pronto</span>
-          <span class="arrow">→</span>
-        </div>
-      </a>
 
       <a class="card" href="pages/manual-html.html">
         <div class="card-head">
           <div class="mark">Hs</div>
-          <span class="vol">Volume III</span>
+          <span class="vol">Passo 1 · Vol III</span>
         </div>
         <h3 class="card-title">HTML semântico + acessibilidade</h3>
         <p class="card-desc">
@@ -317,7 +286,7 @@
       <a class="card" href="pages/manual-css.html">
         <div class="card-head">
           <div class="mark">Cs</div>
-          <span class="vol">Volume IV</span>
+          <span class="vol">Passo 2 · Vol IV</span>
         </div>
         <h3 class="card-title">CSS moderno</h3>
         <p class="card-desc">
@@ -333,19 +302,107 @@
     </div>
   </section>
 
-  <!-- ═══ ONDA 2 ═══ -->
-  <section class="wave" id="onda-2">
+  <!-- Fase 02 -->
+  <section class="wave" id="fase-2">
     <div class="wave-header">
-      <span class="wave-label">Onda 02</span>
-      <h2 class="wave-title">Camada visual</h2>
-      <span class="wave-desc">Interfaces que escalam em complexidade</span>
+      <span class="wave-label">Fase 02</span>
+      <h2 class="wave-title">Programar</h2>
+      <span class="wave-desc">A linguagem que dá vida às páginas, e os tipos que a protegem</span>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="pages/javascript.html">
+        <div class="card-head">
+          <div class="mark">Js</div>
+          <span class="vol">Passo 3 · Vol II</span>
+        </div>
+        <h3 class="card-title">JavaScript moderno</h3>
+        <p class="card-desc">
+          ES2024+, escopo, closures, promises, async/await, módulos
+          e os recursos da linguagem em uso real.
+        </p>
+        <div class="card-foot">
+          <span class="status">Pronto</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a class="card" href="pages/typescript.html">
+        <div class="card-head">
+          <div class="mark">Ts</div>
+          <span class="vol">Passo 4 · Vol I</span>
+        </div>
+        <h3 class="card-title">TypeScript</h3>
+        <p class="card-desc">
+          Tipos, inferência, genéricos, utility types e o sistema de tipos
+          que sustenta o resto da coleção.
+        </p>
+        <div class="card-foot">
+          <span class="status">Pronto</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- Fase 03 -->
+  <section class="wave" id="fase-3">
+    <div class="wave-header">
+      <span class="wave-label">Fase 03</span>
+      <h2 class="wave-title">Ferramentas do ofício</h2>
+      <span class="wave-desc">O terminal e o versionamento — usados a partir daqui, todo dia</span>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="pages/manual-bash.html">
+        <div class="card-head">
+          <div class="mark">Sh</div>
+          <span class="vol">Passo 5 · Vol XVI</span>
+        </div>
+        <h3 class="card-title">Terminal &amp; Bash</h3>
+        <p class="card-desc">
+          Shell, pipes, redirecionamento, filtros de texto, scripts,
+          funções e a escrita de automação robusta.
+        </p>
+        <div class="card-foot">
+          <span class="status">Pronto</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a class="card" href="pages/manual-git.html">
+        <div class="card-head">
+          <div class="mark">Gt</div>
+          <span class="vol">Passo 6 · Vol XIV</span>
+        </div>
+        <h3 class="card-title">Git</h3>
+        <p class="card-desc">
+          Modelo de dados de commits, branches, rebase, merge,
+          conflitos, workflows e colaboração em equipe.
+        </p>
+        <div class="card-foot">
+          <span class="status">Pronto</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- Fase 04 -->
+  <section class="wave" id="fase-4">
+    <div class="wave-header">
+      <span class="wave-label">Fase 04</span>
+      <h2 class="wave-title">Interfaces modernas</h2>
+      <span class="wave-desc">Construir o frontend com componentes</span>
     </div>
     <div class="grid">
 
       <a class="card" href="pages/manual-react.html">
         <div class="card-head">
           <div class="mark">Rc</div>
-          <span class="vol">Volume V</span>
+          <span class="vol">Passo 7 · Vol V</span>
         </div>
         <h3 class="card-title">React</h3>
         <p class="card-desc">
@@ -361,7 +418,7 @@
       <a class="card" href="pages/manual-tailwind.html">
         <div class="card-head">
           <div class="mark">Tw</div>
-          <span class="vol">Volume VI</span>
+          <span class="vol">Passo 8 · Vol VI</span>
         </div>
         <h3 class="card-title">Tailwind CSS</h3>
         <p class="card-desc">
@@ -377,7 +434,7 @@
       <a class="card" href="pages/manual-nextjs.html">
         <div class="card-head">
           <div class="mark">Nx</div>
-          <span class="vol">Volume VII</span>
+          <span class="vol">Passo 9 · Vol VII</span>
         </div>
         <h3 class="card-title">Next.js</h3>
         <p class="card-desc">
@@ -393,19 +450,19 @@
     </div>
   </section>
 
-  <!-- ═══ ONDA 3 ═══ -->
-  <section class="wave" id="onda-3">
+  <!-- Fase 05 -->
+  <section class="wave" id="fase-5">
     <div class="wave-header">
-      <span class="wave-label">Onda 03</span>
-      <h2 class="wave-title">Backend TypeScript</h2>
-      <span class="wave-desc">Do runtime ao banco de dados</span>
+      <span class="wave-label">Fase 05</span>
+      <h2 class="wave-title">Backend e dados</h2>
+      <span class="wave-desc">O servidor, o banco, a validação e a segurança</span>
     </div>
     <div class="grid">
 
       <a class="card" href="pages/manual-nodejs.html">
         <div class="card-head">
           <div class="mark">Nd</div>
-          <span class="vol">Volume VIII</span>
+          <span class="vol">Passo 10 · Vol VIII</span>
         </div>
         <h3 class="card-title">Node.js</h3>
         <p class="card-desc">
@@ -421,7 +478,7 @@
       <a class="card" href="pages/manual-hono.html">
         <div class="card-head">
           <div class="mark">Hn</div>
-          <span class="vol">Volume IX</span>
+          <span class="vol">Passo 11 · Vol IX</span>
         </div>
         <h3 class="card-title">Hono</h3>
         <p class="card-desc">
@@ -437,7 +494,7 @@
       <a class="card" href="pages/manual-sql-postgresql.html">
         <div class="card-head">
           <div class="mark">Pg</div>
-          <span class="vol">Volume X</span>
+          <span class="vol">Passo 12 · Vol X</span>
         </div>
         <h3 class="card-title">SQL + PostgreSQL</h3>
         <p class="card-desc">
@@ -453,7 +510,7 @@
       <a class="card" href="pages/manual-drizzle.html">
         <div class="card-head">
           <div class="mark">Dz</div>
-          <span class="vol">Volume XI</span>
+          <span class="vol">Passo 13 · Vol XI</span>
         </div>
         <h3 class="card-title">Drizzle ORM</h3>
         <p class="card-desc">
@@ -466,10 +523,10 @@
         </div>
       </a>
 
-           <a class="card" href="pages/manual-zod.html">
+      <a class="card" href="pages/manual-zod.html">
         <div class="card-head">
           <div class="mark">Zd</div>
-          <span class="vol">Volume XII</span>
+          <span class="vol">Passo 14 · Vol XII</span>
         </div>
         <h3 class="card-title">Zod</h3>
         <p class="card-desc">
@@ -485,7 +542,7 @@
       <a class="card" href="pages/manual-autenticacao.html">
         <div class="card-head">
           <div class="mark">Au</div>
-          <span class="vol">Volume XIII</span>
+          <span class="vol">Passo 15 · Vol XIII</span>
         </div>
         <h3 class="card-title">Autenticação moderna</h3>
         <p class="card-desc">
@@ -501,35 +558,19 @@
     </div>
   </section>
 
-  <!-- ═══ ONDA 4 ═══ -->
-  <section class="wave" id="onda-4">
+  <!-- Fase 06 -->
+  <section class="wave" id="fase-6">
     <div class="wave-header">
-      <span class="wave-label">Onda 04</span>
-      <h2 class="wave-title">Ferramentas do ofício</h2>
-      <span class="wave-desc">As ferramentas que sustentam o dia a dia</span>
+      <span class="wave-label">Fase 06</span>
+      <h2 class="wave-title">Produção e extras</h2>
+      <span class="wave-desc">Empacotar para entregar, e dominar padrões de texto</span>
     </div>
     <div class="grid">
-
-      <a class="card" href="pages/manual-git.html">
-        <div class="card-head">
-          <div class="mark">Gt</div>
-          <span class="vol">Volume XIV</span>
-        </div>
-        <h3 class="card-title">Git</h3>
-        <p class="card-desc">
-          Modelo de dados de commits, branches, rebase, merge,
-          conflitos, workflows e colaboração em equipe.
-        </p>
-        <div class="card-foot">
-          <span class="status">Pronto</span>
-          <span class="arrow">→</span>
-        </div>
-      </a>
 
       <a class="card" href="pages/manual-docker.html">
         <div class="card-head">
           <div class="mark">Dk</div>
-          <span class="vol">Volume XV</span>
+          <span class="vol">Passo 16 · Vol XV</span>
         </div>
         <h3 class="card-title">Docker</h3>
         <p class="card-desc">
@@ -542,26 +583,10 @@
         </div>
       </a>
 
-      <a class="card" href="pages/manual-bash.html">
-        <div class="card-head">
-          <div class="mark">Sh</div>
-          <span class="vol">Volume XVI</span>
-        </div>
-        <h3 class="card-title">Terminal &amp; Bash</h3>
-        <p class="card-desc">
-          Shell, pipes, redirecionamento, filtros de texto, scripts,
-          funções e a escrita de automação robusta.
-        </p>
-        <div class="card-foot">
-          <span class="status">Pronto</span>
-          <span class="arrow">→</span>
-        </div>
-      </a>
-
       <a class="card" href="pages/manual-regex.html">
         <div class="card-head">
           <div class="mark">Rx</div>
-          <span class="vol">Volume XVII</span>
+          <span class="vol">Passo 17 · Vol XVII</span>
         </div>
         <h3 class="card-title">Regex</h3>
         <p class="card-desc">

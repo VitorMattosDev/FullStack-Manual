@@ -11,7 +11,7 @@ Hospedados em GitHub Pages: `https://vitormattosdev.github.io/FullStack-Manual/`
 ## Estrutura do repositório
 
 ```
-index.html                         # landing page: hero + 4 ondas + cards por volume
+index.html                         # landing page: hero + trilha de aprendizado (6 fases) + cards por volume
 pages/
   typescript.html                  # Vol I    (mark: Ts)
   javascript.html                  # Vol II   (Js)
@@ -227,7 +227,8 @@ Cada esqueleto novo é derivado do manual anterior, reaproveitando head/CSS/JS. 
 
 ## Atualizar o `index.html` ao concluir um volume
 
-- Trocar o card de `<div class="card planned">` para `<a class="card" href="pages/manual-<slug>.html">`, status "Planejado" → "Pronto".
+- O index é uma **trilha de aprendizado**: 6 seções `<section class="wave" id="fase-N">` (fases pedagógicas, NÃO a ordem dos volumes), cada card com `<span class="vol">Passo N · Vol XX</span>`. A ordem dos cards é a ordem de estudo recomendada para iniciantes; o "Vol XX" é só a referência canônica.
+- Trocar o card de `<div class="card planned">` para `<a class="card" href="pages/manual-<slug>.html">`, status "Planejado" → "Pronto", e inseri-lo na fase certa da trilha com o `Passo N` correto.
 - Atualizar o hero: contador `N / 17 publicados` e `progress-fill` width = `N/17 * 100`%.
 - Manter o `mark` do card consistente com o `brand-mark` do manual.
 

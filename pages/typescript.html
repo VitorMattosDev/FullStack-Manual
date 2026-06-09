@@ -664,6 +664,7 @@
         <li><a href="#introducao">Introdução ao TypeScript</a></li>
         <li><a href="#instalacao">Instalação e setup</a></li>
         <li><a href="#tsconfig">O arquivo tsconfig.json</a></li>
+        <li><a href="#strict-mode">Strict mode e configuração</a></li>
       </ul>
     </div>
 
@@ -708,6 +709,7 @@
         <li><a href="#intersection">Intersection types</a></li>
         <li><a href="#narrowing">Narrowing e Type Guards</a></li>
         <li><a href="#discriminated">Discriminated Unions</a></li>
+        <li><a href="#narrowing-avancado">Narrowing avançado</a></li>
       </ul>
     </div>
 
@@ -727,6 +729,7 @@
         <li><a href="#generics">Introdução a Generics</a></li>
         <li><a href="#constraints">Constraints com extends</a></li>
         <li><a href="#generics-defaults">Defaults em Generics</a></li>
+        <li><a href="#generics-avancados">Generics avançados</a></li>
       </ul>
     </div>
 
@@ -741,6 +744,7 @@
         <li><a href="#mapped">Mapped Types</a></li>
         <li><a href="#template-literal">Template Literal Types</a></li>
         <li><a href="#recursive">Tipos Recursivos</a></li>
+        <li><a href="#operador-infer">infer: extração de tipos</a></li>
       </ul>
     </div>
 
@@ -748,6 +752,8 @@
       <div class="nav-group-title">Utility Types</div>
       <ul>
         <li><a href="#utility">Catálogo de Utility Types</a></li>
+        <li><a href="#construindo-utility">Construindo Utility Types</a></li>
+        <li><a href="#branded-types">Branded types e nominal</a></li>
       </ul>
     </div>
 
@@ -758,6 +764,8 @@
         <li><a href="#declaration-files">Arquivos .d.ts</a></li>
         <li><a href="#decorators">Decorators</a></li>
         <li><a href="#async">Tipos assíncronos</a></li>
+        <li><a href="#padroes-praticos">Padrões do mundo real</a></li>
+        <li><a href="#modelo-compilador">Modelo mental do compilador</a></li>
         <li><a href="#boas-praticas">Boas práticas</a></li>
       </ul>
     </div>
@@ -912,9 +920,149 @@ console.log(saudar(maria));</code></pre>
       </div>
     </section>
 
-    <!-- ============ CAPÍTULO 2: TIPOS BÁSICOS ============ -->
-    <section class="chapter" id="tipos-basicos">
+    <!-- ============ CAPÍTULO 2: STRICT MODE ============ -->
+    <section class="chapter" id="strict-mode">
       <div class="chapter-number">Capítulo 02</div>
+      <h2 class="chapter-title">Strict mode <em>e configuração</em></h2>
+      <p class="chapter-intro">O Capítulo 1 instalou o TypeScript e tocou no <code>tsconfig.json</code>. Mas há uma decisão de configuração que importa mais que todas as outras juntas, e que separa um TypeScript que de fato protege de um que só decora o código: o <strong>strict mode</strong>. Sem ele, o compilador deixa passar a maior parte dos erros que justificam usar TypeScript — variáveis possivelmente <code>null</code>, parâmetros com <code>any</code> implícito, atribuições inseguras. Este capítulo trata o <code>tsconfig.json</code> a sério: o que o <code>strict</code> realmente ativa, as flags que mais importam, como o compilador resolve módulos, e por que começar todo projeto com a configuração mais rígida possível é o caminho para colher o valor real da linguagem.</p>
+
+      <h3 class="topic" id="strict-flag"><span class="hash">#</span> A flag que define tudo: strict</h3>
+      <p>O <code>"strict": true</code> no <code>tsconfig.json</code> não é uma opção entre muitas — é a opção. Ela é um atalho que liga um conjunto de verificações rigorosas de uma vez, e cada uma fecha uma classe de bug que, desligada, o TypeScript ignora silenciosamente. Sem <code>strict</code>, o compilador aceita código que parece tipado mas não é checado de verdade, dando uma falsa sensação de segurança. Com ele, o TypeScript cumpre a promessa: pegar erros antes da execução.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">tsconfig.json</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>{
+  "compilerOptions": {
+    "strict": true,            // liga TODAS as checagens rígidas de uma vez
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler"
+  }
+}
+
+// "strict": true é equivalente a ligar individualmente:
+//   strictNullChecks, noImplicitAny, strictFunctionTypes,
+//   strictBindCallApply, strictPropertyInitialization,
+//   noImplicitThis, useUnknownInCatchVariables, alwaysStrict</code></pre>
+      </div>
+
+      <h3 class="topic" id="strict-null-checks"><span class="hash">#</span> strictNullChecks: o bilhão de dólares</h3>
+      <p>A checagem mais importante que o <code>strict</code> ativa é <code>strictNullChecks</code>. Sem ela, <code>null</code> e <code>undefined</code> são atribuíveis a <em>qualquer</em> tipo — um <code>string</code> pode secretamente ser <code>null</code>, e o compilador não avisa. Com ela, <code>null</code> e <code>undefined</code> são tipos próprios, e você é <em>obrigado</em> a lidar com a possibilidade de um valor estar ausente antes de usá-lo. É a checagem que elimina o erro mais comum da programação — o acesso a algo que não existe.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">strict-null.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>function primeiraLetra(texto: string): string {
+  return texto[0].toUpperCase()
+}
+
+// SEM strictNullChecks: compila, mas quebra em runtime se vier null
+// COM strictNullChecks: o tipo abaixo exige tratamento explícito
+function buscar(id: number): string | undefined {
+  return id === 1 ? "Ana" : undefined
+}
+
+const nome = buscar(2)
+nome.toUpperCase()      // ❌ Erro: 'nome' é possivelmente 'undefined'
+
+if (nome !== undefined) {
+  nome.toUpperCase()    // ✅ ok — o narrowing (Cap 5) provou que existe
+}</code></pre>
+      </div>
+
+      <div class="callout warn">
+        <div class="callout-label">Sem strictNullChecks, o TypeScript mente</div>
+        <div class="callout-body">A "invenção do bilhão de dólares" — o null reference — é o erro que mais custou à indústria. Sem <code>strictNullChecks</code>, o TypeScript reproduz exatamente esse problema: um valor tipado como <code>string</code> pode ser <code>null</code> em runtime, e o compilador garante que está tudo bem quando não está. É a configuração que, sozinha, justifica migrar para TypeScript — e desligá-la (ou não ligar o <code>strict</code>) joga fora a maior parte do valor da linguagem. Todo projeto novo deve nascer com <code>strict: true</code>; projetos legados devem migrar gradualmente para ele.</div>
+      </div>
+
+      <h3 class="topic" id="no-implicit-any"><span class="hash">#</span> noImplicitAny: sem buracos silenciosos</h3>
+      <p>Outra checagem central do <code>strict</code> é <code>noImplicitAny</code>. Quando o TypeScript não consegue inferir o tipo de algo (um parâmetro de função sem anotação, por exemplo), ele tem duas opções: assumir <code>any</code> em silêncio (desligando a checagem para aquele valor) ou apontar um erro exigindo que você o tipe. O <code>noImplicitAny</code> escolhe a segunda. Sem ele, parâmetros não anotados viram <code>any</code> e propagam a ausência de checagem pelo código; com ele, você é forçado a ser explícito onde a inferência não alcança.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">implicit-any.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// SEM noImplicitAny: 'item' vira 'any' silenciosamente
+function processar(item) {        // ❌ com a flag: erro, 'item' tem any implícito
+  return item.qualquerCoisa()     // any desliga toda a checagem aqui
+}
+
+// COM noImplicitAny: você anota e o compilador checa
+function processarTS(item: { nome: string }) {
+  return item.nome.toUpperCase()  // ✅ checado de verdade
+}</code></pre>
+      </div>
+
+      <h3 class="topic" id="flags-uteis"><span class="hash">#</span> Flags além do strict</h3>
+      <p>O <code>strict</code> é a base, mas há flags adicionais que valem ligar em projetos sérios. Elas pegam casos que o <code>strict</code> não cobre — índices de array possivelmente indefinidos, variáveis não usadas, retornos faltando. Cada uma fecha mais uma fresta. As mais valiosas estão abaixo.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">tsconfig.json</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>{
+  "compilerOptions": {
+    "strict": true,
+
+    // arr[i] passa a ser 'T | undefined' — força checar o índice
+    "noUncheckedIndexedAccess": true,
+
+    // erro em variáveis e parâmetros declarados mas não usados
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    // erro se um caminho da função não retorna valor
+    "noImplicitReturns": true,
+
+    // exige 'override' ao sobrescrever métodos (Cap 6)
+    "noImplicitOverride": true
+  }
+}</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">noUncheckedIndexedAccess: a flag esquecida que mais protege</div>
+        <div class="callout-body">Curiosamente, uma das checagens mais úteis <em>não</em> está incluída no <code>strict</code>: <code>noUncheckedIndexedAccess</code>. Por padrão, o TypeScript assume que <code>array[i]</code> sempre existe e tem o tipo dos elementos — mas isso é mentira, pois <code>i</code> pode estar fora dos limites, e <code>obj[chave]</code> pode não existir. Com a flag, todo acesso por índice retorna <code>T | undefined</code>, forçando você a checar antes de usar — fechando uma classe inteira de erros de "undefined is not a function". É uma das primeiras flags a ligar depois do <code>strict</code>, e a que mais surpreende quem não a conhece.</div>
+      </div>
+
+      <h3 class="topic" id="module-resolution"><span class="hash">#</span> Como o compilador acha os módulos</h3>
+      <p>Uma fonte comum de confusão é a <em>resolução de módulos</em> — como o TypeScript transforma um <code>import "./algo"</code> num arquivo real. As opções <code>module</code> e <code>moduleResolution</code> controlam isso, e a escolha certa depende do ambiente. Para projetos modernos com bundlers (Vite, esbuild) ou runtimes modernos, <code>"moduleResolution": "Bundler"</code> é a escolha atual; para Node puro, <code>"NodeNext"</code>. Acertar isso evita os erros enigmáticos de "cannot find module" que não têm a ver com o código, e sim com a configuração.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">tsconfig.json</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>{
+  "compilerOptions": {
+    "target": "ES2022",            // qual versão de JS gerar
+    "module": "ESNext",            // sintaxe de módulo na saída
+    "moduleResolution": "Bundler", // como resolver imports (projetos modernos)
+    "esModuleInterop": true,       // interop suave entre ESM e CommonJS (Vol VIII)
+    "skipLibCheck": true,          // não rechecar os .d.ts das dependências (mais rápido)
+    "verbatimModuleSyntax": true   // import type explícito (Cap sobre módulos)
+  }
+}
+// Para Node puro (sem bundler): use "moduleResolution": "NodeNext"</code></pre>
+      </div>
+
+      <div class="callout note">
+        <div class="callout-label">Comece rígido, relaxe só com motivo</div>
+        <div class="callout-body">A estratégia certa para a configuração é o oposto da intuição: comece com o máximo de rigor (<code>strict</code> mais as flags extras) e só desligue uma checagem se houver um motivo concreto e documentado. É muito mais fácil afrouxar uma regra pontualmente do que apertar depois — um projeto que cresceu sem <code>strictNullChecks</code> acumula milhares de erros ao tentar ligá-la. Os <em>presets</em> da comunidade (como os <code>@tsconfig/strictest</code>) embalam essas escolhas rígidas e são um bom ponto de partida. Rigor de configuração é dívida que você não paga depois.</div>
+      </div>
+
+      <h3 class="topic" id="config-referencia"><span class="hash">#</span> Tabela de referência</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Opção</th><th>O que faz</th><th>Recomendação</th></tr></thead>
+          <tbody>
+            <tr><td>strict</td><td>Liga todas as checagens rígidas</td><td>Sempre true</td></tr>
+            <tr><td>strictNullChecks</td><td>null/undefined são tipos próprios</td><td>Crucial (vem no strict)</td></tr>
+            <tr><td>noImplicitAny</td><td>Proíbe any implícito</td><td>Crucial (vem no strict)</td></tr>
+            <tr><td>noUncheckedIndexedAccess</td><td>arr[i] vira T | undefined</td><td>Ligar (não vem no strict)</td></tr>
+            <tr><td>noUnusedLocals/Parameters</td><td>Erro em código não usado</td><td>Ligar</td></tr>
+            <tr><td>moduleResolution</td><td>Como resolver imports</td><td>Bundler ou NodeNext</td></tr>
+            <tr><td>target</td><td>Versão de JS gerada</td><td>ES2022+</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 3: TIPOS BÁSICOS ============ -->
+    <section class="chapter" id="tipos-basicos">
+      <div class="chapter-number">Capítulo 03</div>
       <h2 class="chapter-title">Os <em>tipos básicos</em></h2>
       <p class="chapter-intro">TypeScript herda de JavaScript todos os tipos primitivos e adiciona alguns próprios, nascidos da necessidade de descrever situações que o JavaScript não trata. Este capítulo é o vocabulário fundamental da linguagem.</p>
 
@@ -1191,9 +1339,9 @@ type StatusModerno = "ativo" | "inativo" | "banido";</code></pre>
       </div>
     </section>
 
-    <!-- ============ CAPÍTULO 3: FUNÇÕES ============ -->
+    <!-- ============ CAPÍTULO 4: FUNÇÕES ============ -->
     <section class="chapter" id="funcoes">
-      <div class="chapter-number">Capítulo 03</div>
+      <div class="chapter-number">Capítulo 04</div>
       <h2 class="chapter-title">Funções <em>tipadas</em></h2>
       <p class="chapter-intro">Funções são cidadãs de primeira classe em JavaScript. Em TypeScript, isso significa que elas têm tipos ricos: parâmetros tipados, retornos tipados, parâmetros opcionais, sobrecargas e até a assinatura do <code>this</code>.</p>
 
@@ -1298,9 +1446,9 @@ c.incrementar(); // ✅
       </div>
     </section>
 
-    <!-- ============ CAPÍTULO 4: INTERFACES E TYPES ============ -->
+    <!-- ============ CAPÍTULO 5: INTERFACES E TYPES ============ -->
     <section class="chapter" id="interfaces">
-      <div class="chapter-number">Capítulo 04</div>
+      <div class="chapter-number">Capítulo 05</div>
       <h2 class="chapter-title">Interfaces e <em>Type aliases</em></h2>
       <p class="chapter-intro">Estas são as duas maneiras primárias de nomear um tipo no TypeScript. Elas parecem a mesma coisa e, na maior parte do tempo, são intercambiáveis — mas cada uma tem suas particularidades.</p>
 
@@ -1439,9 +1587,9 @@ interface Cache {
       </div>
     </section>
 
-    <!-- ============ CAPÍTULO 5: UNIONS E NARROWING ============ -->
+    <!-- ============ CAPÍTULO 6: UNIONS E NARROWING ============ -->
     <section class="chapter" id="union">
-      <div class="chapter-number">Capítulo 05</div>
+      <div class="chapter-number">Capítulo 06</div>
       <h2 class="chapter-title">Unions, Intersections e <em>Narrowing</em></h2>
       <p class="chapter-intro">Poucos recursos expressam tanto quanto as uniões de tipos. Combinadas com o mecanismo de <em>narrowing</em> do TypeScript, você consegue representar e validar cenários do mundo real com precisão cirúrgica.</p>
 
@@ -1595,9 +1743,136 @@ function renderizarCompleto(req: Requisicao): string {
       </div>
     </section>
 
-    <!-- ============ CAPÍTULO 6: CLASSES ============ -->
+    <!-- ============ CAPÍTULO 7: NARROWING AVANÇADO ============ -->
+    <section class="chapter" id="narrowing-avancado">
+      <div class="chapter-number">Capítulo 07</div>
+      <h2 class="chapter-title">Narrowing <em>avançado</em></h2>
+      <p class="chapter-intro">O capítulo de Unions introduziu o narrowing — como o TypeScript estreita um tipo amplo (<code>string | number</code>) para um específico conforme você o testa. Aquilo cobriu o básico: <code>typeof</code>, <code>instanceof</code>, checagem de igualdade. Mas o narrowing tem ferramentas mais poderosas que permitem ensinar ao compilador coisas que ele não inferiria sozinho — funções que <em>afirmam</em> um tipo, predicados customizados que descrevem checagens complexas, e a checagem de exaustividade que garante que você tratou todos os casos. Este capítulo aprofunda o narrowing, e é onde o TypeScript deixa de ser um verificador passivo para virar uma ferramenta que você <em>programa</em> para entender a lógica do seu domínio. Dominar isto é a diferença entre lutar contra o compilador e fazê-lo trabalhar a seu favor.</p>
+
+      <h3 class="topic" id="type-predicates"><span class="hash">#</span> Type predicates: ensinando o narrowing</h3>
+      <p>Às vezes a checagem que distingue um tipo de outro é complexa demais para o compilador inferir — está dentro de uma função. Um <strong>type predicate</strong> resolve isso: uma função cujo tipo de retorno é <code>parametro is Tipo</code>, que diz ao compilador "se esta função retornar <code>true</code>, então o argumento é deste tipo". Você encapsula a lógica de checagem numa função, e o TypeScript passa a confiar nela para estreitar o tipo onde ela for usada.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">predicates.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>type Gato = { tipo: "gato"; miar: () =&gt; void }
+type Cao = { tipo: "cao"; latir: () =&gt; void }
+type Animal = Gato | Cao
+
+// Type predicate: o retorno "animal is Gato" ensina o narrowing
+function ehGato(animal: Animal): animal is Gato {
+  return animal.tipo === "gato"
+}
+
+function interagir(animal: Animal) {
+  if (ehGato(animal)) {
+    animal.miar()    // ✅ aqui o tipo é Gato (o predicate provou)
+  } else {
+    animal.latir()   // ✅ aqui é Cao (por eliminação)
+  }
+}</code></pre>
+      </div>
+
+      <div class="callout warn">
+        <div class="callout-label">O compilador confia no predicate — então acerte a lógica</div>
+        <div class="callout-body">O type predicate é uma <em>promessa</em> que você faz ao compilador, e ele a aceita sem verificar. Se a sua função <code>ehGato</code> retornar <code>true</code> para algo que <em>não</em> é um <code>Gato</code>, o TypeScript vai tratar aquele valor como <code>Gato</code> mesmo assim — e o erro só aparece em runtime, justamente o que o TypeScript deveria prevenir. Por isso a lógica dentro de um predicate precisa estar correta de verdade: você está desligando a checagem do compilador e assumindo a responsabilidade. Use predicates para encapsular checagens genuínas (verificar uma propriedade discriminante, validar a forma de um objeto), não para mentir sobre tipos. É poder com responsabilidade.</div>
+      </div>
+
+      <h3 class="topic" id="assertion-functions"><span class="hash">#</span> Assertion functions: asserts</h3>
+      <p>Um parente do type predicate é a <strong>assertion function</strong> — uma função que, em vez de <em>retornar</em> um booleano, <em>lança um erro</em> se a condição não for satisfeita. Seu tipo de retorno usa a palavra <code>asserts</code>: <code>asserts x is Tipo</code>. Depois de chamar a função, o compilador sabe que, se a execução continuou, o valor é daquele tipo (porque, caso contrário, a função teria lançado). É o padrão por trás de funções como <code>assert</code> e de validações que abortam em caso de dados inválidos — conectando à validação do Zod (Vol XII).</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">asserts.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// "asserts valor is string" — se a função retornar (não lançar),
+// o compilador passa a tratar 'valor' como string dali em diante.
+function assertString(valor: unknown): asserts valor is string {
+  if (typeof valor !== "string") {
+    throw new Error("esperava uma string")
+  }
+}
+
+function usar(entrada: unknown) {
+  assertString(entrada)
+  // a partir daqui, 'entrada' é string (senão teria lançado)
+  return entrada.toUpperCase()   // ✅ sem erro
+}
+
+// Variante só de condição: "asserts condicao" (sem 'is')
+function assert(condicao: unknown, msg: string): asserts condicao {
+  if (!condicao) throw new Error(msg)
+}</code></pre>
+      </div>
+
+      <h3 class="topic" id="exaustividade"><span class="hash">#</span> Exaustividade com never</h3>
+      <p>Uma das técnicas mais valiosas do TypeScript: garantir, em tempo de compilação, que você tratou <em>todos</em> os casos de uma union. Quando você estreita uma union até o fim, o tipo restante é <code>never</code> (o tipo vazio, que não tem valores). Atribuir o valor a uma variável <code>never</code> num ramo <code>default</code> faz o compilador <em>falhar</em> se algum caso ficou sem tratamento — porque aí o tipo não seria <code>never</code>. É uma rede de segurança: adicionar um novo membro à union quebra a compilação em todo lugar que precisa tratá-lo.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">exhaustive.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>type Forma =
+  | { tipo: "circulo"; raio: number }
+  | { tipo: "quadrado"; lado: number }
+
+function area(f: Forma): number {
+  switch (f.tipo) {
+    case "circulo":  return Math.PI * f.raio ** 2
+    case "quadrado": return f.lado ** 2
+    default:
+      // Se todos os casos foram tratados, 'f' aqui é 'never'.
+      const _exaustivo: never = f
+      return _exaustivo
+  }
+}
+
+// Se você adicionar { tipo: "triangulo"; ... } à union e esquecer
+// o case, o 'const _exaustivo: never = f' QUEBRA a compilação. ✅</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">O checador de exaustividade é o melhor amigo das unions</div>
+        <div class="callout-body">A checagem de exaustividade com <code>never</code> transforma uma union (Cap 5) num contrato que o compilador faz cumprir. Sem ela, adicionar um novo membro a uma union (um novo tipo de evento, um novo estado, um novo papel de usuário) compila sem reclamar, e os pontos que precisavam tratar o caso novo ficam silenciosamente incompletos — um bug esperando para acontecer em runtime. Com o ramo <code>never</code>, cada lugar que faz <code>switch</code> sobre a union <em>quebra a compilação</em> ao surgir um caso não tratado, apontando exatamente onde adicionar o tratamento. É a aplicação prática que torna as discriminated unions (Cap 5) tão poderosas, e um padrão que você usará constantemente em estados, eventos e máquinas de estado.</div>
+      </div>
+
+      <h3 class="topic" id="narrowing-operadores"><span class="hash">#</span> in, typeof e o fluxo de controle</h3>
+      <p>Além dos predicates e asserts, o TypeScript estreita tipos automaticamente a partir de operadores comuns, e vale conhecer o repertório completo. O operador <code>in</code> checa a presença de uma propriedade, estreitando para o membro da union que a tem. O <code>typeof</code> distingue tipos primitivos. E a <em>análise de fluxo de controle</em> do compilador acompanha as checagens ao longo do código — um <code>return</code> ou <code>throw</code> dentro de um <code>if</code> estreita o tipo no restante da função.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">narrowing-ops.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>type Resposta =
+  | { dados: string }
+  | { erro: string }
+
+function tratar(r: Resposta) {
+  // 'in' estreita pela presença da propriedade
+  if ("erro" in r) {
+    return console.error(r.erro)   // aqui r tem 'erro'
+  }
+  return console.log(r.dados)      // por eliminação, tem 'dados'
+}
+
+// Análise de fluxo: o early return estreita o resto da função
+function comprimento(x: string | null): number {
+  if (x === null) return 0        // descarta o null
+  return x.length                  // ✅ aqui x é string</code></pre>
+      </div>
+
+      <h3 class="topic" id="narrowing-referencia"><span class="hash">#</span> Tabela de referência</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Técnica</th><th>Forma</th><th>Para quê</th></tr></thead>
+          <tbody>
+            <tr><td>Type predicate</td><td><code>x is Tipo</code> (retorno)</td><td>Encapsular checagem complexa</td></tr>
+            <tr><td>Assertion function</td><td><code>asserts x is Tipo</code></td><td>Lançar se inválido; valida e estreita</td></tr>
+            <tr><td>Exaustividade</td><td><code>const _: never = x</code></td><td>Garantir todos os casos tratados</td></tr>
+            <tr><td><code>in</code></td><td><code>"prop" in x</code></td><td>Estreitar por propriedade</td></tr>
+            <tr><td><code>typeof</code> / <code>instanceof</code></td><td>operadores nativos</td><td>Primitivos / classes</td></tr>
+            <tr><td>Análise de fluxo</td><td>early return / throw</td><td>Estreitar o resto do escopo</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 8: CLASSES ============ -->
     <section class="chapter" id="classes">
-      <div class="chapter-number">Capítulo 06</div>
+      <div class="chapter-number">Capítulo 08</div>
       <h2 class="chapter-title">Classes em <em>TypeScript</em></h2>
       <p class="chapter-intro">Classes existem em JavaScript desde ES2015, mas TypeScript adiciona camadas importantes: modificadores de acesso, classes abstratas, implementação de interfaces, membros estáticos tipados e parâmetros de propriedade.</p>
 
@@ -1772,9 +2047,9 @@ strs.push("a");
       </div>
     </section>
 
-    <!-- ============ CAPÍTULO 7: GENERICS ============ -->
+    <!-- ============ CAPÍTULO 9: GENERICS ============ -->
     <section class="chapter" id="generics">
-      <div class="chapter-number">Capítulo 07</div>
+      <div class="chapter-number">Capítulo 09</div>
       <h2 class="chapter-title"><em>Generics</em></h2>
       <p class="chapter-intro">Generics são a ferramenta para escrever código que funciona com múltiplos tipos mantendo total segurança. Em vez de abrir mão da tipagem com <code>any</code>, você parametriza a função, classe ou tipo — o TypeScript preenche o parâmetro conforme o uso.</p>
 
@@ -1855,9 +2130,119 @@ function dividir(a: number, b: number): Resultado&lt;number&gt; {
       </div>
     </section>
 
-    <!-- ============ CAPÍTULO 8: TIPOS AVANÇADOS ============ -->
+    <!-- ============ CAPÍTULO 10: GENERICS AVANÇADOS ============ -->
+    <section class="chapter" id="generics-avancados">
+      <div class="chapter-number">Capítulo 10</div>
+      <h2 class="chapter-title">Generics <em>avançados</em></h2>
+      <p class="chapter-intro">O capítulo de Generics ensinou o essencial: parametrizar tipos para escrever código reutilizável e seguro, restringir parâmetros com <code>extends</code>, dar defaults. Mas os generics têm uma camada mais profunda, onde mora boa parte do poder real do TypeScript: como o compilador <em>infere</em> os parâmetros de tipo a partir dos argumentos, como restringir um parâmetro com base em outro (usando <code>keyof</code>), e os padrões que tornam funções genéricas verdadeiramente type-safe. Este capítulo aprofunda os generics na direção da inferência — o mecanismo que faz o TypeScript "adivinhar" os tipos certos sem você anotá-los — e dos padrões que aparecem em bibliotecas reais como o Zod e o Drizzle (Vols XI–XII). É onde os generics deixam de ser "tipos com variáveis" e viram a ferramenta que captura relações entre tipos.</p>
+
+      <h3 class="topic" id="inferencia-generics"><span class="hash">#</span> Inferência de parâmetros de tipo</h3>
+      <p>O recurso que torna generics agradáveis de usar: você raramente precisa anotar os parâmetros de tipo explicitamente, porque o compilador os <em>infere</em> a partir dos argumentos passados. Quando você chama uma função genérica, o TypeScript olha os valores reais e deduz o tipo. Isso é o que faz <code>identidade("oi")</code> funcionar sem escrever <code>identidade&lt;string&gt;("oi")</code> — o compilador vê a string e preenche o <code>T</code> sozinho. Entender quando a inferência funciona (e quando precisa de ajuda) é central para escrever APIs genéricas ergonômicas.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">inferencia.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>function primeiro&lt;T&gt;(arr: T[]): T | undefined {
+  return arr[0]
+}
+
+// O compilador INFERE T a partir do argumento — sem anotar:
+const n = primeiro([1, 2, 3])        // T = number, n: number | undefined
+const s = primeiro(["a", "b"])       // T = string, s: string | undefined
+
+// A inferência segue os valores: aqui T captura a forma do objeto
+function envolver&lt;T&gt;(valor: T): { valor: T } {
+  return { valor }
+}
+const r = envolver({ id: 1, nome: "Ana" })
+// r: { valor: { id: number; nome: string } } — tudo inferido</code></pre>
+      </div>
+
+      <h3 class="topic" id="keyof-generics"><span class="hash">#</span> Restringindo um tipo com base em outro</h3>
+      <p>O padrão genérico mais poderoso na prática: usar <code>keyof</code> para amarrar um parâmetro de tipo a <em>outro</em>. Uma função que pega uma propriedade de um objeto não deve aceitar qualquer string como chave — só as chaves que <em>aquele</em> objeto realmente tem. Combinando dois parâmetros de tipo com <code>K extends keyof T</code>, você expressa exatamente isso: "<code>K</code> é uma das chaves de <code>T</code>". O resultado é um acesso a propriedade totalmente type-safe, onde o retorno tem o tipo correto e chaves inexistentes são erro de compilação.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">keyof-generic.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// K é restrito às chaves de T; o retorno é o tipo daquela propriedade
+function pegar&lt;T, K extends keyof T&gt;(obj: T, chave: K): T[K] {
+  return obj[chave]
+}
+
+const usuario = { id: 1, nome: "Ana", ativo: true }
+
+const nome = pegar(usuario, "nome")    // nome: string  (tipo correto!)
+const id = pegar(usuario, "id")        // id: number
+pegar(usuario, "idade")                // ❌ Erro: "idade" não é chave de usuario
+
+// T[K] é um "indexed access type": o tipo da propriedade K em T.</code></pre>
+      </div>
+
+      <div class="callout note">
+        <div class="callout-label">Este é o padrão que torna bibliotecas type-safe</div>
+        <div class="callout-body">A combinação <code>&lt;T, K extends keyof T&gt;</code> com retorno <code>T[K]</code> não é um exercício acadêmico — é o coração de como bibliotecas como o Drizzle (Vol XI) e o Zod (Vol XII) entregam segurança de tipos. Quando você acessa uma coluna de uma tabela tipada, ou uma propriedade de um schema, e o editor sabe exatamente o tipo de retorno e recusa chaves inexistentes, é este padrão operando por baixo. Ele captura a relação "a chave pertence a este objeto e o retorno é o tipo daquela chave" — uma relação que só os generics conseguem expressar. Reconhecer este padrão te permite tanto entender como essas bibliotecas funcionam quanto escrever as suas próprias APIs genéricas seguras.</div>
+      </div>
+
+      <h3 class="topic" id="generics-defaults-constraints"><span class="hash">#</span> Defaults e constraints combinados</h3>
+      <p>Constraints (<code>extends</code>) e defaults trabalham juntos para criar APIs genéricas flexíveis mas seguras. A constraint limita o que o parâmetro pode ser; o default define o que ele é quando não especificado. Combinados, permitem um parâmetro de tipo que tem um valor sensato por padrão mas pode ser sobrescrito dentro de um limite. É comum em tipos de configuração e factories — o usuário não precisa especificar o tipo no caso comum, mas pode no caso específico.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">defaults-constraints.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// T restrito a objetos, com default de objeto vazio
+interface Resposta&lt;T extends object = {}&gt; {
+  ok: boolean
+  dados: T
+}
+
+const vazia: Resposta = { ok: true, dados: {} }            // T = {} (default)
+const cheia: Resposta&lt;{ id: number }&gt; = {                   // T explícito
+  ok: true,
+  dados: { id: 1 },
+}
+
+// Constraint sem default: T DEVE ser fornecido e DEVE ser objeto
+function fundir&lt;T extends object&gt;(base: T, extra: Partial&lt;T&gt;): T {
+  return { ...base, ...extra }
+}</code></pre>
+      </div>
+
+      <h3 class="topic" id="noinfer"><span class="hash">#</span> Controlando a inferência com NoInfer</h3>
+      <p>Às vezes a inferência atrapalha: o compilador deduz um parâmetro de tipo de um argumento que você gostaria que ele <em>ignorasse</em>, levando a um tipo amplo demais. O utilitário <code>NoInfer&lt;T&gt;</code> (adicionado ao TypeScript recentemente) diz ao compilador "não use este argumento para inferir o tipo" — fazendo a inferência vir só dos outros argumentos. É um recurso de borda, mas resolve casos reais onde a inferência produz um tipo indesejado, especialmente em funções com um argumento que define o tipo e outro que deveria apenas se conformar a ele.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">noinfer.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Sem NoInfer: o 'padrao' poderia ampliar T para incluir seu próprio tipo
+function criarEstado&lt;T&gt;(opcoes: T[], padrao: NoInfer&lt;T&gt;): T {
+  return padrao
+}
+
+// T é inferido SÓ de 'opcoes'; 'padrao' precisa se conformar a ele
+criarEstado(["a", "b", "c"], "a")     // ✅ T = "a" | "b" | "c"
+criarEstado(["a", "b", "c"], "x")     // ❌ Erro: "x" não está nas opções</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">Generics são sobre relações, não só reutilização</div>
+        <div class="callout-body">A virada conceitual deste capítulo: generics não servem só para "escrever código que funciona com vários tipos". O poder real está em <em>capturar relações entre tipos</em> — "a chave pertence a este objeto", "o retorno tem o tipo daquela propriedade", "o default se conforma às opções". Cada constraint e cada parâmetro de tipo expressa uma regra que o compilador faz cumprir. Quando você escreve <code>&lt;T, K extends keyof T&gt;: T[K]</code>, não está só generalizando — está descrevendo uma <em>lei</em> sobre como os tipos se relacionam, e o TypeScript a impõe em todo uso. Essa é a mentalidade que separa quem usa generics para evitar repetição de quem os usa para construir APIs onde tipos errados são impossíveis de escrever. Os capítulos de <code>infer</code> e utility types levam essa ideia ainda mais longe.</div>
+      </div>
+
+      <h3 class="topic" id="generics-adv-referencia"><span class="hash">#</span> Tabela de referência</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Padrão</th><th>Forma</th><th>Para quê</th></tr></thead>
+          <tbody>
+            <tr><td>Inferência</td><td><code>f&lt;T&gt;(x: T)</code></td><td>Compilador deduz T do argumento</td></tr>
+            <tr><td>Chave de objeto</td><td><code>K extends keyof T</code></td><td>Restringir a chave a T</td></tr>
+            <tr><td>Acesso indexado</td><td><code>T[K]</code></td><td>Tipo da propriedade K em T</td></tr>
+            <tr><td>Constraint + default</td><td><code>&lt;T extends X = Y&gt;</code></td><td>Limite + valor padrão</td></tr>
+            <tr><td><code>NoInfer&lt;T&gt;</code></td><td>bloqueia inferência</td><td>Inferir só de outros argumentos</td></tr>
+            <tr><td>Mentalidade</td><td>—</td><td>Capturar relações entre tipos</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 11: TIPOS AVANÇADOS ============ -->
     <section class="chapter" id="keyof">
-      <div class="chapter-number">Capítulo 08</div>
+      <div class="chapter-number">Capítulo 11</div>
       <h2 class="chapter-title">Tipos <em>avançados</em></h2>
       <p class="chapter-intro">A partir daqui, o sistema de tipos deixa de ser "mais um anotador" e começa a ser quase uma linguagem de programação própria. Esta é a parte que torna possível bibliotecas como Zod, tRPC e Prisma produzirem tipagens tão precisas.</p>
 
@@ -2096,9 +2481,98 @@ type ConfigCongelada = DeepReadonly&lt;Config&gt;;
       </div>
     </section>
 
-    <!-- ============ CAPÍTULO 9: UTILITY TYPES ============ -->
+    <!-- ============ CAPÍTULO 12: INFER ============ -->
+    <section class="chapter" id="operador-infer">
+      <div class="chapter-number">Capítulo 12</div>
+      <h2 class="chapter-title">O operador <em>infer</em></h2>
+      <p class="chapter-intro">O capítulo de Tipos Avançados apresentou os conditional types — tipos que escolhem entre dois resultados conforme uma condição. O <code>infer</code> é o que os torna verdadeiramente poderosos: ele permite <em>extrair</em> um tipo de dentro de outro durante uma checagem condicional. Onde os conditional types decidem, o <code>infer</code> captura. Quer o tipo de retorno de uma função? O tipo dos elementos de um array? O tipo resolvido de uma Promise? Tudo isso é extração com <code>infer</code>. É o operador por trás de muitos dos utility types nativos (<code>ReturnType</code>, <code>Awaited</code>, <code>Parameters</code>), e o que permite escrever os seus próprios. Este capítulo desmonta o <code>infer</code> — um operador que parece mágico no início e se torna uma ferramenta precisa de manipulação de tipos quando o modelo fica claro.</p>
+
+      <h3 class="topic" id="infer-basico"><span class="hash">#</span> Capturando um tipo durante a condição</h3>
+      <p>O <code>infer</code> só aparece dentro de um conditional type, no lado da condição (depois do <code>extends</code>). Ele declara uma "variável de tipo" que o compilador preenche com o que encaixar naquela posição. A leitura é: "se <code>T</code> tem a forma X com algo na posição P, capture esse algo como <code>U</code> e use-o no resultado". É pattern matching para tipos — você descreve uma forma com um buraco, e o <code>infer</code> preenche o buraco com o que estava lá.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">infer-basico.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// "Se T for um array de algum tipo U, capture U; senão, never"
+type ElementoDe&lt;T&gt; = T extends (infer U)[] ? U : never
+
+type A = ElementoDe&lt;number[]&gt;        // number
+type B = ElementoDe&lt;string[]&gt;        // string
+type C = ElementoDe&lt;boolean&gt;         // never (não é array)
+
+// O 'infer U' captura o tipo dos elementos durante a checagem.
+// É pattern matching: a forma "(infer U)[]" tem um buraco, U o preenche.</code></pre>
+      </div>
+
+      <h3 class="topic" id="infer-funcoes"><span class="hash">#</span> Extraindo de funções: retorno e parâmetros</h3>
+      <p>O uso mais comum do <code>infer</code> é extrair partes de tipos de função. O tipo de <em>retorno</em> de uma função, ou os tipos dos seus <em>parâmetros</em>, podem ser capturados descrevendo a forma da função com um <code>infer</code> na posição desejada. É exatamente assim que os utility types <code>ReturnType</code> e <code>Parameters</code> (do catálogo, capítulo de Utility Types) são implementados — e entender a implementação desmistifica o que parecia mágica.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">infer-funcoes.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Extrair o tipo de RETORNO de uma função (assim ReturnType é feito)
+type RetornoDe&lt;T&gt; = T extends (...args: any[]) =&gt; infer R ? R : never
+
+function criarUsuario() {
+  return { id: 1, nome: "Ana" }
+}
+type Usuario = RetornoDe&lt;typeof criarUsuario&gt;   // { id: number; nome: string }
+
+// Extrair os tipos dos PARÂMETROS (assim Parameters é feito)
+type ParamsDe&lt;T&gt; = T extends (...args: infer P) =&gt; any ? P : never
+
+function salvar(id: number, nome: string) {}
+type Args = ParamsDe&lt;typeof salvar&gt;             // [number, string]</code></pre>
+      </div>
+
+      <div class="callout note">
+        <div class="callout-label">infer revela como os utility types nativos funcionam</div>
+        <div class="callout-body">Muitos dos utility types que você usa prontos são, por dentro, conditional types com <code>infer</code>. <code>ReturnType&lt;T&gt;</code> é "extraia o tipo após o <code>=&gt;</code>". <code>Parameters&lt;T&gt;</code> é "extraia a tupla antes do <code>=&gt;</code>". <code>Awaited&lt;T&gt;</code> é "se for uma Promise, extraia o tipo resolvido". Saber que eles são <code>infer</code> por baixo tem dois benefícios: desmistifica a "mágica" desses utilitários, e te dá o poder de escrever os seus próprios quando o nativo não existe para o seu caso. O <code>infer</code> é a peça que faltava entre "consumir utility types" e "criar utility types" — o capítulo de construir utilities (adiante) leva isso adiante.</div>
+      </div>
+
+      <h3 class="topic" id="infer-promise"><span class="hash">#</span> Extraindo de Promises e estruturas</h3>
+      <p>O <code>infer</code> extrai de qualquer forma de tipo, não só funções e arrays. Um caso muito útil é "desembrulhar" uma Promise — capturar o tipo que ela resolve, o que o utility <code>Awaited</code> faz (importante no código assíncrono, Vol VIII e capítulo de tipos assíncronos). Você também pode extrair de tuplas, objetos, e tipos aninhados, combinando <code>infer</code> com recursão para casos mais complexos.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">infer-promise.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Desembrulhar uma Promise (assim Awaited é feito, simplificado)
+type Resolvido&lt;T&gt; = T extends Promise&lt;infer U&gt; ? U : T
+
+type R1 = Resolvido&lt;Promise&lt;string&gt;&gt;    // string
+type R2 = Resolvido&lt;number&gt;              // number (não é Promise)
+
+// Extrair o primeiro elemento de uma tupla
+type Primeiro&lt;T&gt; = T extends [infer P, ...any[]] ? P : never
+type P = Primeiro&lt;[boolean, number, string]&gt;   // boolean
+
+// Combinar com recursão: desembrulhar Promises aninhadas
+type ResolvidoFundo&lt;T&gt; = T extends Promise&lt;infer U&gt; ? ResolvidoFundo&lt;U&gt; : T
+type R3 = ResolvidoFundo&lt;Promise&lt;Promise&lt;number&gt;&gt;&gt;   // number</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">infer é pattern matching para tipos</div>
+        <div class="callout-body">O modelo mental que torna o <code>infer</code> intuitivo: pense nele como pattern matching, o mesmo conceito que linguagens funcionais usam para desestruturar valores — só que aqui sobre <em>tipos</em>. Você escreve uma "forma" com um espaço a preencher (<code>(infer U)[]</code>, <code>Promise&lt;infer U&gt;</code>, <code>(...args: any) =&gt; infer R</code>), e o <code>infer</code> captura o que estava naquele espaço. Uma vez que você enxerga assim — "descrevo a estrutura, marco onde quero capturar, o compilador preenche" —, o <code>infer</code> deixa de ser críptico e vira uma ferramenta precisa. É um recurso de borda (você não o usa todo dia), mas quando precisa extrair um tipo de dentro de outro, é insubstituível, e entender a sua mecânica é o que separa quem só consome tipos avançados de quem os escreve.</div>
+      </div>
+
+      <h3 class="topic" id="infer-referencia"><span class="hash">#</span> Tabela de referência</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Padrão</th><th>Extrai</th></tr></thead>
+          <tbody>
+            <tr><td><code>T extends (infer U)[] ? U : ...</code></td><td>Tipo dos elementos de um array</td></tr>
+            <tr><td><code>T extends (...a: any) =&gt; infer R</code></td><td>Tipo de retorno (ReturnType)</td></tr>
+            <tr><td><code>T extends (...a: infer P) =&gt; any</code></td><td>Tipos dos parâmetros (Parameters)</td></tr>
+            <tr><td><code>T extends Promise&lt;infer U&gt;</code></td><td>Tipo resolvido (Awaited)</td></tr>
+            <tr><td><code>T extends [infer P, ...any]</code></td><td>Primeiro elemento de tupla</td></tr>
+            <tr><td><code>infer</code> + recursão</td><td>Estruturas aninhadas</td></tr>
+            <tr><td>Modelo mental</td><td>Pattern matching para tipos</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 13: UTILITY TYPES ============ -->
     <section class="chapter" id="utility">
-      <div class="chapter-number">Capítulo 09</div>
+      <div class="chapter-number">Capítulo 13</div>
       <h2 class="chapter-title">Catálogo de <em>Utility Types</em></h2>
       <p class="chapter-intro">TypeScript vem com uma biblioteca embutida de utility types — transformadores de tipo úteis para o dia-a-dia. Todos são implementados usando os recursos do capítulo anterior (keyof, conditional types, mapped types e infer). Conhecê-los é economia de tempo pura.</p>
 
@@ -2208,9 +2682,214 @@ function criar&lt;T&gt;(padrao: T, opcoes: NoInfer&lt;T&gt;[]): T {
       </div>
     </section>
 
-    <!-- ============ CAPÍTULO 10: MÓDULOS ============ -->
+    <!-- ============ CAPÍTULO 14: CONSTRUINDO UTILITY TYPES ============ -->
+    <section class="chapter" id="construindo-utility">
+      <div class="chapter-number">Capítulo 14</div>
+      <h2 class="chapter-title">Construindo <em>Utility Types</em></h2>
+      <p class="chapter-intro">O capítulo anterior catalogou os utility types nativos — <code>Partial</code>, <code>Pick</code>, <code>Omit</code>, <code>Record</code> e companhia — como ferramentas prontas. Mas eles não são mágica embutida no compilador: são tipos comuns, escritos em TypeScript, que você poderia ter escrito. Reimplementá-los do zero é o melhor exercício de <em>type-level programming</em> que existe, porque combina tudo dos capítulos avançados — mapped types, conditional types, <code>keyof</code>, <code>infer</code> — em construções pequenas e compreensíveis. Este capítulo reconstrói os utility types mais importantes passo a passo. O objetivo não é decorar as implementações, mas <em>entender o mecanismo</em>: depois deste capítulo, você não só usa os utilitários nativos com clareza, mas escreve os seus próprios quando o nativo não cobre o seu caso.</p>
+
+      <h3 class="topic" id="partial-required"><span class="hash">#</span> Partial e Required: mexendo na opcionalidade</h3>
+      <p>O <code>Partial&lt;T&gt;</code> torna todas as propriedades opcionais; o <code>Required&lt;T&gt;</code> faz o oposto. Ambos são <em>mapped types</em> — eles iteram sobre as chaves de <code>T</code> e reconstroem o tipo aplicando um modificador. O <code>?</code> adiciona opcionalidade; o <code>-?</code> a remove. Ver a implementação revela que "tornar opcional" é só um modificador num mapped type.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">partial-required.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Partial: itera as chaves de T e marca cada uma como opcional (?)
+type MeuPartial&lt;T&gt; = {
+  [K in keyof T]?: T[K]
+}
+
+// Required: o -? REMOVE a opcionalidade de cada chave
+type MeuRequired&lt;T&gt; = {
+  [K in keyof T]-?: T[K]
+}
+
+interface Config { host: string; porta?: number }
+
+type ConfigParcial = MeuPartial&lt;Config&gt;    // { host?: string; porta?: number }
+type ConfigCheia = MeuRequired&lt;Config&gt;     // { host: string; porta: number }</code></pre>
+      </div>
+
+      <h3 class="topic" id="readonly-mutable"><span class="hash">#</span> Readonly e Mutable</h3>
+      <p>O mesmo padrão de mapped type com modificador serve para <code>readonly</code>. O <code>Readonly&lt;T&gt;</code> adiciona <code>readonly</code> a cada propriedade; o modificador <code>-readonly</code> o remove (um "Mutable" que o TypeScript não fornece nativamente, mas você escreve em uma linha). É a prova de que os modificadores <code>?</code> e <code>readonly</code> são manipuláveis em mapped types, com <code>+</code> para adicionar e <code>-</code> para remover.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">readonly-mutable.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Readonly: adiciona readonly a cada propriedade
+type MeuReadonly&lt;T&gt; = {
+  readonly [K in keyof T]: T[K]
+}
+
+// Mutable: -readonly REMOVE o readonly (não existe nativo!)
+type Mutable&lt;T&gt; = {
+  -readonly [K in keyof T]: T[K]
+}
+
+type Congelado = MeuReadonly&lt;{ x: number }&gt;   // { readonly x: number }
+type Destravado = Mutable&lt;Congelado&gt;           // { x: number }</code></pre>
+      </div>
+
+      <h3 class="topic" id="pick-omit"><span class="hash">#</span> Pick e Omit: selecionando chaves</h3>
+      <p>O <code>Pick&lt;T, K&gt;</code> seleciona um subconjunto de propriedades; o <code>Omit&lt;T, K&gt;</code> remove um subconjunto. O <code>Pick</code> usa um mapped type que itera só sobre as chaves <code>K</code> (restritas a <code>keyof T</code>, o padrão do capítulo de generics avançados). O <code>Omit</code> é construído com <code>Exclude</code> para tirar as chaves indesejadas de <code>keyof T</code>, e então faz <code>Pick</code> do resto — mostrando como os utilitários se compõem uns sobre os outros.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">pick-omit.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Pick: itera só as chaves K (que devem ser chaves de T)
+type MeuPick&lt;T, K extends keyof T&gt; = {
+  [P in K]: T[P]
+}
+
+// Omit: pega todas as chaves de T MENOS as de K, e faz Pick do resto
+type MeuOmit&lt;T, K extends keyof T&gt; = MeuPick&lt;T, Exclude&lt;keyof T, K&gt;&gt;
+
+interface Usuario { id: number; nome: string; senha: string }
+
+type PublicoA = MeuPick&lt;Usuario, "id" | "nome"&gt;   // { id, nome }
+type PublicoB = MeuOmit&lt;Usuario, "senha"&gt;         // { id, nome } (sem senha)</code></pre>
+      </div>
+
+      <div class="callout note">
+        <div class="callout-label">Utilitários se compõem uns sobre os outros</div>
+        <div class="callout-body">Repare como <code>Omit</code> é construído a partir de <code>Pick</code> e <code>Exclude</code>. Essa composição é a essência do type-level programming: você não escreve cada utilitário do zero a cada vez — combina peças pequenas e bem definidas em construções maiores, exatamente como compõe funções no código comum (toda a coleção). <code>Exclude</code> remove de uma union; <code>Pick</code> seleciona chaves; <code>Omit</code> = <code>Pick</code> do que <code>Exclude</code> deixou. Cada utility type é uma pequena função sobre tipos, e elas se encaixam. Entender essa composicionalidade é o que permite, diante de uma necessidade nova de transformação de tipos, montá-la a partir das peças que você já conhece em vez de ficar travado.</div>
+      </div>
+
+      <h3 class="topic" id="record-conditional-utils"><span class="hash">#</span> Record e utilitários condicionais</h3>
+      <p>O <code>Record&lt;K, V&gt;</code> constrói um tipo de objeto com chaves <code>K</code> e valores <code>V</code> — um mapped type sobre uma union de chaves. E os utilitários "condicionais" como <code>Exclude</code>, <code>Extract</code> e <code>NonNullable</code> usam conditional types distribuídos sobre unions. Ver o <code>Exclude</code> implementado mostra um comportamento importante: conditional types se <em>distribuem</em> automaticamente sobre cada membro de uma union, processando-os um a um.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">record-conditional.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Record: objeto com chaves K e valores V
+type MeuRecord&lt;K extends string | number | symbol, V&gt; = {
+  [P in K]: V
+}
+type Notas = MeuRecord&lt;"mat" | "port", number&gt;   // { mat: number; port: number }
+
+// Exclude: distribui sobre a union, removendo o que combina com U
+type MeuExclude&lt;T, U&gt; = T extends U ? never : T
+type Sem = MeuExclude&lt;"a" | "b" | "c", "b"&gt;       // "a" | "c"
+
+// NonNullable: remove null e undefined
+type MeuNonNullable&lt;T&gt; = T extends null | undefined ? never : T
+type Limpo = MeuNonNullable&lt;string | null&gt;        // string</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">Escrever utility types ensina a pensar em tipos</div>
+        <div class="callout-body">Reimplementar os utility types não é só curiosidade — é o exercício que consolida todo o conhecimento de tipos avançados num modelo operacional. Mapped types (iterar chaves), modificadores (<code>?</code>, <code>readonly</code>, <code>-</code>), <code>keyof</code> (as chaves), indexed access (<code>T[K]</code>), conditional types (decidir), distribuição sobre unions, <code>infer</code> (extrair) — cada utility type combina alguns desses, e construí-los faz você praticar a combinação. Depois deste capítulo, você lê uma assinatura de tipo complexa de uma biblioteca e a decompõe mentalmente, e diante de uma transformação de tipo que o TypeScript não oferece pronta, você a escreve. É a passagem de consumidor a autor de tipos — a fronteira do domínio real da linguagem.</div>
+      </div>
+
+      <h3 class="topic" id="build-utils-referencia"><span class="hash">#</span> Tabela de referência</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Utility</th><th>Construído com</th></tr></thead>
+          <tbody>
+            <tr><td>Partial / Required</td><td>Mapped type + modificador <code>?</code> / <code>-?</code></td></tr>
+            <tr><td>Readonly / Mutable</td><td>Modificador <code>readonly</code> / <code>-readonly</code></td></tr>
+            <tr><td>Pick</td><td>Mapped type sobre <code>K extends keyof T</code></td></tr>
+            <tr><td>Omit</td><td><code>Pick</code> + <code>Exclude</code> (composição)</td></tr>
+            <tr><td>Record</td><td>Mapped type sobre union de chaves</td></tr>
+            <tr><td>Exclude / Extract</td><td>Conditional type distribuído</td></tr>
+            <tr><td>NonNullable</td><td>Conditional removendo null/undefined</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 15: BRANDED TYPES ============ -->
+    <section class="chapter" id="branded-types">
+      <div class="chapter-number">Capítulo 15</div>
+      <h2 class="chapter-title">Branded types <em>e nominal typing</em></h2>
+      <p class="chapter-intro">O sistema de tipos do TypeScript é <em>estrutural</em>: dois tipos são compatíveis se têm a mesma forma, independentemente de como se chamam. Isso é flexível e prático na maioria das vezes — mas cria um problema sutil. Um <code>UserId</code> e um <code>ProductId</code>, ambos sendo <code>string</code> por baixo, são <em>intercambiáveis</em> para o compilador, mesmo que misturá-los seja um bug grave. Os <strong>branded types</strong> (ou nominal typing) resolvem isso: eles "marcam" um tipo de forma que o torna incompatível com outros da mesma estrutura, fazendo o compilador distinguir um ID de usuário de um ID de produto, um e-mail validado de uma string qualquer. Este capítulo — cujo padrão aparece nos seus próprios volumes de Drizzle, Zod e Autenticação (Vols XI–XIII) — mostra como simular tipagem nominal numa linguagem estrutural, e quando isso vale a complexidade extra.</p>
+
+      <h3 class="topic" id="estrutural-vs-nominal"><span class="hash">#</span> Estrutural vs nominal: o problema</h3>
+      <p>Em tipagem <strong>estrutural</strong> (a do TypeScript), o que importa é a forma. Se dois tipos têm os mesmos membros, são compatíveis — o nome é irrelevante. Em tipagem <strong>nominal</strong> (a de linguagens como Java), o nome importa: dois tipos com a mesma forma mas nomes diferentes são incompatíveis. O TypeScript é estrutural, o que significa que <code>type UserId = string</code> e <code>type ProductId = string</code> são, para o compilador, exatamente a mesma coisa — <code>string</code>. Passar um onde se espera o outro compila sem reclamar, e o bug escapa.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">problema.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Aliases simples NÃO criam distinção — são só string por baixo
+type UserId = string
+type ProductId = string
+
+function buscarUsuario(id: UserId) { /* ... */ }
+
+const produtoId: ProductId = "prod_123"
+buscarUsuario(produtoId)   // ❌ deveria ser erro... mas COMPILA!
+// Para o compilador, UserId e ProductId são ambos 'string'.
+// O bug de passar o ID errado escapa silenciosamente.</code></pre>
+      </div>
+
+      <h3 class="topic" id="branding"><span class="hash">#</span> A técnica: marcar o tipo</h3>
+      <p>O truque dos branded types é adicionar uma propriedade "fantasma" ao tipo — uma marca que existe só no nível de tipos, nunca em runtime — que o torna estruturalmente distinto. Como <code>UserId</code> passa a ter uma marca diferente de <code>ProductId</code>, suas formas deixam de ser idênticas, e o compilador os trata como incompatíveis. A marca usa uma técnica de intersection (Cap 5) com um símbolo único, e o valor em runtime continua sendo apenas uma string — o branding é puramente uma ficção de tipos.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">branding.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Um helper genérico de branding: marca T com um rótulo B
+type Brand&lt;T, B&gt; = T &amp; { readonly __brand: B }
+
+// Agora os IDs são estruturalmente DISTINTOS
+type UserId = Brand&lt;string, "UserId"&gt;
+type ProductId = Brand&lt;string, "ProductId"&gt;
+
+function buscarUsuario(id: UserId) { /* ... */ }
+
+const pid = "prod_123" as ProductId
+buscarUsuario(pid)        // ✅ AGORA é erro: ProductId não é UserId
+
+// A marca __brand não existe em runtime — pid ainda é só "prod_123".
+// É uma ficção de tipos que o compilador faz cumprir.</code></pre>
+      </div>
+
+      <div class="callout note">
+        <div class="callout-label">A marca existe só no compilador, nunca em runtime</div>
+        <div class="callout-body">O ponto que confunde no início: a propriedade <code>__brand</code> nunca existe de fato no valor. Você nunca cria <code>{ __brand: "UserId" }</code> — o valor continua sendo uma string pura. A marca é uma <em>anotação de tipo</em> que existe apenas durante a checagem, e desaparece completamente no JavaScript gerado (toda a tipagem some na compilação). É por isso que branded types têm custo zero em runtime: não há objeto a mais, não há verificação a mais, nenhum overhead. O branding é puramente uma forma de dar ao compilador estrutural a capacidade de <em>distinguir</em> tipos que, sem a marca, ele consideraria iguais. É um truque elegante: usar o próprio sistema estrutural (intersection com uma forma única) para simular nominalidade.</div>
+      </div>
+
+      <h3 class="topic" id="branded-validacao"><span class="hash">#</span> Branding como prova de validação</h3>
+      <p>O uso mais valioso dos branded types vai além de distinguir IDs: eles representam <em>provas</em> de que um valor passou por uma validação. Um <code>Email</code> branded não é qualquer string — é uma string que <em>comprovadamente</em> passou pela validação de e-mail. Como a marca só pode ser aplicada pela função de validação (que é a única que faz o <code>as</code>), o tipo <code>Email</code> garante, em tempo de compilação, que aquele valor foi validado. Isso conecta diretamente ao Zod (Vol XII) e à autenticação (Vol XIII): tipos que carregam a garantia de que cruzaram a fronteira de validação.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">prova-validacao.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>type Email = Brand&lt;string, "Email"&gt;
+
+// A ÚNICA forma de obter um Email é passar pela validação.
+// O branding vira uma "prova" de que o valor foi validado.
+function validarEmail(entrada: string): Email | null {
+  return entrada.includes("@") ? (entrada as Email) : null
+}
+
+function enviar(para: Email) { /* confia que 'para' é válido */ }
+
+const cru = "ana@exemplo.com"
+enviar(cru)                    // ❌ erro: string não é Email (não validado)
+
+const email = validarEmail(cru)
+if (email) enviar(email)       // ✅ ok: passou pela validação</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">Use branding com moderação, onde a confusão é cara</div>
+        <div class="callout-body">Branded types adicionam complexidade — os <code>as</code> necessários, o helper de Brand, a fricção de criar valores marcados. Por isso não se deve "brandar tudo": a maioria dos tipos vive bem com a tipagem estrutural padrão, que é prática justamente por ser flexível. Reserve o branding para onde a confusão entre tipos de mesma forma é genuinamente <em>perigosa</em>: IDs de entidades diferentes que nunca devem ser trocados, valores que precisam carregar uma garantia de validação (e-mails, valores sanitizados, dinheiro em centavos vs reais), unidades que não se misturam. Nesses casos, o custo se paga ao tornar uma classe inteira de bugs impossível de compilar. É a aplicação ao TypeScript do princípio que atravessa a coleção: torne os estados inválidos irrepresentáveis — e o branding é a ferramenta quando a estrutura sozinha não basta.</div>
+      </div>
+
+      <h3 class="topic" id="branded-referencia"><span class="hash">#</span> Tabela de referência</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Conceito</th><th>Detalhe</th></tr></thead>
+          <tbody>
+            <tr><td>Tipagem estrutural</td><td>Compatível por forma (padrão do TS)</td></tr>
+            <tr><td>Tipagem nominal</td><td>Compatível por nome (Java, etc.)</td></tr>
+            <tr><td>Branded type</td><td><code>T &amp; { __brand: B }</code></td></tr>
+            <tr><td>Custo em runtime</td><td>Zero — a marca some na compilação</td></tr>
+            <tr><td>Uso: IDs distintos</td><td>UserId ≠ ProductId</td></tr>
+            <tr><td>Uso: prova de validação</td><td>Email, valor sanitizado (Vols XII–XIII)</td></tr>
+            <tr><td>Quando usar</td><td>Onde confundir tipos iguais é caro</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 16: MÓDULOS ============ -->
     <section class="chapter" id="modulos">
-      <div class="chapter-number">Capítulo 10</div>
+      <div class="chapter-number">Capítulo 16</div>
       <h2 class="chapter-title">Módulos</h2>
       <p class="chapter-intro">Todo arquivo <code>.ts</code> que contém um <code>import</code> ou <code>export</code> é um módulo — seu escopo é isolado do restante do projeto. TypeScript aceita a sintaxe moderna ESM e também CommonJS, e oferece alguns refinamentos próprios.</p>
 
@@ -2268,9 +2947,9 @@ const d = Geometria.distancia({ x: 0, y: 0 }, { x: 3, y: 4 });</code></pre>
       </div>
     </section>
 
-    <!-- ============ CAPÍTULO 11: DECLARATION FILES ============ -->
+    <!-- ============ CAPÍTULO 17: DECLARATION FILES ============ -->
     <section class="chapter" id="declaration-files">
-      <div class="chapter-number">Capítulo 11</div>
+      <div class="chapter-number">Capítulo 17</div>
       <h2 class="chapter-title">Arquivos <em>.d.ts</em> e ambientes</h2>
       <p class="chapter-intro">Declaration files descrevem, em tipos, a superfície de algo que já existe — uma biblioteca JavaScript, uma variável global, um módulo CSS importado. Eles são a forma como o TypeScript conversa com o mundo não-tipado.</p>
 
@@ -2336,9 +3015,9 @@ export {}; // necessário para o arquivo ser tratado como módulo</code></pre>
       </div>
     </section>
 
-    <!-- ============ CAPÍTULO 12: DECORATORS ============ -->
+    <!-- ============ CAPÍTULO 18: DECORATORS ============ -->
     <section class="chapter" id="decorators">
-      <div class="chapter-number">Capítulo 12</div>
+      <div class="chapter-number">Capítulo 18</div>
       <h2 class="chapter-title">Decorators</h2>
       <p class="chapter-intro">Decorators são funções que modificam classes, métodos, propriedades, acessores e parâmetros em tempo de declaração. TypeScript 5.0 adotou a sintaxe padrão do ECMAScript (Stage 3) — mais simples e alinhada com o futuro do JavaScript.</p>
 
@@ -2399,9 +3078,9 @@ class API {
       </div>
     </section>
 
-    <!-- ============ CAPÍTULO 13: ASYNC ============ -->
+    <!-- ============ CAPÍTULO 19: ASYNC ============ -->
     <section class="chapter" id="async">
-      <div class="chapter-number">Capítulo 13</div>
+      <div class="chapter-number">Capítulo 19</div>
       <h2 class="chapter-title">Tipos <em>assíncronos</em></h2>
       <p class="chapter-intro">Promises e async/await são JavaScript puro, mas TypeScript traz tipagem rica para eles. Saber ler e escrever assinaturas assíncronas é requisito para qualquer código de backend ou de chamadas HTTP.</p>
 
@@ -2448,9 +3127,237 @@ async function pegarUsuarioSeguro(id: number): Promise&lt;Resultado&lt;Usuario&g
       </div>
     </section>
 
-    <!-- ============ CAPÍTULO 14: BOAS PRÁTICAS ============ -->
+    <!-- ============ CAPÍTULO 20: PADRÕES DO MUNDO REAL ============ -->
+    <section class="chapter" id="padroes-praticos">
+      <div class="chapter-number">Capítulo 20</div>
+      <h2 class="chapter-title">Padrões de tipagem <em>do mundo real</em></h2>
+      <p class="chapter-intro">Os capítulos anteriores construíram o vocabulário do sistema de tipos, peça por peça. Este capítulo monta esse vocabulário em <em>padrões</em> — formas recorrentes de usar tipos para resolver problemas reais de aplicação. Modelar estados que não podem ser inválidos, representar operações que podem falhar sem exceções, tipar configurações e eventos com precisão. Estes não são recursos novos da linguagem; são <em>aplicações</em> dos recursos que você já conhece, na forma como aparecem no código de produção da coleção inteira. O princípio que une todos eles é o mais importante do TypeScript prático: <strong>tornar os estados inválidos irrepresentáveis</strong> — desenhar os tipos de modo que o código errado simplesmente não compile, em vez de confiar que o programador lembrará de cada regra.</p>
+
+      <h3 class="topic" id="estados-impossiveis"><span class="hash">#</span> Tornar estados inválidos irrepresentáveis</h3>
+      <p>O padrão mais valioso, e o que dá sentido a todos os outros. Em vez de um tipo que permite combinações inválidas (e confiar em checagens de runtime para evitá-las), você modela o tipo de forma que as combinações inválidas <em>não existam</em>. O exemplo clássico é um estado de carregamento: um objeto com flags <code>carregando</code>, <code>dados</code> e <code>erro</code> permite o estado impossível "carregando e com erro ao mesmo tempo". Uma discriminated union (Cap 5) elimina isso — cada estado é um membro distinto, e os impossíveis nem têm como ser escritos.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">estados.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// ❌ Permite estados impossíveis (carregando E com erro E com dados?)
+interface EstadoRuim&lt;T&gt; {
+  carregando: boolean
+  dados: T | null
+  erro: string | null
+}
+
+// ✅ Discriminated union: só os estados VÁLIDOS existem
+type Estado&lt;T&gt; =
+  | { status: "carregando" }
+  | { status: "sucesso"; dados: T }
+  | { status: "erro"; mensagem: string }
+
+function render(estado: Estado&lt;string&gt;) {
+  switch (estado.status) {
+    case "carregando": return "..."
+    case "sucesso":    return estado.dados      // só existe aqui
+    case "erro":       return estado.mensagem   // só existe aqui
+  }
+}</code></pre>
+      </div>
+
+      <div class="callout note">
+        <div class="callout-label">O princípio que organiza o TypeScript prático</div>
+        <div class="callout-body">"Make illegal states unrepresentable" é a ideia que transforma o TypeScript de um verificador de tipos num desenhador de domínios. Em vez de escrever um tipo permissivo e cercá-lo de validações e comentários sobre o que é válido, você molda o tipo para que o inválido seja impossível de expressar — e então o compilador faz a regra cumprir gratuitamente, em todo lugar, para sempre. Um estado que não pode ser "carregando e erro" não precisa de teste para isso. Um <code>Email</code> branded (capítulo anterior) que só a validação produz não precisa de checagem de "será que validei?". Cada vez que você consegue codificar uma regra de negócio na <em>forma do tipo</em>, ela deixa de ser uma disciplina que se pode esquecer e vira uma garantia que o compilador impõe. Esse é o retorno máximo do investimento em tipos, e o fio que conecta discriminated unions, branded types e os padrões deste capítulo.</div>
+      </div>
+
+      <h3 class="topic" id="result-type"><span class="hash">#</span> Result: erros sem exceções</h3>
+      <p>Um padrão difundido para operações que podem falhar: em vez de lançar exceções (que o sistema de tipos não rastreia — uma função pode lançar sem que sua assinatura avise), retornar um <em>Result</em> — uma discriminated union que representa explicitamente sucesso ou falha. O chamador é <em>obrigado</em> pelo compilador a tratar ambos os casos antes de acessar o valor, porque o dado só existe no ramo de sucesso. É a tipagem de erros tornada visível e inescapável, popular em linguagens como Rust e cada vez mais em TypeScript.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">result.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>type Result&lt;T, E = Error&gt; =
+  | { ok: true; valor: T }
+  | { ok: false; erro: E }
+
+function dividir(a: number, b: number): Result&lt;number, string&gt; {
+  if (b === 0) return { ok: false, erro: "divisão por zero" }
+  return { ok: true, valor: a / b }
+}
+
+const r = dividir(10, 0)
+// r.valor          ❌ erro: 'valor' não existe quando ok é false
+if (r.ok) {
+  console.log(r.valor)     // ✅ só aqui o valor existe
+} else {
+  console.error(r.erro)    // ✅ e aqui, o erro
+}</code></pre>
+      </div>
+
+      <h3 class="topic" id="tipando-config"><span class="hash">#</span> Tipando configuração e dados externos</h3>
+      <p>Dois padrões para os limites da aplicação. Para <em>configuração</em>, o <code>satisfies</code> (do capítulo de assertions) valida a forma sem alargar o tipo, mantendo a inferência precisa de cada valor. Para <em>dados externos</em> (JSON, respostas de API), o tipo correto de entrada é <code>unknown</code> — não <code>any</code> —, forçando você a validar antes de usar, exatamente como o Zod (Vol XII) faz. Esses padrões marcam a fronteira entre o mundo tipado interno e o mundo não confiável externo.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">config-externo.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// CONFIG: satisfies valida a forma SEM perder os tipos literais precisos
+const config = {
+  porta: 3000,
+  ambiente: "producao",
+} satisfies { porta: number; ambiente: string }
+// config.ambiente continua sendo "producao" (literal), não string genérica
+
+// DADOS EXTERNOS: a entrada é unknown, não any — força validar
+function processarResposta(json: unknown) {
+  // não dá para usar json direto — precisa validar/estreitar (Cap 5, Zod)
+  if (typeof json === "object" &amp;&amp; json !== null &amp;&amp; "id" in json) {
+    // agora o narrowing permite acessar com segurança
+  }
+}</code></pre>
+      </div>
+
+      <h3 class="topic" id="tipando-eventos"><span class="hash">#</span> Tipando eventos e callbacks</h3>
+      <p>Um padrão comum em UIs e sistemas orientados a eventos: um mapa de eventos onde cada nome de evento tem um tipo de payload específico, e o tipo garante que o handler de cada evento receba o payload correto. Usando um <code>Record</code> de eventos e <code>keyof</code> (capítulo de generics avançados), você cria uma API de eventos totalmente type-safe, onde emitir um evento com o payload errado ou registrar um handler com a assinatura errada é erro de compilação.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">eventos.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Mapa: cada evento -&gt; o tipo do seu payload
+interface Eventos {
+  login: { userId: number }
+  logout: { motivo: string }
+  erro: { codigo: number; mensagem: string }
+}
+
+// 'on' usa keyof para amarrar o nome ao payload correto
+function on&lt;K extends keyof Eventos&gt;(
+  evento: K,
+  handler: (payload: Eventos[K]) =&gt; void
+) { /* ... */ }
+
+on("login", (p) =&gt; p.userId)        // ✅ p é { userId: number }
+on("erro", (p) =&gt; p.mensagem)       // ✅ p é { codigo, mensagem }
+on("login", (p) =&gt; p.motivo)        // ❌ 'motivo' não existe em login</code></pre>
+      </div>
+
+      <h3 class="topic" id="padroes-referencia"><span class="hash">#</span> Tabela de referência</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Padrão</th><th>Resolve</th></tr></thead>
+          <tbody>
+            <tr><td>Estados irrepresentáveis</td><td>Discriminated union elimina o inválido</td></tr>
+            <tr><td>Result&lt;T, E&gt;</td><td>Erros explícitos, sem exceções não rastreadas</td></tr>
+            <tr><td><code>satisfies</code> em config</td><td>Validar forma sem perder literais</td></tr>
+            <tr><td><code>unknown</code> em dados externos</td><td>Forçar validação na fronteira</td></tr>
+            <tr><td>Mapa de eventos + <code>keyof</code></td><td>Eventos type-safe</td></tr>
+            <tr><td>Princípio</td><td>Tornar estados inválidos irrepresentáveis</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 21: MODELO MENTAL DO COMPILADOR ============ -->
+    <section class="chapter" id="modelo-compilador">
+      <div class="chapter-number">Capítulo 21</div>
+      <h2 class="chapter-title">O modelo mental <em>do compilador</em></h2>
+      <p class="chapter-intro">Depois de tantos recursos, vale recuar e olhar o sistema como um todo — como o compilador <em>pensa</em>. Entender o modelo mental por trás do TypeScript transforma a relação com a ferramenta: mensagens de erro intimidantes viram diagnósticos legíveis, comportamentos surpreendentes ganham explicação, e você para de "brigar com os tipos" e passa a colaborar com o compilador. Este capítulo cobre as ideias estruturais que explicam o resto: por que a tipagem é estrutural, como ler erros de tipo longos, as ferramentas para depurar e inspecionar tipos, e por que o sistema de tipos some completamente em runtime. É o capítulo que amarra a compreensão — menos sobre sintaxe nova, mais sobre o <em>porquê</em> das coisas funcionarem como funcionam, o conhecimento que torna você autônomo diante de qualquer situação com tipos.</p>
+
+      <h3 class="topic" id="structural-typing"><span class="hash">#</span> Tipagem estrutural: forma, não nome</h3>
+      <p>A decisão de design mais fundamental do TypeScript, já tocada nos branded types: a compatibilidade é <strong>estrutural</strong>. Um valor é atribuível a um tipo se tem <em>pelo menos</em> a forma que o tipo exige — os membros certos com os tipos certos —, independentemente de qual classe ou interface o declarou. Isso explica muito: por que um objeto literal pode satisfazer uma interface sem "implementá-la" explicitamente, por que tipos com a mesma forma são intercambiáveis, e por que o branding (capítulo anterior) é necessário para distingui-los. Pensar "forma, não nome" desfaz muitas surpresas.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">structural.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>interface Ponto { x: number; y: number }
+
+// Nenhuma menção a 'Ponto', mas a FORMA bate — é compatível
+const p = { x: 1, y: 2, z: 3 }
+function plotar(ponto: Ponto) { /* ... */ }
+plotar(p)        // ✅ p tem x e y (z a mais não importa)
+
+// Duas formas idênticas são intercambiáveis, nomes à parte
+interface Coord { x: number; y: number }
+const c: Coord = p
+const q: Ponto = c    // ✅ Coord e Ponto têm a mesma forma</code></pre>
+      </div>
+
+      <h3 class="topic" id="lendo-erros"><span class="hash">#</span> Lendo erros de tipo</h3>
+      <p>Mensagens de erro do TypeScript têm fama de assustadoras — longas, aninhadas, cheias de tipos. Mas elas seguem uma estrutura legível quando você sabe lê-las: o compilador relata o erro de fora para dentro, e a causa raiz geralmente está <em>no final</em> da mensagem, na linha mais indentada. A técnica é começar pela última linha (o conflito específico) e subir para entender o contexto. Erros sobre objetos grandes mostram só a propriedade que diverge. Aprender a ler o erro — em vez de fechá-lo no susto — resolve a maioria dos problemas sem busca externa.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">erro.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>interface Usuario { nome: string; idade: number }
+const u: Usuario = { nome: "Ana", idade: "30" }
+
+// O erro lê-se de FORA para DENTRO; a causa está no fim:
+//
+//   Type '{ nome: string; idade: string }' is not assignable
+//   to type 'Usuario'.
+//     Types of property 'idade' are incompatible.   &lt;- contexto
+//       Type 'string' is not assignable to 'number'. &lt;- A CAUSA (fim)
+//
+// Comece pela última linha: idade deveria ser number, veio string.</code></pre>
+      </div>
+
+      <div class="callout tip">
+        <div class="callout-label">Leia o erro de baixo para cima</div>
+        <div class="callout-body">A heurística que desarma os erros mais assustadores do TypeScript: leia-os <em>de baixo para cima</em>. A primeira linha de um erro costuma ser o conflito de alto nível ("este tipo grande não é atribuível àquele tipo grande"), que parece esmagador. Mas o compilador então <em>detalha</em>, descendo cada nível de aninhamento até a incompatibilidade específica — e essa causa raiz, na linha final e mais indentada, é quase sempre simples e acionável ("string não é number"). Em vez de tentar processar o tipo inteiro de uma vez, pule para o fim, entenda o conflito pontual, e suba o necessário para localizá-lo no seu código. Com prática, erros que pareciam exigir um especialista viram diagnósticos de dez segundos. O TypeScript não está sendo hostil — está te mostrando exatamente onde a forma esperada e a fornecida divergem.</div>
+      </div>
+
+      <h3 class="topic" id="inspecionar-tipos"><span class="hash">#</span> Inspecionar e depurar tipos</h3>
+      <p>Quando um tipo complexo (um conditional, um mapped, um resultado de <code>infer</code>) produz algo inesperado, há ferramentas para inspecioná-lo. Passar o mouse sobre um valor no editor mostra seu tipo inferido. Um truque útil é atribuir o tipo a um alias e inspecioná-lo, ou usar um utilitário que "expande" tipos para ver a forma final em vez do alias. E o <code>// @ts-expect-error</code> documenta e <em>verifica</em> que uma linha deve causar erro — útil em testes de tipo e para marcar incompatibilidades conhecidas.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">inspecionar.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>// Inspecionar um tipo: atribua a um alias e passe o mouse no editor
+type Resultado = ReturnType&lt;typeof minhaFuncao&gt;
+//   hover em 'Resultado' mostra a forma final
+
+// Forçar a expansão de um tipo para ver a forma (truque comum)
+type Expandir&lt;T&gt; = { [K in keyof T]: T[K] } &amp; {}
+
+// @ts-expect-error: afirma que a PRÓXIMA linha DEVE dar erro.
+// Se ela NÃO der erro, o próprio @ts-expect-error vira um erro.
+// @ts-expect-error
+const x: number = "texto"   // esperado falhar; documenta a intenção</code></pre>
+      </div>
+
+      <h3 class="topic" id="tipos-somem"><span class="hash">#</span> Os tipos somem em runtime</h3>
+      <p>O fato estrutural mais importante de todos, e fonte de muita confusão: <strong>os tipos não existem em runtime</strong>. O TypeScript compila para JavaScript apagando <em>toda</em> a informação de tipos — interfaces, anotações, generics, tudo desaparece. O JavaScript gerado não sabe nada sobre os seus tipos. Isso tem consequências práticas profundas: você não pode checar um tipo em runtime (<code>if (x instanceof MinhaInterface)</code> não existe), não pode validar dados externos só com tipos (precisa de validação real, como o Zod do Vol XII), e o branding (capítulo anterior) tem custo zero justamente porque some.</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="filename">runtime.ts</span><button class="copy-btn">Copiar</button></div>
+        <pre><code>interface Usuario { nome: string }
+
+// ❌ NÃO funciona: interfaces não existem em runtime
+// if (dado instanceof Usuario) { }   // erro: Usuario não é um valor
+
+// O JavaScript gerado deste arquivo NÃO tem nada sobre Usuario.
+// Toda a tipagem foi apagada na compilação.
+
+// Para checar a forma em RUNTIME, você precisa de código real
+// (ou de uma biblioteca de validação como o Zod — Vol XII):
+function ehUsuario(d: unknown): d is Usuario {
+  return typeof d === "object" &amp;&amp; d !== null &amp;&amp; "nome" in d
+}</code></pre>
+      </div>
+
+      <div class="callout warn">
+        <div class="callout-label">Tipos são para o compilador; validação é para o runtime</div>
+        <div class="callout-body">A lição que fecha o volume e conecta toda a coleção: tipos e validação são coisas <em>diferentes</em> que resolvem problemas <em>diferentes</em>. Os tipos do TypeScript protegem você durante o desenvolvimento — pegam erros no editor, no build, antes de rodar — e então desaparecem. Eles não fazem nada em runtime, e não podem proteger contra dados que chegam de fora (uma resposta de API, um formulário, um JSON) em runtime. Para isso existe a <em>validação</em> (Zod, Vol XII), que roda de verdade e verifica os dados quando eles cruzam a fronteira. Confundir os dois é um erro clássico: tipar uma resposta de API como <code>Usuario</code> não garante que ela <em>seja</em> um usuário — só diz ao compilador para confiar que é. A garantia real vem de validar em runtime e <em>derivar</em> o tipo dessa validação. Tipos para o que você escreve; validação para o que você recebe. Entender essa divisão é entender o lugar do TypeScript no stack.</div>
+      </div>
+
+      <h3 class="topic" id="compilador-referencia"><span class="hash">#</span> Tabela de referência</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Ideia</th><th>Consequência</th></tr></thead>
+          <tbody>
+            <tr><td>Tipagem estrutural</td><td>Compatível por forma, não por nome</td></tr>
+            <tr><td>Ler erro de baixo p/ cima</td><td>A causa raiz está na linha final</td></tr>
+            <tr><td>Hover / alias</td><td>Inspecionar tipos no editor</td></tr>
+            <tr><td><code>@ts-expect-error</code></td><td>Afirmar e verificar um erro esperado</td></tr>
+            <tr><td>Tipos somem em runtime</td><td>Sem checagem de tipo em runtime</td></tr>
+            <tr><td>Validação ≠ tipos</td><td>Dados externos exigem validação real (Zod)</td></tr>
+            <tr><td>Princípio</td><td>Tipos p/ o que você escreve; validação p/ o que recebe</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ CAPÍTULO 22: BOAS PRÁTICAS ============ -->
     <section class="chapter" id="boas-praticas">
-      <div class="chapter-number">Capítulo 14</div>
+      <div class="chapter-number">Capítulo 22</div>
       <h2 class="chapter-title">Boas <em>práticas</em></h2>
       <p class="chapter-intro">Você aprendeu a mecânica da linguagem. Esta última parte reúne regras não-oficiais que a comunidade TypeScript costuma seguir — o tipo de coisa que faz um código "cheirar" certo.</p>
 
