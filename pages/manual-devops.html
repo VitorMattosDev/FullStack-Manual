@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps — Manual de Referência · Volume XIX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0d0b; --bg-2: #17130f; --panel: #1c1712; --panel-2: #241d17;
+    --border: #2d251d; --border-strong: #3a3024;
+    --text: #f2ede4; --text-2: #cfc5b4; --muted: #a39a8e; --dim: #6a6258;
+    --accent: #f0a830; --accent-2: #e08c2a; --accent-soft: rgba(240, 168, 48, 0.12);
+    --teal: #5eead4; --rose: #f5a8a8; --sage: #b0c98c; --sky: #7dd3fc;
+    --sx-keyword: #e59866; --sx-string: #b0c98c; --sx-number: #e0a05a;
+    --sx-comment: #6a6258; --sx-tag: #e59866; --sx-attr: #f0c878;
+    --sx-class: #7dd3fc; --sx-prop: #f0c878; --sx-fn: #f0c878;
+    --sx-directive: #f5a8a8; --sx-op: #a39a8e;
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body {
+    background: var(--bg); color: var(--text); font-family: var(--font-body);
+    font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background-image: radial-gradient(circle at 10% 0%, rgba(240, 168, 48, 0.04) 0%, transparent 50%), radial-gradient(circle at 90% 30%, rgba(125, 211, 252, 0.03) 0%, transparent 40%);
+  }
+
+  /* ── HEADER ─────────────────────────────────────────── */
+  header.top { position: sticky; top: 0; z-index: 50; background: rgba(15, 13, 11, 0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); }
+  header.top .inner { max-width: 1440px; margin: 0 auto; padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--text); }
+  .brand-mark { width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-weight: 700; color: #1a1410; font-size: 13px; letter-spacing: -0.5px; box-shadow: 0 4px 20px rgba(240, 168, 48, 0.25); }
+  .brand-text .title { font-family: var(--font-display); font-weight: 600; font-size: 20px; font-style: italic; line-height: 1; }
+  .brand-text .sub { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
+  .search-wrap { flex: 1; max-width: 420px; position: relative; }
+  .search-wrap input { width: 100%; background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 10px 14px 10px 40px; border-radius: 8px; font-family: var(--font-body); font-size: 14px; transition: all 0.2s; }
+  .search-wrap input:focus { outline: none; border-color: var(--accent); background: var(--panel-2); }
+  .search-wrap::before { content: "⌕"; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px; }
+  .header-meta { display: flex; align-items: center; gap: 16px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .header-meta .dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  /* ── SCROLL PROGRESS ─────────────────────────────────── */
+  .scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--teal)); width: 0%; z-index: 100; transition: width 0.1s; }
+
+  /* ── LAYOUT ──────────────────────────────────────────── */
+  .layout { max-width: 1440px; margin: 0 auto; display: grid; grid-template-columns: 280px 1fr; gap: 0; padding: 0 32px; }
+  aside.sidebar { position: sticky; top: 77px; height: calc(100vh - 77px); overflow-y: auto; padding: 32px 24px 32px 0; border-right: 1px solid var(--border); scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+  aside.sidebar::-webkit-scrollbar { width: 6px; }
+  aside.sidebar::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+  .nav-group { margin-bottom: 28px; }
+  .nav-group-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; padding: 0 12px; display: flex; align-items: center; gap: 10px; }
+  .nav-group-title::before { content: ""; width: 4px; height: 4px; background: var(--accent); transform: rotate(45deg); }
+  .nav-group ul { list-style: none; }
+  .nav-group a { display: block; padding: 7px 12px; color: var(--text-2); text-decoration: none; font-size: 14px; border-left: 2px solid transparent; transition: all 0.15s; border-radius: 0 4px 4px 0; }
+  .nav-group a:hover, .nav-group a.active { color: var(--accent); background: var(--accent-soft); border-left-color: var(--accent); }
+  .nav-group a.active { font-weight: 500; }
+  .nav-hidden { display: none !important; }
+
+  /* ── MAIN ────────────────────────────────────────────── */
+  main { padding: 48px 48px 96px; min-width: 0; }
+
+  /* ── HERO ────────────────────────────────────────────── */
+  .hero { margin-bottom: 80px; padding: 48px 0 64px; border-bottom: 1px solid var(--border); position: relative; }
+  .hero::before { content: ""; position: absolute; top: 0; left: -48px; right: -48px; bottom: 0; background: radial-gradient(ellipse at top left, rgba(240, 168, 48, 0.08), transparent 50%), radial-gradient(ellipse at bottom right, rgba(125, 211, 252, 0.05), transparent 50%); pointer-events: none; z-index: -1; }
+  .eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 14px; }
+  .eyebrow::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border-strong), transparent); max-width: 280px; }
+  h1.hero-title { font-family: var(--font-display); font-weight: 600; font-size: clamp(48px, 8vw, 96px); line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 24px; color: var(--text); }
+  h1.hero-title em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .hero-lead { font-family: var(--font-display); font-size: clamp(18px, 2.4vw, 24px); line-height: 1.5; color: var(--text-2); max-width: 720px; font-weight: 400; }
+  .hero-lead::first-letter { font-size: 1.4em; font-weight: 600; color: var(--accent); }
+  .hero-meta { margin-top: 48px; display: flex; gap: 48px; flex-wrap: wrap; }
+  .hero-meta-item { border-left: 2px solid var(--accent); padding-left: 16px; }
+  .hero-meta-item .label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .hero-meta-item .value { font-family: var(--font-display); font-size: 20px; font-weight: 600; }
+
+  /* ── CHAPTERS ────────────────────────────────────────── */
+  section.chapter { margin-bottom: 80px; scroll-margin-top: 90px; }
+  .chapter-number { font-family: var(--font-mono); font-size: 11px; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 14px; }
+  h2.chapter-title { font-family: var(--font-display); font-weight: 600; font-size: clamp(34px, 4.5vw, 52px); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 20px; color: var(--text); }
+  h2.chapter-title em { font-style: italic; color: var(--accent); }
+  .chapter-intro { font-family: var(--font-display); font-size: 19px; line-height: 1.55; color: var(--text-2); max-width: 780px; margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  h3.topic { font-family: var(--font-display); font-weight: 600; font-size: 28px; line-height: 1.2; margin: 56px 0 12px; color: var(--text); scroll-margin-top: 90px; display: flex; align-items: baseline; gap: 16px; }
+  h3.topic .hash { font-family: var(--font-mono); font-size: 14px; color: var(--accent); font-weight: 400; }
+  h4.subtopic { font-family: var(--font-body); font-weight: 600; font-size: 17px; margin: 36px 0 10px; color: var(--text); letter-spacing: -0.005em; }
+  p { margin-bottom: 16px; color: var(--text-2); max-width: 780px; }
+  p strong { color: var(--text); font-weight: 600; }
+  p em { color: var(--accent); font-style: italic; }
+  p code, li code { font-family: var(--font-mono); font-size: 0.88em; background: var(--panel); padding: 2px 7px; border-radius: 4px; border: 1px solid var(--border); color: var(--teal); white-space: nowrap; }
+  ul.bullets { color: var(--text-2); max-width: 780px; padding-left: 20px; margin-bottom: 16px; }
+  ul.bullets li { margin-bottom: 8px; }
+
+  /* ── CODE BLOCKS ──────────────────────────────────────── */
+  .code-wrap { margin: 24px 0 32px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .code-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 18px; background: var(--panel-2); border-bottom: 1px solid var(--border); }
+  .filename { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+  .copy-btn { font-family: var(--font-mono); font-size: 11px; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 4px; padding: 3px 10px; cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px; }
+  .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+  pre { overflow-x: auto; padding: 22px 24px; scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+  pre::-webkit-scrollbar { height: 6px; }
+  pre::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+  pre code { font-family: var(--font-mono); font-size: 13.5px; line-height: 1.7; color: var(--text-2); background: none; border: none; padding: 0; white-space: pre; display: block; }
+
+  /* ── SYNTAX HIGHLIGHT ─────────────────────────────────── */
+  .kw  { color: var(--sx-keyword); font-style: italic; }  /* keywords */
+  .st  { color: var(--sx-string); }                         /* strings */
+  .nm  { color: var(--sx-number); }                         /* numbers */
+  .cm  { color: var(--sx-comment); font-style: italic; }   /* comments */
+  .tg  { color: var(--sx-tag); }                            /* JSX tags */
+  .at  { color: var(--sx-attr); }                           /* JSX attributes / object keys */
+  .cl  { color: var(--sx-class); }                          /* component / type names */
+  .fn  { color: var(--sx-fn); }                             /* function names */
+  .pr  { color: var(--sx-prop); }                           /* properties */
+  .dr  { color: var(--sx-directive); }                      /* "use server", "use client", "use cache" */
+  .op  { color: var(--sx-op); }                             /* operators */
+
+  /* ── CALLOUTS ────────────────────────────────────────── */
+  .callout { border-radius: 8px; padding: 18px 22px; margin: 28px 0; max-width: 780px; border-left: 3px solid; }
+  .callout-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
+  .callout-body { font-size: 15px; line-height: 1.6; color: var(--text-2); }
+  .callout-body code { font-family: var(--font-mono); font-size: 0.88em; background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 3px; }
+  .callout-body strong { color: var(--text); }
+  .callout.note { background: rgba(94, 234, 212, 0.06); border-color: var(--teal); }
+  .callout.note .callout-label { color: var(--teal); }
+  .callout.warn { background: rgba(245, 168, 168, 0.06); border-color: var(--rose); }
+  .callout.warn .callout-label { color: var(--rose); }
+  .callout.tip { background: rgba(240, 168, 48, 0.06); border-color: var(--accent); }
+  .callout.tip .callout-label { color: var(--accent); }
+  /* Callout específico do Next.js: .v16 (sky) — sinaliza novidades da versão atual */
+  .callout.v16 { background: rgba(125, 211, 252, 0.07); border-color: var(--sky); }
+  .callout.v16 .callout-label { color: var(--sky); }
+  /* Callout RSC (sage) — para pontos sobre Server vs Client Components */
+  .callout.rsc { background: rgba(176, 201, 140, 0.06); border-color: var(--sage); }
+  .callout.rsc .callout-label { color: var(--sage); }
+
+  /* ── TABLES ──────────────────────────────────────────── */
+  .table-wrap { overflow-x: auto; margin: 24px 0 32px; max-width: 780px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); padding: 10px 16px; text-align: left; border-bottom: 2px solid var(--border-strong); }
+  td { padding: 10px 16px; border-bottom: 1px solid var(--border); color: var(--text-2); vertical-align: top; }
+  td code { font-family: var(--font-mono); font-size: 12px; color: var(--teal); }
+  tr:hover td { background: var(--panel); }
+
+  /* ── FOOTER ──────────────────────────────────────────── */
+  footer.page-footer { margin-top: 120px; padding: 48px 0; border-top: 1px solid var(--border); text-align: center; }
+  .footer-ornament { font-family: var(--font-mono); font-size: 14px; color: var(--border-strong); letter-spacing: 8px; margin-bottom: 24px; }
+  .footer-next { font-family: var(--font-display); font-size: 18px; color: var(--text-2); }
+  .footer-next strong { color: var(--accent); font-style: italic; }
+  .footer-meta { margin-top: 16px; font-family: var(--font-mono); font-size: 11px; color: var(--dim); letter-spacing: 1.5px; text-transform: uppercase; }
+
+  /* ── MOBILE ──────────────────────────────────────────── */
+  .mobile-toggle { display: none; background: none; border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 18px; }
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; padding: 0 20px; }
+    main { padding: 32px 20px 64px; }
+    .mobile-toggle { display: block; }
+    aside.sidebar { position: fixed; top: 0; left: -100%; width: 280px; height: 100vh; z-index: 40; padding: 24px 20px; background: var(--bg-2); border-right: 1px solid var(--border); transition: left 0.3s ease; }
+    aside.sidebar.open { left: 0; }
+    .search-wrap { display: none; }
+    .header-meta { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="progress"></div>
+
+<header class="top">
+  <div class="inner">
+    <a href="#top" class="brand">
+      <div class="brand-mark">Op</div>
+      <div class="brand-text">
+        <div class="title">DevOps</div>
+        <div class="sub">Referência · CI/CD, deploy e operação em produção</div>
+      </div>
+    </a>
+    <div class="search-wrap">
+      <input type="text" id="search" placeholder="Buscar capítulo..." autocomplete="off">
+    </div>
+    <div class="header-meta">
+      <span class="dot"></span>
+      <span>Volume XIX</span>
+      <span>22 capítulos</span>
+    </div>
+    <button class="mobile-toggle" id="menuToggle">☰</button>
+  </div>
+</header>
+
+<div class="layout" id="top">
+  <aside class="sidebar" id="sidebar">
+    <nav>
+      <div class="nav-group">
+        <div class="nav-group-title">Fundamentos</div>
+        <ul>
+          <li><a href="#introducao">01 · O que é DevOps</a></li>
+          <li><a href="#ambientes">02 · Ambientes: dev, staging, prod</a></li>
+          <li><a href="#configuracao">03 · Configuração e segredos</a></li>
+          <li><a href="#build">04 · Build e artefatos reproduzíveis</a></li>
+        </ul>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">CI/CD</div>
+        <ul>
+          <li><a href="#ci">05 · Integração contínua</a></li>
+          <li><a href="#pipelines">06 · Pipelines de CI/CD</a></li>
+          <li><a href="#cd">07 · Entrega e implantação contínua</a></li>
+          <li><a href="#estrategias-deploy">08 · Estratégias de deploy</a></li>
+          <li><a href="#rollback">09 · Rollback e feature flags</a></li>
+        </ul>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">Infraestrutura</div>
+        <ul>
+          <li><a href="#plataformas">10 · Plataformas de hospedagem</a></li>
+          <li><a href="#iac">11 · Infraestrutura como código</a></li>
+          <li><a href="#orquestracao">12 · Containers em produção</a></li>
+          <li><a href="#rede">13 · Redes, DNS e TLS</a></li>
+          <li><a href="#banco-producao">14 · Bancos em produção</a></li>
+        </ul>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">Observabilidade</div>
+        <ul>
+          <li><a href="#observabilidade">15 · Os três pilares</a></li>
+          <li><a href="#logging">16 · Logging estruturado</a></li>
+          <li><a href="#metricas">17 · Métricas e dashboards</a></li>
+          <li><a href="#tracing">18 · Tracing distribuído</a></li>
+          <li><a href="#alertas">19 · Alertas e SLOs</a></li>
+        </ul>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">Operação</div>
+        <ul>
+          <li><a href="#incidentes">20 · Resposta a incidentes</a></li>
+          <li><a href="#seguranca">21 · Segurança em produção</a></li>
+          <li><a href="#producao">22 · Boas práticas (encerramento)</a></li>
+        </ul>
+      </div>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <div class="eyebrow">Volume XIX · Guia de referência definitivo</div>
+      <h1 class="hero-title">DevOps</h1>
+      <p class="hero-lead">Os testes (Vol XVIII) garantiram que o software <em>funciona</em>; o DevOps garante que ele <em>chega à produção e se mantém lá</em>. Este volume fecha a Onda 5 — e a coleção — cobrindo a segunda metade da qualidade: levar o código testado até os usuários de forma automática e confiável, e operá-lo depois de implantado. Não é sobre uma ferramenta, mas sobre a cultura e as práticas que conectam desenvolvimento e operação: ambientes e configuração, o pipeline de CI/CD que automatiza a entrega (conectando ao Git do Vol XIV, ao Docker do Vol XV e ao CI dos testes), estratégias de deploy sem downtime, infraestrutura como código, e a observabilidade — logs, métricas, traces, alertas — que torna o software em produção visível e operável. É onde o stack inteiro que a coleção construiu enfim encontra os usuários, e onde a engenharia continua depois do deploy.</p>
+      <div class="hero-meta">
+        <div class="hero-meta-item"><div class="label">Domínio</div><div class="value">CI/CD · IaC · Observabilidade</div></div>
+        <div class="hero-meta-item"><div class="label">Capítulos</div><div class="value">22</div></div>
+        <div class="hero-meta-item"><div class="label">Volume</div><div class="value">XIX</div></div>
+        <div class="hero-meta-item"><div class="label">Foco</div><div class="value">Entrega e operação</div></div>
+      </div>
+    </div>
+
+    <!-- CHAPTERS_INSERT_HERE -->
+
+    <footer class="page-footer">
+      <div class="footer-ornament">· ✦ ·</div>
+      <div class="footer-next">Volume final da coleção · Da base à operação, a fundação fullstack completa em <strong>19 volumes</strong></div>
+      <div class="footer-meta">Coleção Fullstack · Volume XIX de XIX</div>
+    </footer>
+  </main>
+</div>
+
+<script>
+(function() {
+  const bar = document.getElementById("progress");
+  window.addEventListener("scroll", () => {
+    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    bar.style.width = pct + "%";
+  }, { passive: true });
+
+  document.querySelectorAll(".copy-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const code = btn.closest(".code-wrap").querySelector("code").innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = "Copiado!";
+        setTimeout(() => btn.textContent = "Copiar", 2000);
+      });
+    });
+  });
+
+  const navLinks = Array.from(document.querySelectorAll("aside.sidebar a"));
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove("active"));
+        const link = navLinks.find(a => a.getAttribute("href") === "#" + e.target.id);
+        if (link) link.classList.add("active");
+      }
+    });
+  }, { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll("section.chapter").forEach(s => obs.observe(s));
+
+  document.getElementById("menuToggle")?.addEventListener("click", () => {
+    document.getElementById("sidebar").classList.toggle("open");
+  });
+
+  document.getElementById("search")?.addEventListener("input", function() {
+    const q = this.value.toLowerCase().trim();
+    if (!q) {
+      navLinks.forEach(a => { a.parentElement.classList.remove("nav-hidden"); });
+      document.querySelectorAll(".nav-group").forEach(g => g.classList.remove("nav-hidden"));
+      return;
+    }
+    document.querySelectorAll(".nav-group").forEach(group => {
+      let anyMatch = false;
+      group.querySelectorAll("a").forEach(a => {
+        const matches = a.textContent.toLowerCase().includes(q);
+        a.parentElement.classList.toggle("nav-hidden", !matches);
+        if (matches) anyMatch = true;
+      });
+      group.classList.toggle("nav-hidden", !anyMatch);
+    });
+  });
+
+  document.querySelectorAll("aside.sidebar a").forEach(a => {
+    a.addEventListener("click", () => {
+      if (window.innerWidth <= 960) document.getElementById("sidebar").classList.remove("open");
+    });
+  });
+})();
+</script>
+</body>
+</html>

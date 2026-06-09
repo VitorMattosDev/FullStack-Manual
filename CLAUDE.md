@@ -29,7 +29,9 @@ pages/
   manual-git.html                  # Vol XIV  (Gt)  ✅ 22 caps
   manual-docker.html               # Vol XV   (Dk)  ✅ 22 caps
   manual-bash.html                 # Vol XVI  (Sh)  ✅ 22 caps
-  manual-regex.html                # Vol XVII (Rx)  ✅ 22 caps — COLEÇÃO COMPLETA (17/17)
+  manual-regex.html                # Vol XVII (Rx)  ✅ 22 caps (fim da Onda 4 / núcleo fullstack)
+  manual-testes.html               # Vol XVIII (Te) ✅ 22 caps — Onda 5
+  manual-devops.html               # Vol XIX  (Op)  ⬜ planejado — Onda 5
 _insert.py                         # insere 1 capítulo no marcador + valida (ajustar `path`)
 PROMPT-VOL-*.md                    # prompt de inicialização de cada volume futuro
 CLAUDE.md                          # este arquivo
@@ -58,6 +60,8 @@ CLAUDE.md                          # este arquivo
 | 4 | XV | Docker | manual-docker.html | Dk | ✅ |
 | 4 | XVI | Terminal & Bash | manual-bash.html | Sh | ✅ |
 | 4 | XVII | Regex | manual-regex.html | Rx | ✅ |
+| 5 Qualidade e operação | XVIII | Testes | manual-testes.html | Te | ✅ |
+| 5 | XIX | DevOps | manual-devops.html | Op | ⬜ planejado |
 
 O `mark` de cada volume (2 letras) **deve ser idêntico** no card do `index.html` e no `brand-mark` do manual.
 
