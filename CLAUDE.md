@@ -4,7 +4,7 @@ Guia operacional para produzir e manter os manuais desta coleção. Leia isto an
 
 ## O que é o projeto
 
-**FullStack Manual** é uma coleção de **17 manuais de referência fullstack em português do Brasil (PT-BR)**. Cada volume é um **arquivo HTML único e autocontido** — sem build, sem dependências, sem JS externo além das fontes do Google. Tema *dark warm*, syntax highlighting customizado em `<span>`, navegação por sidebar com scroll-spy e busca client-side.
+**FullStack Manual** é uma coleção de **19 manuais de referência fullstack em português do Brasil (PT-BR)**. Cada volume é um **arquivo HTML único e autocontido** — sem build, sem dependências, sem JS externo além das fontes do Google. Tema *dark warm*, syntax highlighting customizado em `<span>`, navegação por sidebar com scroll-spy e busca client-side.
 
 Hospedados em GitHub Pages: `https://vitormattosdev.github.io/FullStack-Manual/`.
 
@@ -31,7 +31,7 @@ pages/
   manual-bash.html                 # Vol XVI  (Sh)  ✅ 22 caps
   manual-regex.html                # Vol XVII (Rx)  ✅ 22 caps (fim da Onda 4 / núcleo fullstack)
   manual-testes.html               # Vol XVIII (Te) ✅ 22 caps — Onda 5
-  manual-devops.html               # Vol XIX  (Op)  ⬜ planejado — Onda 5
+  manual-devops.html               # Vol XIX  (Op)  ✅ 22 caps — fim da Onda 5 / coleção completa
 _insert.py                         # insere 1 capítulo no marcador + valida (ajustar `path`)
 PROMPT-VOL-*.md                    # prompt de inicialização de cada volume futuro
 CLAUDE.md                          # este arquivo
@@ -61,7 +61,9 @@ CLAUDE.md                          # este arquivo
 | 4 | XVI | Terminal & Bash | manual-bash.html | Sh | ✅ |
 | 4 | XVII | Regex | manual-regex.html | Rx | ✅ |
 | 5 Qualidade e operação | XVIII | Testes | manual-testes.html | Te | ✅ |
-| 5 | XIX | DevOps | manual-devops.html | Op | ⬜ planejado |
+| 5 | XIX | DevOps | manual-devops.html | Op | ✅ |
+
+> **Coleção completa: 19/19 volumes publicados.**
 
 O `mark` de cada volume (2 letras) **deve ser idêntico** no card do `index.html` e no `brand-mark` do manual.
 
@@ -233,7 +235,7 @@ Cada esqueleto novo é derivado do manual anterior, reaproveitando head/CSS/JS. 
 
 - O index é uma **trilha de aprendizado**: 6 seções `<section class="wave" id="fase-N">` (fases pedagógicas, NÃO a ordem dos volumes), cada card com `<span class="vol">Passo N · Vol XX</span>`. A ordem dos cards é a ordem de estudo recomendada para iniciantes; o "Vol XX" é só a referência canônica.
 - Trocar o card de `<div class="card planned">` para `<a class="card" href="pages/manual-<slug>.html">`, status "Planejado" → "Pronto", e inseri-lo na fase certa da trilha com o `Passo N` correto.
-- Atualizar o hero: contador `N / 17 publicados` e `progress-fill` width = `N/17 * 100`%.
+- Atualizar o hero: contador `N / 19 publicados` e `progress-fill` width = `N/19 * 100`%.
 - Manter o `mark` do card consistente com o `brand-mark` do manual.
 
 ## Estratégia de modelo
