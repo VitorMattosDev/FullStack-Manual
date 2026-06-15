@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FullStack Quest — Jogo de revisão da coleção</title>
+<meta name="description" content="Jogo de revisão gamificado da coleção FullStack Manual: exercícios progressivos dos 20 volumes, com XP, níveis, conquistas e progresso salvo no navegador.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0d0b; --bg-2: #17130f; --panel: #1c1712; --panel-2: #241d17;
+    --border: #2d251d; --border-strong: #3a3024;
+    --text: #f2ede4; --text-2: #cfc5b4; --muted: #a39a8e; --dim: #6a6258;
+    --accent: #f0a830; --accent-2: #e08c2a; --accent-soft: rgba(240, 168, 48, 0.12);
+    --teal: #5eead4; --rose: #f5a8a8; --sage: #b0c98c; --sky: #7dd3fc;
+    --ok: #9bd17a; --ok-soft: rgba(155, 209, 122, 0.12);
+    --err: #f08a8a; --err-soft: rgba(240, 138, 138, 0.12);
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--text); font-family: var(--font-body);
+    font-size: 16px; line-height: 1.6; min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(240, 168, 48, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 90% 20%, rgba(125, 211, 252, 0.03) 0%, transparent 40%),
+      radial-gradient(circle at 50% 95%, rgba(176, 201, 140, 0.025) 0%, transparent 45%);
+  }
+  a { color: inherit; }
+  .page { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+
+  /* ─── TOP BAR ─── */
+  .topbar {
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    padding-bottom: 1.5rem; margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand { display: flex; align-items: center; gap: 0.85rem; text-decoration: none; flex-shrink: 0; }
+  .brand-mark {
+    width: 52px; height: 52px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    display: grid; place-items: center; color: var(--bg);
+    font-family: var(--font-mono); font-weight: 700; font-size: 1.5rem;
+    box-shadow: 0 8px 28px rgba(240,168,48,0.25);
+  }
+  .brand-text .title { font-family: var(--font-display); font-weight: 600; font-size: 1.4rem; line-height: 1.05; letter-spacing: -0.02em; }
+  .brand-text .title em { font-style: italic; color: var(--accent); }
+  .brand-text .sub { font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+  .stats { display: flex; align-items: center; gap: 1.25rem; margin-left: auto; flex-wrap: wrap; }
+  .stat { display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); font-size: 0.95rem; }
+  .stat .ico { font-size: 1.15rem; }
+  .stat .big { font-weight: 700; color: var(--text); }
+  .stat .lbl { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .home-link { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-2); text-decoration: none; border-bottom: 1px dotted var(--border-strong); padding-bottom: 1px; transition: color .18s, border-color .18s; }
+  .home-link:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ─── LEVEL BAR ─── */
+  .levelbar { display: flex; align-items: center; gap: 1rem; margin-bottom: 2.25rem; }
+  .level-badge {
+    flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 64px; height: 64px; border-radius: 16px;
+    background: var(--panel); border: 1.5px solid var(--accent);
+  }
+  .level-badge .n { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; color: var(--accent); line-height: 1; }
+  .level-badge .t { font-family: var(--font-mono); font-size: 0.55rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+  .xp-wrap { flex: 1; }
+  .xp-meta { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); margin-bottom: 0.4rem; }
+  .xp-meta strong { color: var(--text); }
+  .xp-track { background: var(--panel); border: 1px solid var(--border); border-radius: 999px; height: 12px; overflow: hidden; }
+  .xp-fill { height: 100%; background: linear-gradient(90deg, var(--accent-2), var(--accent)); border-radius: 999px; transition: width .8s ease; }
+
+  /* ─── BADGES ─── */
+  .badges { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 2.5rem; }
+  .badge {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.45rem 0.8rem; border-radius: 999px;
+    background: var(--panel); border: 1px solid var(--border);
+    font-size: 0.8rem; color: var(--dim); opacity: 0.55;
+    transition: opacity .2s, border-color .2s, color .2s, background .2s;
+  }
+  .badge.earned { opacity: 1; color: var(--text); border-color: var(--accent); background: var(--accent-soft); }
+  .badge .e { font-size: 1.1rem; filter: grayscale(1); }
+  .badge.earned .e { filter: none; }
+
+  /* ─── PHASES / CARDS ─── */
+  .phase { margin-top: 2.5rem; }
+  .phase-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--border); }
+  .phase-label { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+  .phase-title { font-family: var(--font-display); font-weight: 500; font-size: 1.4rem; letter-spacing: -0.01em; }
+  .phase-prog { margin-left: auto; font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.9rem; }
+
+  .card {
+    text-align: left; cursor: pointer; font: inherit; color: inherit;
+    display: flex; flex-direction: column;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+    padding: 1.15rem 1.1rem; position: relative; overflow: hidden;
+    transition: transform .16s, border-color .16s, box-shadow .16s, background .16s;
+  }
+  .card:hover:not(.locked) { transform: translateY(-3px); border-color: var(--border-strong); background: var(--panel-2); box-shadow: 0 12px 30px -10px rgba(0,0,0,.5); }
+  .card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.9rem; }
+  .mark { font-family: var(--font-mono); font-weight: 700; font-size: 1rem; width: 42px; height: 42px; display: grid; place-items: center; border: 1.5px solid var(--border-strong); border-radius: 10px; color: var(--text-2); }
+  .card:hover:not(.locked) .mark { color: var(--accent); border-color: var(--accent); }
+  .vol { font-family: var(--font-mono); font-size: 0.66rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+  .card-title { font-family: var(--font-display); font-weight: 500; font-size: 1.1rem; line-height: 1.2; margin-bottom: 0.7rem; }
+  .card-foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; font-family: var(--font-mono); font-size: 0.74rem; }
+  .card-state { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--muted); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--dim); }
+  .card.done .dot { background: var(--ok); }
+  .card.open .dot { background: var(--accent); }
+  .card .score { color: var(--ok); font-weight: 700; }
+  .card.locked { opacity: 0.5; cursor: not-allowed; border-style: dashed; }
+  .card.locked .lock { font-size: 0.95rem; }
+  .stars { letter-spacing: 1px; }
+
+  /* ─── QUIZ SCREEN ─── */
+  .quiz-top { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.75rem; }
+  .qt-back { background: var(--panel); border: 1px solid var(--border); color: var(--text-2); border-radius: 10px; padding: 0.5rem 0.8rem; cursor: pointer; font: inherit; font-size: 0.85rem; transition: border-color .15s, color .15s; }
+  .qt-back:hover { border-color: var(--accent); color: var(--accent); }
+  .qbar { flex: 1; background: var(--panel); border: 1px solid var(--border); border-radius: 999px; height: 12px; overflow: hidden; }
+  .qbar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-2), var(--accent)); border-radius: 999px; transition: width .35s ease; }
+  .hearts { font-size: 1.15rem; letter-spacing: 2px; flex-shrink: 0; min-width: 70px; text-align: right; }
+
+  .qcard { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 1.75rem 1.6rem; }
+  .qkind { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 0.7rem; }
+  .qtext { font-family: var(--font-display); font-weight: 500; font-size: 1.4rem; line-height: 1.3; margin-bottom: 1.25rem; letter-spacing: -0.01em; }
+  .qtext code, .opt code, .feedback code { font-family: var(--font-mono); font-size: 0.86em; background: var(--bg-2); border: 1px solid var(--border); border-radius: 5px; padding: 0.05em 0.35em; color: var(--teal); }
+
+  .codeblock { background: #110e0a; border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.1rem; margin-bottom: 1.25rem; overflow-x: auto; }
+  .codeblock pre { font-family: var(--font-mono); font-size: 0.86rem; line-height: 1.7; color: var(--text-2); white-space: pre; }
+  .blank { display: inline-block; min-width: 60px; border-bottom: 2px solid var(--accent); color: var(--accent); text-align: center; }
+
+  .opts { display: flex; flex-direction: column; gap: 0.6rem; }
+  .opt {
+    text-align: left; font: inherit; color: var(--text); cursor: pointer;
+    background: var(--bg-2); border: 1.5px solid var(--border); border-radius: 12px;
+    padding: 0.85rem 1rem; display: flex; align-items: center; gap: 0.75rem;
+    transition: border-color .14s, background .14s, transform .1s;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--border-strong); }
+  .opt:disabled { cursor: default; }
+  .opt .key { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); border: 1px solid var(--border-strong); border-radius: 6px; width: 24px; height: 24px; display: grid; place-items: center; flex-shrink: 0; }
+  .opt.sel { border-color: var(--accent); background: var(--accent-soft); }
+  .opt.correct { border-color: var(--ok); background: var(--ok-soft); }
+  .opt.wrong { border-color: var(--err); background: var(--err-soft); }
+  .opt.correct .key { border-color: var(--ok); color: var(--ok); }
+  .opt.wrong .key { border-color: var(--err); color: var(--err); }
+
+  .fill-input { width: 100%; font-family: var(--font-mono); font-size: 1rem; background: var(--bg-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 0.85rem 1rem; color: var(--teal); outline: none; transition: border-color .15s; }
+  .fill-input:focus { border-color: var(--accent); }
+  .fill-input.correct { border-color: var(--ok); color: var(--ok); }
+  .fill-input.wrong { border-color: var(--err); color: var(--err); }
+
+  /* ordering */
+  .order-seq { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.9rem; min-height: 8px; }
+  .order-slot { display: flex; align-items: center; gap: 0.7rem; background: var(--accent-soft); border: 1.5px solid var(--accent); border-radius: 10px; padding: 0.6rem 0.85rem; cursor: pointer; }
+  .order-slot .num { font-family: var(--font-mono); font-weight: 700; color: var(--accent); }
+  .order-pool { display: flex; flex-direction: column; gap: 0.5rem; }
+  .order-item { text-align: left; font: inherit; color: var(--text); cursor: pointer; background: var(--bg-2); border: 1.5px solid var(--border); border-radius: 10px; padding: 0.65rem 0.85rem; transition: border-color .14s; }
+  .order-item:hover { border-color: var(--border-strong); }
+  .order-help { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.6rem; }
+  .order-seq.correct .order-slot { border-color: var(--ok); background: var(--ok-soft); }
+  .order-seq.correct .order-slot .num { color: var(--ok); }
+  .order-seq.wrong .order-slot { border-color: var(--err); background: var(--err-soft); }
+  .order-seq.wrong .order-slot .num { color: var(--err); }
+
+  .feedback { margin-top: 1.25rem; border-radius: 12px; padding: 0.95rem 1.1rem; border: 1px solid var(--border); display: none; }
+  .feedback.show { display: block; }
+  .feedback.ok { border-color: var(--ok); background: var(--ok-soft); }
+  .feedback.no { border-color: var(--err); background: var(--err-soft); }
+  .feedback .fb-title { font-weight: 600; margin-bottom: 0.25rem; }
+  .feedback.ok .fb-title { color: var(--ok); }
+  .feedback.no .fb-title { color: var(--err); }
+  .feedback .fb-body { color: var(--text-2); font-size: 0.92rem; }
+
+  .qactions { margin-top: 1.5rem; display: flex; justify-content: flex-end; }
+  .btn {
+    font: inherit; font-weight: 600; cursor: pointer; border: none; border-radius: 12px;
+    padding: 0.8rem 1.8rem; background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: var(--bg); transition: transform .12s, box-shadow .12s, opacity .12s;
+    box-shadow: 0 6px 20px -6px rgba(240,168,48,.5);
+  }
+  .btn:hover:not(:disabled) { transform: translateY(-1px); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+  .btn.ghost { background: var(--panel); color: var(--text-2); border: 1px solid var(--border); box-shadow: none; }
+  .btn.ghost:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+
+  /* ─── RESULTS ─── */
+  .result { text-align: center; max-width: 560px; margin: 1rem auto; background: var(--panel); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem 2rem; }
+  .result .r-emoji { font-size: 3.5rem; line-height: 1; margin-bottom: 0.5rem; }
+  .result h2 { font-family: var(--font-display); font-weight: 600; font-size: 2rem; margin-bottom: 0.4rem; }
+  .result .r-sub { color: var(--muted); margin-bottom: 1.75rem; }
+  .r-stats { display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+  .r-stat { background: var(--bg-2); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.4rem; min-width: 110px; }
+  .r-stat .v { font-family: var(--font-display); font-weight: 700; font-size: 1.8rem; color: var(--accent); }
+  .r-stat .l { font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .r-actions { display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; }
+  .r-new-badges { margin: 0 0 1.5rem; display: flex; flex-direction: column; gap: 0.4rem; align-items: center; }
+  .r-new-badges .nb { color: var(--accent); font-family: var(--font-mono); font-size: 0.85rem; }
+  .read-link { display: inline-block; margin-top: 1.4rem; font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-2); text-decoration: none; border-bottom: 1px dotted var(--border-strong); }
+  .read-link:hover { color: var(--accent); border-color: var(--accent); }
+
+  .toolbar { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 1rem; }
+
+  /* level up toast */
+  .toast { position: fixed; left: 50%; bottom: 2rem; transform: translateX(-50%) translateY(120%); background: var(--panel-2); border: 1.5px solid var(--accent); border-radius: 14px; padding: 0.9rem 1.4rem; box-shadow: 0 12px 40px -8px rgba(0,0,0,.6); font-family: var(--font-mono); font-size: 0.92rem; z-index: 50; transition: transform .4s cubic-bezier(.2,.9,.3,1.3); }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast strong { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .page { padding: 1.5rem 1rem 4rem; }
+    .stats { width: 100%; margin-left: 0; justify-content: space-between; }
+    .qtext { font-size: 1.2rem; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<main class="page" id="app"></main>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   FullStack Quest — engine de revisão gamificada
+   Dados → MODULES (20 volumes da coleção). Estado em localStorage.
+   ════════════════════════════════════════════════════════════════ */
+
+const PHASES = [
+  { id: 1, label: "Fase 01", title: "A base da web" },
+  { id: 2, label: "Fase 02", title: "Programar" },
+  { id: 3, label: "Fase 03", title: "Ferramentas do ofício" },
+  { id: 4, label: "Fase 04", title: "Interfaces modernas" },
+  { id: 5, label: "Fase 05", title: "Backend e dados" },
+  { id: 6, label: "Fase 06", title: "Produção e extras" },
+  { id: 7, label: "Fase 07", title: "Qualidade e operação" },
+  { id: 8, label: "Fase 08", title: "Junte tudo" },
+];
+
+/* tipos de questão:
+   mc     → múltipla escolha   { q, options:[], answer:idx, explain }
+   vf     → verdadeiro/falso   { q, answer:true|false, explain }
+   fill   → completar código   { q, code, accept:[], explain }   (code usa ___ como lacuna)
+   output → prever a saída     { q, code, options:[], answer:idx, explain }
+   order  → ordenar passos     { q, items:[...ordem correta], explain }
+*/
+
+const MODULES = [
+  /* ─── FASE 1 ─── */
+  { id:"html", step:1, vol:"Vol III", mark:"Hs", phase:1, title:"HTML semântico + a11y", file:"pages/manual-html.html", questions:[
+    { type:"mc", q:"Qual elemento marca o conteúdo principal e único de uma página?", options:["<code>&lt;div&gt;</code>","<code>&lt;main&gt;</code>","<code>&lt;section&gt;</code>","<code>&lt;article&gt;</code>"], answer:1, explain:"<code>&lt;main&gt;</code> é o marco do conteúdo central; deve haver apenas um por página e leitores de tela o usam como ponto de salto." },
+    { type:"vf", q:"O atributo alt deve sempre ter texto descritivo, mesmo em imagens puramente decorativas.", answer:false, explain:"Imagens decorativas usam alt=\"\" (vazio) para que leitores de tela as ignorem. O alt descritivo é só para imagens informativas." },
+    { type:"fill", q:"Associe um rótulo ao campo: o atributo do &lt;label&gt; aponta para o id do input.", code:'<label ___="email">E-mail</label>\n<input id="email" type="email">', accept:["for"], explain:"<code>for</code> liga o &lt;label&gt; ao input pelo id — clicar no rótulo foca o campo e o leitor de tela anuncia o nome." },
+    { type:"mc", q:"Por que pular de &lt;h1&gt; direto para &lt;h3&gt; é um problema?", options:["Deixa a fonte menor","Quebra a hierarquia do documento que a navegação assistiva usa","É inválido em HTML5","Impede o CSS de aplicar"], answer:1, explain:"Os níveis de heading formam o sumário do documento. Saltos confundem a navegação por headings de leitores de tela." },
+    { type:"order", q:"Ordene a estrutura semântica típica de uma página, de cima para baixo:", items:["<code>&lt;header&gt;</code>","<code>&lt;nav&gt;</code>","<code>&lt;main&gt;</code>","<code>&lt;footer&gt;</code>"], explain:"Cabeçalho e navegação no topo, conteúdo principal no meio, rodapé ao final — landmarks que dão estrutura à página." },
+  ]},
+  { id:"css", step:2, vol:"Vol IV", mark:"Cs", phase:1, title:"CSS moderno", file:"pages/manual-css.html", questions:[
+    { type:"mc", q:"Qual valor faz padding e border serem incluídos na largura definida do elemento?", options:["box-sizing: content-box","box-sizing: border-box","overflow: hidden","display: flex"], answer:1, explain:"<code>border-box</code> faz width incluir padding e border — o padrão moderno que evita estouros de largura." },
+    { type:"mc", q:"Entre <code>#id</code>, <code>.classe</code> e <code>div</code>, qual seletor tem maior especificidade?", options:[".classe","div","#id","Todos iguais"], answer:2, explain:"A ordem de especificidade é id (#) > classe (.) > tipo (tag). Por isso #id vence em conflitos." },
+    { type:"fill", q:"Crie uma grid de 3 colunas de larguras iguais:", code:".lista {\n  display: grid;\n  grid-template-columns: ___;\n}", accept:["repeat(3, 1fr)","repeat(3,1fr)","1fr 1fr 1fr"], explain:"<code>repeat(3, 1fr)</code> divide o espaço em três frações iguais — equivalente a <code>1fr 1fr 1fr</code>." },
+    { type:"vf", q:"Container queries permitem estilizar com base no tamanho do contêiner pai, não da viewport.", answer:true, explain:"Diferente de media queries (viewport), container queries reagem ao tamanho do contêiner — ideal para componentes reutilizáveis." },
+    { type:"mc", q:"Num container <code>display: flex</code> (linha), qual propriedade alinha os itens no eixo principal (horizontal)?", options:["align-items","justify-content","place-items","flex-wrap"], answer:1, explain:"<code>justify-content</code> distribui no eixo principal; <code>align-items</code> alinha no eixo cruzado." },
+  ]},
+
+  /* ─── FASE 2 ─── */
+  { id:"javascript", step:3, vol:"Vol II", mark:"Js", phase:2, title:"JavaScript moderno", file:"pages/javascript.html", questions:[
+    { type:"output", q:"Qual é a saída?", code:'console.log(typeof null);', options:['"null"','"object"','"undefined"','undefined'], answer:1, explain:"<code>typeof null</code> é \"object\" — um bug histórico da linguagem mantido por compatibilidade." },
+    { type:"mc", q:"Qual a diferença de escopo entre <code>var</code> e <code>let</code>?", options:["var é de bloco; let é de função","var é de função; let é de bloco","Ambos são de bloco","Ambos são de função"], answer:1, explain:"<code>var</code> tem escopo de função (e sofre hoisting); <code>let</code>/<code>const</code> têm escopo de bloco." },
+    { type:"mc", q:"O que uma <code>async function</code> sempre retorna?", options:["O valor diretamente","Uma Promise","undefined","Um callback"], answer:1, explain:"Uma função async sempre retorna uma Promise; o valor retornado vira o valor resolvido dela." },
+    { type:"fill", q:"Copie (rasamente) um array usando spread:", code:"const copia = [___original];", accept:["...","... "], explain:"O operador spread <code>...</code> expande os elementos num novo array — uma cópia rasa." },
+    { type:"output", q:"Qual é a saída?", code:"console.log(0.1 + 0.2 === 0.3);", options:["true","false","NaN","0.3"], answer:1, explain:"Ponto flutuante (IEEE-754) torna 0.1 + 0.2 = 0.30000000000000004 — por isso é false." },
+  ]},
+  { id:"typescript", step:4, vol:"Vol I", mark:"Ts", phase:2, title:"TypeScript", file:"pages/typescript.html", questions:[
+    { type:"mc", q:"Qual a vantagem de <code>unknown</code> sobre <code>any</code>?", options:["unknown é mais rápido","unknown obriga a estreitar o tipo antes de usar","São idênticos","any é mais seguro"], answer:1, explain:"<code>unknown</code> aceita qualquer valor mas não deixa usá-lo sem antes verificar/estreitar o tipo — é a versão segura de any." },
+    { type:"fill", q:"Use o utility type que torna todas as propriedades de User opcionais:", code:"type Rascunho = ___<User>;", accept:["partial"], explain:"<code>Partial&lt;T&gt;</code> transforma todas as propriedades em opcionais — útil para updates parciais." },
+    { type:"vf", q:"Um <code>enum</code> normal do TypeScript gera código JavaScript em tempo de execução.", answer:true, explain:"enums comuns emitem um objeto em runtime. Para evitar isso, usa-se <code>const enum</code> ou union de literais." },
+    { type:"output", q:"O tipo de <code>x</code> dentro do if é estreitado para qual?", code:'function f(x: string | number) {\n  if (typeof x === "string") {\n    // tipo de x aqui?\n  }\n}', options:["string | number","string","number","unknown"], answer:1, explain:"O <code>typeof</code> guard estreita a union: dentro do if, x é apenas string." },
+    { type:"mc", q:"Qual construção verifica tipos em tempo de execução (runtime), não só na compilação?", options:["interface","type","Uma lib como Zod","generics"], answer:2, explain:"Tipos do TS somem na compilação. Para validar dados externos em runtime, usa-se Zod (Vol XII) — daí a dupla TS + Zod." },
+  ]},
+
+  /* ─── FASE 3 ─── */
+  { id:"bash", step:5, vol:"Vol XVI", mark:"Sh", phase:3, title:"Terminal & Bash", file:"pages/manual-bash.html", questions:[
+    { type:"mc", q:"O que <code>2&gt;&amp;1</code> faz num comando?", options:["Roda 2 comandos","Redireciona stderr para o mesmo destino do stdout","Repete o comando 2 vezes","Cria 2 arquivos"], answer:1, explain:"O descritor 2 (stderr) é redirecionado para onde o 1 (stdout) aponta — útil para juntar erros e saída num log." },
+    { type:"fill", q:"Liste também os arquivos ocultos no diretório atual:", code:"ls ___", accept:["-a","-la","-al","-A"], explain:"A flag <code>-a</code> mostra arquivos ocultos (que começam com ponto)." },
+    { type:"mc", q:"O que a variável especial <code>$?</code> contém?", options:["O PID do shell","O código de saída do último comando","O diretório atual","O último argumento"], answer:1, explain:"<code>$?</code> guarda o exit code do comando anterior — 0 é sucesso, diferente de 0 é falha." },
+    { type:"vf", q:"O pipe <code>|</code> conecta o stdout de um comando ao stdin do seguinte.", answer:true, explain:"Pipes encadeiam processos: a saída de um vira a entrada do próximo, base da composição no Unix." },
+    { type:"output", q:"Dado <code>nome=\"bash\"</code>, qual a saída?", code:'nome="bash"\necho ${#nome}', options:["bash","4","#bash","nome"], answer:1, explain:"<code>${#var}</code> retorna o comprimento da string — \"bash\" tem 4 caracteres." },
+  ]},
+  { id:"git", step:6, vol:"Vol XIV", mark:"Gt", phase:3, title:"Git", file:"pages/manual-git.html", questions:[
+    { type:"mc", q:"Qual comando cria uma branch nova e já muda para ela?", options:["git branch nova","git switch -c nova","git checkout nova","git merge nova"], answer:1, explain:"<code>git switch -c nova</code> (ou <code>git checkout -b nova</code>) cria e troca. <code>git branch</code> só cria." },
+    { type:"mc", q:"Qual a diferença fundamental entre <code>rebase</code> e <code>merge</code>?", options:["merge é mais rápido","rebase reescreve o histórico aplicando commits sobre outra base","São idênticos","rebase apaga commits"], answer:1, explain:"O merge cria um commit de junção preservando o histórico; o rebase reaplica seus commits sobre outra base, deixando linha reta (mas reescreve hashes)." },
+    { type:"fill", q:"Tire um arquivo da staging area sem perder as mudanças:", code:"git ___ --staged arquivo.txt", accept:["restore","reset"], explain:"<code>git restore --staged</code> remove da staging mantendo as alterações no arquivo (equivale ao antigo <code>git reset</code>)." },
+    { type:"vf", q:"<code>git pull</code> equivale a <code>git fetch</code> seguido de <code>git merge</code>.", answer:true, explain:"O pull baixa as referências remotas (fetch) e já integra na branch atual (merge, ou rebase com --rebase)." },
+    { type:"order", q:"Ordene o fluxo de salvar uma mudança e publicá-la:", items:["Editar o arquivo","<code>git add</code>","<code>git commit</code>","<code>git push</code>"], explain:"Edita → stage (add) → grava o commit local → envia ao remoto (push)." },
+  ]},
+
+  /* ─── FASE 4 ─── */
+  { id:"react", step:7, vol:"Vol V", mark:"Rc", phase:4, title:"React", file:"pages/manual-react.html", questions:[
+    { type:"mc", q:"Qual é a regra dos Hooks?", options:["Só podem ser usados em classes","Devem ser chamados no topo do componente, nunca em loops/condicionais","Podem ser chamados em qualquer lugar","Só funcionam com useState"], answer:1, explain:"Hooks devem ser chamados sempre na mesma ordem, no topo — por isso nada de loops, condições ou funções aninhadas." },
+    { type:"fill", q:"Declare o estado de um contador:", code:"const [count, ___] = useState(0);", accept:["setCount","setcount"], explain:"useState retorna o valor e uma função setter — a convenção é set + nome do estado." },
+    { type:"vf", q:"Usar o índice do array como key de uma lista é sempre seguro.", answer:false, explain:"Índices como key quebram quando a lista reordena/insere no meio. Use um id estável dos dados." },
+    { type:"mc", q:"Quando a função de cleanup retornada por <code>useEffect</code> roda?", options:["Nunca","Antes do efeito re-executar e ao desmontar o componente","Só na primeira renderização","A cada render, sempre"], answer:1, explain:"O cleanup roda antes do próximo efeito (quando deps mudam) e na desmontagem — para cancelar timers, listeners, subscriptions." },
+    { type:"mc", q:"Por que atualizar estado com <code>setCount(c =&gt; c + 1)</code> em vez de <code>setCount(count + 1)</code>?", options:["É mais curto","Evita usar valor desatualizado (stale) em atualizações em lote","Não faz diferença","Obriga re-render"], answer:1, explain:"A forma funcional recebe o valor mais recente, evitando bugs quando vários updates ocorrem antes do próximo render." },
+  ]},
+  { id:"tailwind", step:8, vol:"Vol VI", mark:"Tw", phase:4, title:"Tailwind CSS", file:"pages/manual-tailwind.html", questions:[
+    { type:"mc", q:"Qual utility aplica padding nas laterais (esquerda e direita)?", options:["py-4","px-4","pt-4","m-4"], answer:1, explain:"<code>px-*</code> é padding no eixo X (horizontal); <code>py-*</code> no eixo Y (vertical)." },
+    { type:"fill", q:"Mude a cor de fundo apenas no hover:", code:'<button class="bg-blue-500 ___:bg-blue-600">', accept:["hover"], explain:"O prefixo <code>hover:</code> aplica a utility só no estado de hover." },
+    { type:"mc", q:"O prefixo responsivo <code>md:</code> aplica o estilo a partir de quando?", options:["Só em telas menores que md","A partir da largura do breakpoint md (mobile-first)","Apenas em md exatamente","Em modo escuro"], answer:1, explain:"Tailwind é mobile-first: <code>md:</code> vale de md para cima. Estilos sem prefixo são a base (menores)." },
+    { type:"vf", q:"O Tailwind gera apenas as classes detectadas no seu código (via configuração de content).", answer:true, explain:"O scan do conteúdo gera só o CSS usado, mantendo o bundle pequeno — por isso classes montadas dinamicamente podem sumir." },
+    { type:"mc", q:"Qual variante estiliza o elemento quando o tema escuro está ativo?", options:["night:","theme:","dark:","invert:"], answer:2, explain:"A variante <code>dark:</code> aplica estilos quando o modo escuro está ligado (por classe ou media query)." },
+  ]},
+  { id:"nextjs", step:9, vol:"Vol VII", mark:"Nx", phase:4, title:"Next.js", file:"pages/manual-nextjs.html", questions:[
+    { type:"mc", q:"No App Router, os componentes são, por padrão...", options:["Client Components","Server Components","Estáticos puros","Edge Functions"], answer:1, explain:"No App Router tudo é Server Component por padrão; para interatividade no browser, marca-se o arquivo com 'use client'." },
+    { type:"fill", q:"Qual diretiva no topo do arquivo torna o componente um Client Component?", code:"___\n\nexport default function Botao() { /* ... */ }", accept:["'use client'","\"use client\"","use client"], explain:"A diretiva <code>'use client'</code> marca o componente (e seus filhos) para rodar no cliente." },
+    { type:"mc", q:"Qual recurso permite mutar dados no servidor a partir de um formulário, sem criar uma rota de API manual?", options:["getServerSideProps","Server Actions","useEffect","API Routes"], answer:1, explain:"Server Actions são funções que rodam no servidor e podem ser chamadas direto de formulários/eventos." },
+    { type:"vf", q:"Um arquivo <code>loading.tsx</code> cria automaticamente um estado de carregamento via Suspense para a rota.", answer:true, explain:"O App Router usa convenções de arquivo: loading.tsx vira fallback de Suspense; error.tsx vira error boundary." },
+    { type:"fill", q:"Qual nome de arquivo define o layout compartilhado de um segmento de rota?", code:"app/dashboard/___.tsx", accept:["layout"], explain:"<code>layout.tsx</code> envolve as páginas do segmento e persiste entre navegações." },
+  ]},
+
+  /* ─── FASE 5 ─── */
+  { id:"nodejs", step:10, vol:"Vol VIII", mark:"Nd", phase:5, title:"Node.js", file:"pages/manual-nodejs.html", questions:[
+    { type:"mc", q:"O modelo de execução do Node.js é...", options:["Multi-thread bloqueante","Single-thread, não-bloqueante via event loop","Sem concorrência","Baseado em processos por requisição"], answer:1, explain:"O Node usa um event loop single-thread com I/O assíncrono não-bloqueante; trabalho pesado de CPU pode bloquear esse loop." },
+    { type:"fill", q:"Leia uma variável de ambiente chamada PORT:", code:"const porta = process.___.PORT;", accept:["env"], explain:"<code>process.env</code> expõe as variáveis de ambiente do processo." },
+    { type:"mc", q:"Qual a diferença entre <code>require</code> e <code>import</code>?", options:["Nenhuma","require é CommonJS (síncrono); import é ESM (estático)","import só funciona no browser","require é mais novo"], answer:1, explain:"<code>require</code> é do sistema CommonJS; <code>import</code>/<code>export</code> são ES Modules, o padrão moderno e estaticamente analisável." },
+    { type:"vf", q:"Streams permitem processar dados em pedaços, sem carregar tudo na memória de uma vez.", answer:true, explain:"Streams leem/escrevem em chunks — essenciais para arquivos grandes e dados de rede sem estourar a memória." },
+    { type:"mc", q:"Onde colocar trabalho intensivo de CPU para não travar o event loop?", options:["Em um setTimeout","Em um Worker Thread (ou processo separado)","No próprio handler","Em uma Promise"], answer:1, explain:"Worker Threads (ou child processes) rodam em paralelo, liberando o event loop principal para o I/O." },
+  ]},
+  { id:"hono", step:11, vol:"Vol IX", mark:"Hn", phase:5, title:"Hono", file:"pages/manual-hono.html", questions:[
+    { type:"mc", q:"O que é o Hono?", options:["Um ORM","Um framework web minimalista e multi-runtime","Um banco de dados","Um bundler"], answer:1, explain:"Hono é um framework web leve que roda em Node, Bun, Deno, Cloudflare Workers e outros runtimes." },
+    { type:"fill", q:"Registre uma rota GET na raiz:", code:'app.___("/", (c) => c.text("ok"));', accept:["get"], explain:"<code>app.get</code> registra um handler para requisições GET; o objeto <code>c</code> é o Context (request + response)." },
+    { type:"mc", q:"No Hono, o objeto <code>c</code> passado ao handler representa...", options:["O cliente HTTP","O Context: acesso a request, response e estado","O console","A configuração"], answer:1, explain:"O Context concentra request, helpers de resposta (c.json, c.text), variáveis e parâmetros." },
+    { type:"vf", q:"Um middleware no Hono pode rodar lógica antes e depois do handler usando <code>await next()</code>.", answer:true, explain:"Middlewares seguem o padrão onion: código antes do <code>await next()</code> roda na entrada; depois, na saída." },
+    { type:"mc", q:"Como o Hono integra validação de entrada de forma tipada?", options:["Não suporta","Com middleware de validação usando schemas (ex.: Zod)","Só com regex","Apenas manualmente"], answer:1, explain:"O validator do Hono aceita schemas (como Zod) e entrega dados já validados e tipados ao handler." },
+  ]},
+  { id:"sql", step:12, vol:"Vol X", mark:"Pg", phase:5, title:"SQL + PostgreSQL", file:"pages/manual-sql-postgresql.html", questions:[
+    { type:"mc", q:"Qual a diferença entre INNER JOIN e LEFT JOIN?", options:["Nenhuma","LEFT JOIN mantém todas as linhas da tabela à esquerda, mesmo sem correspondência","INNER JOIN é mais lento","LEFT JOIN remove duplicatas"], answer:1, explain:"INNER JOIN só traz linhas com correspondência nas duas tabelas; LEFT JOIN preserva todas da esquerda, preenchendo com NULL quando não há par." },
+    { type:"fill", q:"Selecione apenas valores distintos da coluna pais:", code:"SELECT ___ pais FROM clientes;", accept:["distinct"], explain:"<code>DISTINCT</code> elimina linhas duplicadas no resultado." },
+    { type:"mc", q:"Um índice em uma coluna...", options:["Sempre torna tudo mais rápido","Acelera leituras/buscas mas adiciona custo nas escritas","Diminui o tamanho da tabela","É obrigatório"], answer:1, explain:"Índices aceleram SELECTs por essa coluna, mas cada INSERT/UPDATE precisa atualizá-los — é um trade-off." },
+    { type:"vf", q:"Em uma transação, <code>ROLLBACK</code> desfaz todas as mudanças feitas desde o BEGIN.", answer:true, explain:"Transações são atômicas (o A de ACID): ou tudo é confirmado com COMMIT, ou tudo é desfeito com ROLLBACK." },
+    { type:"mc", q:"Para filtrar por um resultado de agregação (ex.: COUNT &gt; 5), usa-se...", options:["WHERE","HAVING","GROUP","LIMIT"], answer:1, explain:"<code>WHERE</code> filtra linhas antes do agrupamento; <code>HAVING</code> filtra grupos após o GROUP BY/agregação." },
+  ]},
+  { id:"drizzle", step:13, vol:"Vol XI", mark:"Dz", phase:5, title:"Drizzle ORM", file:"pages/manual-drizzle.html", questions:[
+    { type:"mc", q:"Qual a filosofia central do Drizzle?", options:["Esconder o SQL completamente","Schema-as-code TypeScript-first com queries tipadas próximas do SQL","Gerar SQL aleatório","Substituir o banco"], answer:1, explain:"O schema é definido em TypeScript e o Drizzle infere os tipos; a API espelha o SQL, sem mágica que esconda a query." },
+    { type:"fill", q:"Inicie uma consulta de leitura na tabela users:", code:"const linhas = await db.___().from(users);", accept:["select"], explain:"<code>db.select().from(tabela)</code> é a forma de SELECT; encadeia-se .where(), .orderBy() etc." },
+    { type:"vf", q:"O Drizzle infere os tipos das linhas a partir da definição do schema.", answer:true, explain:"Definir o schema em TS dá tipagem ponta a ponta: o retorno das queries já vem tipado, sem geração de código extra." },
+    { type:"mc", q:"Qual ferramenta gera e aplica migrations no ecossistema Drizzle?", options:["drizzle-kit","prisma migrate","knex","sequelize-cli"], answer:0, explain:"O <code>drizzle-kit</code> compara o schema com o banco e gera os arquivos de migration (push/generate)." },
+    { type:"mc", q:"Como o Drizzle se conecta ao conteúdo do Vol X (SQL)?", options:["Não se conecta","É uma camada tipada sobre o mesmo SQL/PostgreSQL","Substitui o PostgreSQL","Só funciona com MySQL"], answer:1, explain:"Drizzle é um ORM fino sobre o banco relacional do Vol X — você ainda raciocina em JOINs, índices e transações." },
+  ]},
+  { id:"zod", step:14, vol:"Vol XII", mark:"Zd", phase:5, title:"Zod", file:"pages/manual-zod.html", questions:[
+    { type:"mc", q:"Para que serve o Zod?", options:["Estilizar componentes","Validar dados em runtime e inferir o tipo TypeScript","Rodar testes","Gerenciar estado"], answer:1, explain:"Zod valida dados em tempo de execução (entrada de API, forms, env) e ainda fornece o tipo TS via inferência." },
+    { type:"fill", q:"Extraia o tipo TypeScript de um schema Zod:", code:"const User = z.object({ nome: z.string() });\ntype User = z.___<typeof User>;", accept:["infer"], explain:"<code>z.infer&lt;typeof Schema&gt;</code> deriva o tipo estático a partir do schema — uma só fonte de verdade." },
+    { type:"mc", q:"Qual a diferença entre <code>.parse()</code> e <code>.safeParse()</code>?", options:["Nenhuma","parse lança erro em dado inválido; safeParse retorna um objeto { success, data/error }","safeParse é mais rápido","parse não valida"], answer:1, explain:"<code>.parse()</code> lança exceção; <code>.safeParse()</code> devolve um resultado discriminado, sem throw — melhor para fluxo de erro controlado." },
+    { type:"vf", q:"Um schema Zod pode validar a entrada e, ao mesmo tempo, ser a fonte do tipo estático.", answer:true, explain:"Esse é o ponto: o schema é único — valida em runtime e gera o tipo TS, eliminando divergência entre os dois." },
+    { type:"output", q:"O que <code>.optional()</code> faz com um campo?", code:"z.object({\n  apelido: z.string().optional()\n})", options:["Torna obrigatório","Permite que o campo seja undefined/ausente","Define um valor padrão","Remove o campo"], answer:1, explain:"<code>.optional()</code> aceita undefined; já <code>.default(x)</code> preenche um valor quando ausente." },
+  ]},
+  { id:"auth", step:15, vol:"Vol XIII", mark:"Au", phase:5, title:"Autenticação", file:"pages/manual-autenticacao.html", questions:[
+    { type:"mc", q:"Como senhas devem ser armazenadas no banco?", options:["Em texto puro","Cifradas com uma chave reversível","Como hash com algoritmo lento (bcrypt/argon2) + salt","Em base64"], answer:2, explain:"Nunca texto puro nem cifra reversível. Usa-se hash lento com salt (bcrypt, argon2) — irreversível e resistente a brute-force." },
+    { type:"mc", q:"Diferença entre sessão (server-side) e JWT?", options:["JWT é mais seguro sempre","Sessão guarda estado no servidor; JWT é stateless e carrega os dados assinados no token","São a mesma coisa","Sessão não usa cookies"], answer:1, explain:"Sessão referencia um estado no servidor; JWT carrega claims assinadas no próprio token (stateless), mais difícil de revogar." },
+    { type:"fill", q:"Complete a flag que impede o cookie de trafegar fora de HTTPS:", code:"Set-Cookie: sid=abc; HttpOnly; ___", accept:["secure"], explain:"<code>Secure</code> só envia o cookie por HTTPS; <code>HttpOnly</code> o esconde do JavaScript (anti-XSS)." },
+    { type:"vf", q:"OAuth trata de autorização; o OIDC adiciona uma camada de autenticação (identidade) sobre ele.", answer:true, explain:"OAuth 2.0 concede acesso a recursos (autorização). OpenID Connect padroniza a autenticação/identidade em cima do OAuth." },
+    { type:"mc", q:"O que é RBAC?", options:["Um tipo de hash","Controle de acesso baseado em papéis (roles)","Um protocolo de rede","Um formato de token"], answer:1, explain:"Role-Based Access Control associa permissões a papéis e papéis a usuários — simplifica a gestão de autorização." },
+  ]},
+
+  /* ─── FASE 6 ─── */
+  { id:"docker", step:16, vol:"Vol XV", mark:"Dk", phase:6, title:"Docker", file:"pages/manual-docker.html", questions:[
+    { type:"mc", q:"Qual a relação entre imagem e container?", options:["São sinônimos","A imagem é o molde imutável; o container é uma instância em execução dela","O container cria a imagem","A imagem roda dentro do container"], answer:1, explain:"A imagem é um template em camadas; o container é uma instância executável criada a partir dela." },
+    { type:"fill", q:"Defina a imagem base num Dockerfile:", code:"___ node:20-alpine\nWORKDIR /app", accept:["from"], explain:"<code>FROM</code> é sempre a primeira instrução — define a imagem base sobre a qual as camadas são construídas." },
+    { type:"mc", q:"Para que serve um multi-stage build?", options:["Rodar vários containers","Separar a etapa de build da imagem final, deixando-a menor e sem ferramentas de build","Criar redes","Versionar imagens"], answer:1, explain:"Compila numa stage com todas as ferramentas e copia só os artefatos para a imagem final enxuta — menor e mais segura." },
+    { type:"vf", q:"Volumes mantêm os dados persistentes mesmo quando o container é removido.", answer:true, explain:"Volumes vivem fora do ciclo de vida do container; o sistema de arquivos da camada do container é efêmero." },
+    { type:"order", q:"Ordene as instruções típicas de um Dockerfile:", items:["<code>FROM</code>","<code>WORKDIR</code>","<code>COPY</code>","<code>RUN</code>","<code>CMD</code>"], explain:"Base → diretório de trabalho → copiar arquivos → instalar/compilar (RUN) → comando de inicialização (CMD)." },
+  ]},
+  { id:"regex", step:17, vol:"Vol XVII", mark:"Rx", phase:6, title:"Regex", file:"pages/manual-regex.html", questions:[
+    { type:"mc", q:"O que a classe <code>\\d</code> casa?", options:["Qualquer letra","Um único dígito (0-9)","Espaço em branco","Qualquer caractere"], answer:1, explain:"<code>\\d</code> casa um dígito; <code>\\w</code> casa palavra (letra/dígito/_) e <code>\\s</code> casa espaço." },
+    { type:"mc", q:"Qual a diferença entre os quantificadores <code>*</code> e <code>+</code>?", options:["São iguais","* é zero ou mais; + é um ou mais","* é exatamente um","+ é opcional"], answer:1, explain:"<code>*</code> permite zero ocorrências; <code>+</code> exige pelo menos uma. <code>?</code> é zero ou uma." },
+    { type:"fill", q:"Ancore o padrão ao início da linha/string:", code:"___\\d{3}-\\d{4}$", accept:["^"], explain:"<code>^</code> ancora no início e <code>$</code> no fim — juntos exigem que o padrão cubra a linha inteira." },
+    { type:"vf", q:"Um lookahead <code>(?=...)</code> verifica o que vem depois sem consumir caracteres.", answer:true, explain:"Lookarounds são asserções de largura zero: validam contexto sem incluir os caracteres no match." },
+    { type:"output", q:"Em <code>\"&lt;a&gt;&lt;b&gt;\"</code>, o padrão guloso <code>&lt;.*&gt;</code> casa o quê?", code:'texto:  <a><b>\nregex:  <.*>', options:["&lt;a&gt;","&lt;b&gt;","&lt;a&gt;&lt;b&gt; (tudo)","nada"], answer:2, explain:"O <code>*</code> é guloso: casa o máximo possível, do primeiro &lt; ao último &gt;. Para parar no primeiro &gt;, use o lazy <code>&lt;.*?&gt;</code>." },
+  ]},
+
+  /* ─── FASE 7 ─── */
+  { id:"testes", step:18, vol:"Vol XVIII", mark:"Te", phase:7, title:"Testes", file:"pages/manual-testes.html", questions:[
+    { type:"mc", q:"Na pirâmide de testes, qual camada deve ser a mais numerosa?", options:["Testes end-to-end","Testes de integração","Testes unitários (a base)","Testes manuais"], answer:2, explain:"A base larga são os testes unitários (rápidos e baratos); no topo, poucos E2E (lentos e frágeis)." },
+    { type:"fill", q:"Declare um caso de teste no Vitest:", code:'___("soma 1 + 1", () => {\n  expect(1 + 1).toBe(2);\n});', accept:["test","it"], explain:"<code>test</code> (ou seu alias <code>it</code>) define um caso; <code>expect</code> faz a asserção." },
+    { type:"mc", q:"O que é um mock?", options:["Um teste que sempre passa","Uma implementação falsa de uma dependência para isolar o que está sendo testado","Um erro proposital","Um relatório de cobertura"], answer:1, explain:"Mocks substituem dependências (rede, banco, módulos) por versões controladas, isolando a unidade sob teste." },
+    { type:"vf", q:"O Playwright executa testes end-to-end controlando um navegador real.", answer:true, explain:"Playwright dirige Chromium/Firefox/WebKit de verdade, simulando o usuário — o topo da pirâmide." },
+    { type:"mc", q:"Para que serve o MSW (Mock Service Worker) em testes de frontend?", options:["Estilizar","Interceptar requisições de rede e responder com dados simulados","Medir performance","Compilar o código"], answer:1, explain:"O MSW intercepta as chamadas HTTP no nível da rede, devolvendo respostas falsas sem alterar o código da aplicação." },
+  ]},
+  { id:"devops", step:19, vol:"Vol XIX", mark:"Op", phase:7, title:"DevOps", file:"pages/manual-devops.html", questions:[
+    { type:"mc", q:"Qual a diferença entre CI e CD?", options:["São a mesma coisa","CI integra e testa o código a cada mudança; CD entrega/implanta automaticamente","CD vem antes de CI","CI é manual"], answer:1, explain:"Continuous Integration valida cada commit (build + testes); Continuous Delivery/Deployment automatiza a entrega para os ambientes." },
+    { type:"fill", q:"Em qual pasta o GitHub Actions procura os arquivos de pipeline?", code:".github/___/deploy.yml", accept:["workflows"], explain:"Os workflows ficam em <code>.github/workflows/</code> como arquivos YAML." },
+    { type:"mc", q:"Como segredos (senhas, tokens, chaves) devem ser tratados?", options:["Commitados no repositório","Guardados em variáveis de ambiente / secret managers, fora do código","Em comentários","No README"], answer:1, explain:"Segredos nunca vão para o repositório; usam-se secrets do CI, cofres e variáveis de ambiente injetadas em runtime." },
+    { type:"vf", q:"Observabilidade se apoia em três pilares: logs, métricas e traces.", answer:true, explain:"Logs (eventos), métricas (números agregados) e traces (caminho de uma requisição) juntos explicam o comportamento em produção." },
+    { type:"mc", q:"O que torna um deploy mais seguro de reverter quando algo dá errado?", options:["Apagar a versão antiga","Estratégias como blue-green/canary que permitem rollback rápido","Fazer deploy só na sexta","Não testar"], answer:1, explain:"Blue-green e canary mantêm a versão anterior viva, permitindo voltar (rollback) quase instantaneamente se houver falha." },
+  ]},
+
+  /* ─── FASE 8 ─── */
+  { id:"capstone", step:20, vol:"Vol XX", mark:"Fs", phase:8, title:"Projeto Fullstack", file:"pages/manual-capstone.html", questions:[
+    { type:"order", q:"Ordene as camadas ao construir o app fullstack, da fundação para a entrega:", items:["Modelar o schema (SQL/Drizzle)","Expor a API (Hono)","Validar os dados (Zod)","Construir a UI (React/Next.js)","Empacotar e implantar (Docker/DevOps)"], explain:"A coleção é um arco: dados → API → validação → interface → operação. Cada volume é uma camada desse fluxo." },
+    { type:"mc", q:"Como garantir o mesmo contrato de tipos entre backend e frontend?", options:["Reescrever os tipos dos dois lados","Compartilhar um schema (ex.: Zod) que valida e infere o tipo para ambos","Confiar no JavaScript","Usar any"], answer:1, explain:"Um schema Zod compartilhado serve de fonte única: valida na fronteira e fornece o tipo TS para os dois lados." },
+    { type:"vf", q:"A autenticação deve ser validada no servidor, não apenas no cliente.", answer:true, explain:"Checagens no cliente são conveniência/UX; a fonte de verdade da autorização precisa estar no servidor, que não confia na entrada." },
+    { type:"mc", q:"Por que escrever testes (Vol XVIII) antes de implantar (Vol XIX) o capstone?", options:["Para gastar tempo","Para garantir que as camadas integradas funcionam antes de ir a produção","Não é necessário","Só para cobertura"], answer:1, explain:"Os testes dão a confiança para o CI/CD entregar automaticamente — qualidade e operação andam juntas." },
+    { type:"mc", q:"O que conecta todos os 19 volumes anteriores no capstone?", options:["Nada, são independentes","Um único app real, ponta a ponta, que usa cada tecnologia na sua camada","Apenas o CSS","O índice"], answer:1, explain:"O capstone costura tudo: um gerenciador de tarefas em time, do schema ao deploy, dando sentido prático a cada volume." },
+  ]},
+];
+
+const BADGES = [
+  { id:"first",    emoji:"🌱", name:"Primeiros Passos", test:s => completedCount(s) >= 1 },
+  { id:"five",     emoji:"⚡", name:"Aquecendo",        test:s => completedCount(s) >= 5 },
+  { id:"perfect",  emoji:"💎", name:"Impecável",        test:s => Object.values(s.completed).some(c => c.perfect) },
+  { id:"frontend", emoji:"🎨", name:"Front-end",        test:s => ["html","css","javascript","typescript","react","tailwind","nextjs"].every(id => s.completed[id]) },
+  { id:"backend",  emoji:"🛠️", name:"Back-end",        test:s => ["nodejs","hono","sql","drizzle","zod","auth"].every(id => s.completed[id]) },
+  { id:"streak7",  emoji:"🔥", name:"Em Chamas",        test:s => (s.streak && s.streak.count >= 7) },
+  { id:"ten",      emoji:"🚀", name:"Meia Trilha",      test:s => completedCount(s) >= 10 },
+  { id:"all",      emoji:"👑", name:"Full Stack",       test:s => completedCount(s) >= MODULES.length },
+];
+
+/* ─── estado ─── */
+const SKEY = "fullstack-quest-v1";
+function load() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SKEY));
+    if (s && typeof s === "object") return normalize(s);
+  } catch (e) {}
+  return normalize({});
+}
+function normalize(s) {
+  return {
+    xp: s.xp || 0,
+    completed: s.completed || {},      // { moduleId: { correct, total, perfect, xp } }
+    badges: s.badges || [],            // [badgeId]
+    streak: s.streak || { count: 0, last: null },
+    missed: s.missed || [],            // [{ m, i }]
+  };
+}
+function save() { localStorage.setItem(SKEY, JSON.stringify(state)); }
+let state = load();
+
+/* ─── helpers ─── */
+function completedCount(s) { return Object.keys(s.completed).length; }
+function moduleById(id) { return MODULES.find(m => m.id === id); }
+function orderedModules() { return [...MODULES].sort((a, b) => a.step - b.step); }
+function isUnlocked(mod) {
+  return true; // acesso livre: todos os módulos sempre disponíveis (XP/badges/streak preservados)
+}
+function esc(s) { return String(s).replace(/&(?!(amp|lt|gt|quot|#39);)/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+function normFill(s) { return String(s).trim().toLowerCase().replace(/\s+/g, " ").replace(/;+$/, "").replace(/^["']|["']$/g, "").replace(/^["']|["']$/g, ""); }
+function levelInfo(xp) {
+  let lvl = 1, need = 100, acc = 0;
+  while (xp >= acc + need) { acc += need; lvl++; need = Math.round(need * 1.4); }
+  return { lvl, into: xp - acc, need, pct: Math.round(((xp - acc) / need) * 100) };
+}
+function updateStreak() {
+  const today = new Date().toISOString().slice(0, 10);
+  if (state.streak.last === today) return;
+  const y = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+  state.streak.count = (state.streak.last === y) ? state.streak.count + 1 : 1;
+  state.streak.last = today;
+  save();
+}
+function refreshBadges() {
+  const newly = [];
+  for (const b of BADGES) {
+    if (!state.badges.includes(b.id) && b.test(state)) { state.badges.push(b.id); newly.push(b); }
+  }
+  if (newly.length) save();
+  return newly;
+}
+function toast(html) {
+  const t = document.getElementById("toast");
+  t.innerHTML = html; t.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.classList.remove("show"), 3200);
+}
+
+const ROMAN = {}; // not needed; vol comes from data
+
+/* ════════════════ TELA: HUB ════════════════ */
+function renderHub() {
+  updateStreak();
+  const li = levelInfo(state.xp);
+  const done = completedCount(state);
+  const ord = orderedModules();
+
+  const stats = `
+    <div class="stats">
+      <div class="stat"><span class="ico">🔥</span><span><span class="big">${state.streak.count}</span> <span class="lbl">streak</span></span></div>
+      <div class="stat"><span class="ico">✨</span><span><span class="big">${state.xp}</span> <span class="lbl">XP</span></span></div>
+      <div class="stat"><span class="ico">🏅</span><span><span class="big">${state.badges.length}</span><span class="lbl">/${BADGES.length} badges</span></span></div>
+      <a class="home-link" href="index.html">← Coleção</a>
+    </div>`;
+
+  const levelbar = `
+    <div class="levelbar">
+      <div class="level-badge"><span class="n">${li.lvl}</span><span class="t">Nível</span></div>
+      <div class="xp-wrap">
+        <div class="xp-meta"><span>Nível ${li.lvl}</span><span><strong>${li.into}</strong> / ${li.need} XP p/ o próximo</span></div>
+        <div class="xp-track"><div class="xp-fill" style="width:${li.pct}%"></div></div>
+      </div>
+    </div>`;
+
+  const badges = `<div class="badges">` + BADGES.map(b => {
+    const got = state.badges.includes(b.id);
+    return `<div class="badge ${got ? "earned" : ""}" title="${esc(b.name)}"><span class="e">${b.emoji}</span><span>${esc(b.name)}</span></div>`;
+  }).join("") + `</div>`;
+
+  const missedN = state.missed.length;
+  const toolbar = `
+    <div class="toolbar">
+      <button class="btn ghost" ${missedN ? "" : "disabled"} onclick="startReview()">🔁 Revisar erros${missedN ? " (" + missedN + ")" : ""}</button>
+      <button class="btn ghost" onclick="resetAll()">↺ Zerar progresso</button>
+    </div>`;
+
+  const phasesHtml = PHASES.map(ph => {
+    const mods = ord.filter(m => m.phase === ph.id);
+    const doneP = mods.filter(m => state.completed[m.id]).length;
+    const cards = mods.map(m => {
+      const c = state.completed[m.id];
+      const unlocked = isUnlocked(m);
+      let stateCls = unlocked ? (c ? "done" : "open") : "locked";
+      let foot;
+      if (!unlocked) {
+        foot = `<span class="card-state"><span class="lock">🔒</span> Bloqueado</span>`;
+      } else if (c) {
+        const stars = "★".repeat(scoreStars(c)) + "☆".repeat(3 - scoreStars(c));
+        foot = `<span class="card-state"><span class="dot"></span> ${c.correct}/${c.total}</span><span class="score stars">${stars}</span>`;
+      } else {
+        foot = `<span class="card-state"><span class="dot"></span> Jogar</span><span class="score">→</span>`;
+      }
+      const onclick = unlocked ? `onclick="startModule('${m.id}')"` : "";
+      return `
+        <button class="card ${stateCls}" ${onclick}>
+          <div class="card-top"><div class="mark">${m.mark}</div><span class="vol">Passo ${m.step} · ${m.vol}</span></div>
+          <div class="card-title">${esc(m.title)}</div>
+          <div class="card-foot">${foot}</div>
+        </button>`;
+    }).join("");
+    return `
+      <section class="phase">
+        <div class="phase-head">
+          <span class="phase-label">${ph.label}</span>
+          <h2 class="phase-title">${esc(ph.title)}</h2>
+          <span class="phase-prog">${doneP}/${mods.length}</span>
+        </div>
+        <div class="grid">${cards}</div>
+      </section>`;
+  }).join("");
+
+  document.getElementById("app").innerHTML = `
+    <div class="topbar">
+      <a class="brand" href="index.html">
+        <div class="brand-mark">FS</div>
+        <div class="brand-text"><div class="title">FullStack <em>Quest</em></div><div class="sub">Revisão · ${done}/${MODULES.length} módulos</div></div>
+      </a>
+      ${stats}
+    </div>
+    ${levelbar}
+    ${badges}
+    ${toolbar}
+    ${phasesHtml}
+    <footer style="margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border);color:var(--muted);font-size:.85rem;font-family:var(--font-mono);">
+      Consolide a coleção FullStack Manual jogando · progresso salvo neste navegador
+    </footer>`;
+  window.scrollTo(0, 0);
+}
+function scoreStars(c) {
+  const r = c.correct / c.total;
+  if (r >= 1) return 3;
+  if (r >= 0.7) return 2;
+  if (r >= 0.4) return 1;
+  return 0;
+}
+
+/* ════════════════ QUIZ ════════════════ */
+let session = null;
+const HEARTS_START = 3;
+
+function startModule(id) {
+  const mod = moduleById(id);
+  if (!mod || !isUnlocked(mod)) return;
+  session = {
+    mode: "module", mod, queue: mod.questions.map((q, i) => ({ q, i })),
+    idx: 0, correct: 0, mistakes: 0, hearts: HEARTS_START, answered: false, picked: null, seq: [],
+  };
+  renderQuestion();
+}
+function startReview() {
+  if (!state.missed.length) return;
+  const items = state.missed.map(ref => {
+    const mod = moduleById(ref.m); if (!mod) return null;
+    const q = mod.questions[ref.i]; if (!q) return null;
+    return { q, ref, modTitle: mod.title };
+  }).filter(Boolean);
+  if (!items.length) { state.missed = []; save(); renderHub(); return; }
+  session = {
+    mode: "review", queue: items, idx: 0, correct: 0, mistakes: 0,
+    hearts: 99, answered: false, picked: null, seq: [], clearedRefs: [],
+  };
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const s = session;
+  const item = s.queue[s.idx];
+  const q = item.q;
+  s.answered = false; s.picked = null; s.seq = [];
+
+  const total = s.queue.length;
+  const pct = Math.round((s.idx / total) * 100);
+  const hearts = s.mode === "review"
+    ? `<span class="hearts">🔁 revisão</span>`
+    : `<span class="hearts">${"❤️".repeat(s.hearts)}${"🖤".repeat(HEARTS_START - s.hearts)}</span>`;
+  const title = s.mode === "review" ? "Revisão de erros" : s.mod.title;
+
+  const kindLabel = { mc:"Múltipla escolha", vf:"Verdadeiro ou falso", fill:"Complete o código", output:"Qual a saída?", order:"Ordene os passos" }[q.type];
+
+  let body = "";
+  if (q.code && q.type !== "fill") {
+    body += `<div class="codeblock"><pre>${esc(q.code)}</pre></div>`;
+  }
+  body += `<div class="qtext">${q.q}</div>`;
+
+  if (q.type === "mc" || q.type === "output") {
+    body += `<div class="opts">` + q.options.map((o, i) =>
+      `<button class="opt" data-i="${i}" onclick="pick(${i})"><span class="key">${String.fromCharCode(65 + i)}</span><span>${o}</span></button>`
+    ).join("") + `</div>`;
+  } else if (q.type === "vf") {
+    body += `<div class="opts">
+      <button class="opt" data-i="1" onclick="pick(1)"><span class="key">V</span><span>Verdadeiro</span></button>
+      <button class="opt" data-i="0" onclick="pick(0)"><span class="key">F</span><span>Falso</span></button>
+    </div>`;
+  } else if (q.type === "fill") {
+    const codeHtml = esc(q.code).replace("___", '<span class="blank" id="blankSlot">␣␣␣</span>');
+    body += `<div class="codeblock"><pre>${codeHtml}</pre></div>`;
+    body += `<input class="fill-input" id="fillInput" placeholder="digite o que falta na lacuna…" autocomplete="off" autocapitalize="off" spellcheck="false">`;
+  } else if (q.type === "order") {
+    body += `<div class="order-help">Clique na ordem correta. Clique num item da sequência para devolvê-lo.</div>`;
+    body += `<div class="order-seq" id="orderSeq"></div>`;
+    body += `<div class="order-pool" id="orderPool"></div>`;
+  }
+
+  document.getElementById("app").innerHTML = `
+    <div class="quiz-top">
+      <button class="qt-back" onclick="quitToHub()">← Sair</button>
+      <div class="qbar"><div class="qbar-fill" style="width:${pct}%"></div></div>
+      ${hearts}
+    </div>
+    <div style="font-family:var(--font-mono);font-size:.75rem;color:var(--muted);margin-bottom:.6rem;">${esc(title)} · questão ${s.idx + 1}/${total}</div>
+    <div class="qcard">
+      <div class="qkind">${kindLabel}</div>
+      ${body}
+      <div class="feedback" id="feedback"><div class="fb-title" id="fbTitle"></div><div class="fb-body" id="fbBody"></div></div>
+      <div class="qactions"><button class="btn" id="actionBtn" disabled onclick="verify()">Verificar</button></div>
+    </div>`;
+  window.scrollTo(0, 0);
+
+  if (q.type === "fill") {
+    const inp = document.getElementById("fillInput");
+    inp.focus();
+    inp.addEventListener("input", () => { document.getElementById("actionBtn").disabled = inp.value.trim() === ""; });
+    inp.addEventListener("keydown", e => { if (e.key === "Enter" && !document.getElementById("actionBtn").disabled) verify(); });
+  } else if (q.type === "order") {
+    renderOrder();
+  }
+}
+
+/* seleção de múltipla escolha / VF */
+function pick(i) {
+  if (session.answered) return;
+  session.picked = i;
+  document.querySelectorAll(".opt").forEach(el => el.classList.toggle("sel", +el.dataset.i === i));
+  document.getElementById("actionBtn").disabled = false;
+}
+
+/* ordering */
+function renderOrder() {
+  const q = session.queue[session.idx].q;
+  const seqEl = document.getElementById("orderSeq");
+  const poolEl = document.getElementById("orderPool");
+  seqEl.innerHTML = session.seq.map((origIdx, pos) =>
+    `<div class="order-slot" onclick="orderRemove(${pos})"><span class="num">${pos + 1}</span><span>${q.items[origIdx]}</span></div>`
+  ).join("");
+  poolEl.innerHTML = q._shuffled.filter(i => !session.seq.includes(i)).map(i =>
+    `<button class="order-item" onclick="orderAdd(${i})">${q.items[i]}</button>`
+  ).join("");
+  document.getElementById("actionBtn").disabled = session.seq.length !== q.items.length;
+}
+function orderAdd(i) { if (session.answered) return; session.seq.push(i); renderOrder(); }
+function orderRemove(pos) { if (session.answered) return; session.seq.splice(pos, 1); renderOrder(); }
+
+/* verificação */
+function verify() {
+  const s = session;
+  if (s.answered) { advance(); return; }
+  const q = s.queue[s.idx].q;
+  let ok = false;
+
+  if (q.type === "mc" || q.type === "output") {
+    ok = s.picked === q.answer;
+    document.querySelectorAll(".opt").forEach(el => {
+      const i = +el.dataset.i; el.disabled = true;
+      if (i === q.answer) el.classList.add("correct");
+      else if (i === s.picked) el.classList.add("wrong");
+    });
+  } else if (q.type === "vf") {
+    const want = q.answer ? 1 : 0;
+    ok = s.picked === want;
+    document.querySelectorAll(".opt").forEach(el => {
+      const i = +el.dataset.i; el.disabled = true;
+      if (i === want) el.classList.add("correct");
+      else if (i === s.picked) el.classList.add("wrong");
+    });
+  } else if (q.type === "fill") {
+    const inp = document.getElementById("fillInput");
+    const val = normFill(inp.value);
+    ok = q.accept.some(a => normFill(a) === val);
+    inp.disabled = true;
+    inp.classList.add(ok ? "correct" : "wrong");
+    const slot = document.getElementById("blankSlot");
+    if (slot) { slot.textContent = ok ? inp.value.trim() : q.accept[0]; }
+  } else if (q.type === "order") {
+    ok = s.seq.every((v, idx) => v === idx) && s.seq.length === q.items.length;
+    const seqEl = document.getElementById("orderSeq");
+    seqEl.classList.add(ok ? "correct" : "wrong");
+    if (!ok) {
+      // mostra a ordem correta
+      seqEl.innerHTML = q.items.map((txt, pos) => `<div class="order-slot"><span class="num">${pos + 1}</span><span>${txt}</span></div>`).join("");
+      document.getElementById("orderPool").innerHTML = "";
+    }
+    document.querySelectorAll(".order-item").forEach(el => el.disabled = true);
+  }
+
+  s.answered = true;
+  const fb = document.getElementById("feedback");
+  fb.classList.add("show", ok ? "ok" : "no");
+  document.getElementById("fbTitle").textContent = ok ? "Correto!" : "Não foi dessa vez";
+  document.getElementById("fbBody").innerHTML = q.explain;
+
+  if (ok) {
+    s.correct++;
+    if (s.mode === "review") s.clearedRefs.push(s.queue[s.idx].ref);
+  } else {
+    s.mistakes++;
+    if (s.mode === "module") {
+      s.hearts--;
+      addMissed(s.mod.id, s.queue[s.idx].i);
+    }
+  }
+
+  const btn = document.getElementById("actionBtn");
+  if (s.mode === "module" && s.hearts <= 0) {
+    btn.textContent = "Ver resultado"; btn.onclick = () => failModule();
+  } else {
+    btn.textContent = (s.idx + 1 >= s.queue.length) ? "Concluir" : "Continuar";
+    btn.onclick = advance;
+  }
+}
+
+function addMissed(m, i) {
+  if (!state.missed.some(r => r.m === m && r.i === i)) { state.missed.push({ m, i }); save(); }
+}
+
+function advance() {
+  const s = session;
+  if (s.idx + 1 < s.queue.length) { s.idx++; renderQuestion(); }
+  else { finishSession(); }
+}
+
+function quitToHub() { session = null; renderHub(); }
+
+function failModule() {
+  const s = session;
+  document.getElementById("app").innerHTML = `
+    <div class="result">
+      <div class="r-emoji">💔</div>
+      <h2>Vidas esgotadas</h2>
+      <p class="r-sub">Você acertou ${s.correct} de ${s.idx + 1} antes de perder os corações. Reveja o manual e tente de novo — sem pressa.</p>
+      <div class="r-actions">
+        <button class="btn" onclick="startModule('${s.mod.id}')">↻ Tentar de novo</button>
+        <button class="btn ghost" onclick="quitToHub()">Voltar ao mapa</button>
+      </div>
+      <a class="read-link" href="${s.mod.file}" target="_blank" rel="noopener">📖 Abrir o ${esc(s.mod.vol)} — ${esc(s.mod.title)}</a>
+    </div>`;
+  window.scrollTo(0, 0);
+}
+
+function finishSession() {
+  const s = session;
+  if (s.mode === "review") return finishReview();
+
+  const total = s.queue.length;
+  const perfect = s.mistakes === 0;
+  const moduleXp = s.correct * 10 + (perfect ? 30 : 0);
+  const prev = state.completed[s.mod.id];
+  const prevXp = prev ? prev.xp : 0;
+  let gained = 0;
+  if (moduleXp > prevXp) { gained = moduleXp - prevXp; state.xp += gained; }
+
+  // só registra como concluído se chegou ao fim com vidas
+  const wasNew = !prev;
+  state.completed[s.mod.id] = { correct: s.correct, total, perfect, xp: Math.max(moduleXp, prevXp) };
+  save();
+
+  const beforeLvl = levelInfo(state.xp - gained).lvl;
+  const afterLvl = levelInfo(state.xp).lvl;
+  const newBadges = refreshBadges();
+
+  const emoji = perfect ? "🏆" : (s.correct / total >= 0.6 ? "🎉" : "👏");
+  const heading = perfect ? "Módulo impecável!" : "Módulo concluído!";
+
+  let extras = "";
+  if (afterLvl > beforeLvl) extras += `<div class="nb">⬆️ Subiu para o nível ${afterLvl}!</div>`;
+  newBadges.forEach(b => extras += `<div class="nb">${b.emoji} Nova conquista: ${esc(b.name)}</div>`);
+
+  document.getElementById("app").innerHTML = `
+    <div class="result">
+      <div class="r-emoji">${emoji}</div>
+      <h2>${heading}</h2>
+      <p class="r-sub">${esc(s.mod.vol)} — ${esc(s.mod.title)}</p>
+      ${extras ? `<div class="r-new-badges">${extras}</div>` : ""}
+      <div class="r-stats">
+        <div class="r-stat"><div class="v">${s.correct}/${total}</div><div class="l">Acertos</div></div>
+        <div class="r-stat"><div class="v">+${gained}</div><div class="l">XP ganho</div></div>
+        <div class="r-stat"><div class="v">${"★".repeat(scoreStars({correct:s.correct,total}))}${"☆".repeat(3-scoreStars({correct:s.correct,total}))}</div><div class="l">Estrelas</div></div>
+      </div>
+      <div class="r-actions">
+        ${nextModuleBtn(s.mod)}
+        <button class="btn ghost" onclick="startModule('${s.mod.id}')">↻ Repetir</button>
+        <button class="btn ghost" onclick="quitToHub()">Mapa</button>
+      </div>
+      <a class="read-link" href="${s.mod.file}" target="_blank" rel="noopener">📖 Reler o ${esc(s.mod.vol)} — ${esc(s.mod.title)}</a>
+    </div>`;
+  window.scrollTo(0, 0);
+  if (afterLvl > beforeLvl) toast(`⬆️ <strong>Nível ${afterLvl}</strong> alcançado!`);
+}
+
+function nextModuleBtn(mod) {
+  const ord = orderedModules();
+  const idx = ord.findIndex(m => m.id === mod.id);
+  const next = ord[idx + 1];
+  if (next) return `<button class="btn" onclick="startModule('${next.id}')">Próximo: ${esc(next.title)} →</button>`;
+  return `<button class="btn" onclick="quitToHub()">🎓 Ver o mapa</button>`;
+}
+
+function finishReview() {
+  const s = session;
+  // remove os refs resolvidos da lista de erros
+  state.missed = state.missed.filter(r => !s.clearedRefs.some(c => c.m === r.m && c.i === r.i));
+  save();
+  const cleared = s.clearedRefs.length;
+  const remaining = state.missed.length;
+  refreshBadges();
+  document.getElementById("app").innerHTML = `
+    <div class="result">
+      <div class="r-emoji">${remaining === 0 ? "✅" : "🔁"}</div>
+      <h2>Revisão concluída</h2>
+      <p class="r-sub">Você resolveu ${cleared} de ${s.queue.length} questões revisadas.${remaining ? " Ainda restam " + remaining + " na lista." : " Sua lista de erros está zerada!"}</p>
+      <div class="r-actions">
+        ${remaining ? `<button class="btn" onclick="startReview()">Continuar revisando</button>` : ""}
+        <button class="btn ghost" onclick="quitToHub()">Voltar ao mapa</button>
+      </div>
+    </div>`;
+  window.scrollTo(0, 0);
+}
+
+function resetAll() {
+  if (!confirm("Zerar todo o progresso (XP, níveis, conquistas e módulos)? Isso não pode ser desfeito.")) return;
+  localStorage.removeItem(SKEY);
+  state = load();
+  renderHub();
+}
+
+/* embaralha os itens de ordering uma vez (estável por questão) */
+function prepShuffles() {
+  MODULES.forEach(m => m.questions.forEach(q => {
+    if (q.type === "order" && !q._shuffled) {
+      const arr = q.items.map((_, i) => i);
+      for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
+      // garante que não comece já ordenado
+      if (arr.every((v, i) => v === i)) arr.reverse();
+      q._shuffled = arr;
+    }
+  }));
+}
+
+/* deep-link: jogo.html#moduleId abre o módulo (se desbloqueado) */
+function handleHash() {
+  const id = location.hash.replace("#", "");
+  if (id && moduleById(id)) {
+    const mod = moduleById(id);
+    if (isUnlocked(mod)) { startModule(id); return true; }
+  }
+  return false;
+}
+
+prepShuffles();
+if (!handleHash()) renderHub();
+window.addEventListener("hashchange", () => { if (!handleHash()) renderHub(); });
+</script>
+</body>
+</html>
